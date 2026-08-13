@@ -29,6 +29,21 @@
 #include "PhysicsControlled.h"
 #include "PhysicsStandard.h"
 #include "RightHandedSet.h"
+#include "CreatureActionBase.h"
+#include "CombatActionBase.h"
+#include "DefPointer.h"
+#include "DefPointeeBase.h"
+#include "Stealth.h"
+#include "GameScriptInterface.h"
+
+#include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
+#include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"
+#include "CreatureActions/CreatureAction_InterruptableMidAttackAutoTurn.h"
+#include "CreatureActions/CreatureAction_PlayerInteractionGreet.h"
+#include "CreatureActions/CreatureAction_StartBlocking.h"
+
+#include "CombatActions/CombatAction_KickThingOnGround.h"
+#include "CombatActions/CombatAction_ControlledStrafeJump.h"
 
 class SDK
 {

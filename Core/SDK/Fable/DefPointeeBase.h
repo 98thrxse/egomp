@@ -4,8 +4,10 @@
 
 #include "../Utils/Hook.h"
 
-class CBaseClass
+class CDefPointeeBase
 {
 public:
+    char pad[0x1C];
+
     static void Hook();
 };

@@ -49,4 +49,19 @@ SDK::SDK()
 	CTCPhysicsControlled::Hook();
 	CTCPhysicsStandard::Hook();
 	CRightHandedSet::Hook();
+	CCreatureActionBase::Hook();
+	CCombatActionBase::Hook();
+	CDefPointer::Hook();
+	CDefPointeeBase::Hook();
+	CTCStealth::Hook();
+	CGameScriptInterface::Hook();
+
+	CCreatureAction_PlayerInteractionGreet::Hook();
+	CCreatureAction_StartBlocking::Hook();
+	CCreatureAction_InterruptableMidAttackAutoTurn::Hook();
+	CCreatureAction_UnsheatheItemFromInventory::Hook();
+	CCreatureAction_SheatheItemToInventory::Hook();
+
+	CCombatAction_KickThingOnGround::Hook();
+	CCombatAction_ControlledStrafeJump::Hook();
 };

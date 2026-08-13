@@ -1,4 +1,4 @@
-#include "NetPlayerManager.h";
+#include "NetPlayerManager.h"
 
 NetPlayerManager::NetPlayerManager(
     Network* network,

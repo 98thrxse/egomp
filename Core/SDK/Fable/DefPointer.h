@@ -4,8 +4,12 @@
 
 #include "../Utils/Hook.h"
 
-class CBaseClass
+#include "DefPointeeBase.h"
+
+class CDefPointer
 {
 public:
+    CDefPointeeBase* Object;
+
     static void Hook();
 };

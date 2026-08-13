@@ -3,8 +3,8 @@
 #include <iostream>
 
 #include "../../../SDK/Fable/SDK.h"
-
 #include "../../Network/Network.h"
+
 #include "../NetPlayerManager/NetPlayerManager.h"
 
 class NetMainGameComponent
@@ -26,6 +26,18 @@ private:
 
 	void SetupNetworkCallbacks();
 	void ClearNetworkCallbacks();
+
+	void SetupNetworkSessionCallbacks();
+	void ClearNetworkSessionCallbacks();
+
+	void SetupNetworkLifecycleCallbacks();
+	void ClearNetworkLifecycleCallbacks();
+
+	void SetupNetworkMotionCallbacks();
+	void ClearNetworkMotionCallbacks();
+
+	void SetupNetworkActionCallbacks();
+	void ClearNetworkActionCallbacks();
 
 	void Selection();
 	void Options();

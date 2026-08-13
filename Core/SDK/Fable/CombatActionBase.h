@@ -4,8 +4,10 @@
 
 #include "../Utils/Hook.h"
 
-class CBaseClass
+class CCombatActionBase
 {
 public:
+    char pad[0x114];
+
     static void Hook();
 };

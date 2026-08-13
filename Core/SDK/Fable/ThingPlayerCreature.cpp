@@ -56,6 +56,29 @@ void __fastcall CThingPlayerCreature::HApplyRelativeMovementAcceleration(CThingP
 	OApplyRelativeMovementAcceleration(_this, vect, game_action);
 }
 
+char(__thiscall* CThingPlayerCreature::OSetActionForMelee)(CThingPlayerCreature*, CCreatureAbilityDef const&) = nullptr;
+char __fastcall CThingPlayerCreature::HSetActionForMelee(CThingPlayerCreature* _this, void* _EDX, CCreatureAbilityDef const& arg)
+{
+	return OSetActionForMelee(_this, arg);
+}
+
+
+char CThingPlayerCreature::SetActionForMelee(CCreatureAbilityDef const& arg)
+{
+	return OSetActionForMelee(this, arg);
+}
+
+char(__thiscall* CThingPlayerCreature::OSetPlayerCreatureActionForMelee)(CThingPlayerCreature*, ECombatZone, C3DVector const&, CThing*, CCreatureAbilityDef const&) = nullptr;
+char __fastcall CThingPlayerCreature::HSetPlayerCreatureActionForMelee(CThingPlayerCreature* _this, void* _EDX, ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef)
+{
+	return OSetPlayerCreatureActionForMelee(_this, combatZone, vector, thing, abilityDef);
+}
+
+char CThingPlayerCreature::SetPlayerCreatureActionForMelee(ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef)
+{
+	return OSetPlayerCreatureActionForMelee(this, combatZone, vector, thing, abilityDef);
+}
+
 void CThingPlayerCreature::Hook()
 {
 	ADD_HOOK(0x006AC910, HCreate, OCreate);
@@ -63,4 +86,6 @@ void CThingPlayerCreature::Hook()
 	ADD_HOOK(0x006AB820, HResolveFacingDirection, OResolveFacingDirection);
 	ADD_HOOK(0x006AD260, HUpdateWalkingControlForces, OUpdateWalkingControlForces);
 	ADD_HOOK(0x006AD3C0, HApplyRelativeMovementAcceleration, OApplyRelativeMovementAcceleration);
+	ADD_HOOK(0x006AABE0, HSetActionForMelee, OSetActionForMelee);
+	ADD_HOOK(0x006AA720, HSetPlayerCreatureActionForMelee, OSetPlayerCreatureActionForMelee);
 }

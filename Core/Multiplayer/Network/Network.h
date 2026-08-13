@@ -44,6 +44,7 @@ private:
 
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerMovementCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerRotationCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> netPlayerActionCallbacks;
 
 	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
 	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
@@ -64,6 +65,7 @@ private:
 
 	void HandleNetPlayerMovement(SLNet::Packet* packet);
 	void HandleNetPlayerRotation(SLNet::Packet* packet);
+	void HandleNetPlayerAction(SLNet::Packet* packet);
 
 	void HandleDisconnectionNotification(SLNet::Packet* packet);
 	void HandleConnectionLost(SLNet::Packet* packet);
@@ -114,6 +116,9 @@ public:
 
 	void AddNetPlayerRotationCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerRotationCallbacks[id] = cb; }
 	void RemoveNetPlayerRotationCallback(const std::string& id) { netPlayerRotationCallbacks.erase(id); }
+
+	void AddNetPlayerActionCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerActionCallbacks[id] = cb; }
+	void RemoveNetPlayerActionCallback(const std::string& id) { netPlayerActionCallbacks.erase(id); }
 
 	void AddDisconnectionNotificationCallback(const std::string& id, std::function<void(int)> cb) { disconnectionNotificationCallbacks[id] = cb; }
 	void RemoveDisconnectionNotificationCallback(const std::string& id) { disconnectionNotificationCallbacks.erase(id); }

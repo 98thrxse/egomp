@@ -58,6 +58,12 @@ void __fastcall CWorld::HSetAsPaused(CWorld* _this, void* _EDX, bool paused)
     OSetAsPaused(_this, paused);
 }
 
+void(__thiscall* CWorld::OEAControlledCreatureStartSneaking)(CWorld*, const CGameEvent*) = nullptr;
+void __fastcall CWorld::HEAControlledCreatureStartSneaking(CWorld* _this, void* _EDX, const CGameEvent* event)
+{
+    OEAControlledCreatureStartSneaking(_this, event);
+}
+
 void CWorld::Hook()
 {
     ADD_HOOK(0x00629260, HEAMoveHeroToRegion, OEAMoveHeroToRegion);
@@ -65,4 +71,5 @@ void CWorld::Hook()
     ADD_HOOK(0x0049E2C0, HSetAsLoadingRegion, OSetAsLoadingRegion);
     ADD_HOOK(0x004A3740, HUpdateRegionLoad, OUpdateRegionLoad);
     ADD_HOOK(0x0049D8F0, HSetAsPaused, OSetAsPaused);
+    ADD_HOOK(0x0062AA70, HEAControlledCreatureStartSneaking, OEAControlledCreatureStartSneaking);
 }

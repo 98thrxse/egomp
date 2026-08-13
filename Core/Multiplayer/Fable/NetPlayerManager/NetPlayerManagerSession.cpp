@@ -10,7 +10,7 @@ void NetPlayerManager::ConnectionNotification(int networkId, SystemAddress syste
         return;
     }
 
-    C3DVector position = *((CThing*)creature)->GetPos();
+    C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
     SLNet::BitStream bs;
     bs.Write((SLNet::MessageID)ID_CREATE_LOCAL_NET_PLAYER);

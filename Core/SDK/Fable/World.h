@@ -61,4 +61,7 @@ private:
 
     static void(__thiscall* OSetAsPaused)(CWorld*, bool);
     static void __fastcall HSetAsPaused(CWorld* _this, void* _EDX, bool paused);
+
+    static void(__thiscall* OEAControlledCreatureStartSneaking)(CWorld*, const CGameEvent*);
+    static void __fastcall HEAControlledCreatureStartSneaking(CWorld* _this, void* _EDX, const CGameEvent* event);
 };

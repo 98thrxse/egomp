@@ -176,9 +176,40 @@ void NetMainGameComponent::Disconnect()
 
 void NetMainGameComponent::SetupNetworkCallbacks()
 {
+
+	SetupNetworkSessionCallbacks();
+	SetupNetworkLifecycleCallbacks();
+	SetupNetworkMotionCallbacks();
+	SetupNetworkActionCallbacks();
+}
+
+void NetMainGameComponent::ClearNetworkCallbacks()
+{
+    if (network) {
+        ClearNetworkSessionCallbacks();
+        ClearNetworkLifecycleCallbacks();
+        ClearNetworkMotionCallbacks();
+        ClearNetworkActionCallbacks();
+    }
+}
+
+void NetMainGameComponent::SetupNetworkSessionCallbacks()
+{
     network->AddConnectionNotificationCallback("ConnectionNotification", [this](int networkId, SystemAddress systemAddress) {
         netPlayerManager->ConnectionNotification(networkId, systemAddress);
-    });
+        });
+}
+
+void NetMainGameComponent::ClearNetworkSessionCallbacks()
+{
+    network->RemoveConnectionNotificationCallback("ConnectionNotification");
+    network->RemoveDisconnectionNotificationCallback("DisconnectionNotification");
+    network->RemoveConnectionLostCallback("ConnectionLost");
+    network->RemoveConnectionAttemptFailedCallback("ConnectionAttemptFailed");
+}
+
+void NetMainGameComponent::SetupNetworkLifecycleCallbacks()
+{
     network->AddCreateLocalNetPlayerCallback("CreateLocalNetPlayer", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector position = {};
@@ -187,7 +218,8 @@ void NetMainGameComponent::SetupNetworkCallbacks()
         bs.Read(position);
 
         netPlayerManager->CreateLocalNetPlayer(networkId, position);
-    });
+        });
+
     network->AddCreateNetPlayerCallback("CreateNetPlayer", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector position = {};
@@ -198,7 +230,8 @@ void NetMainGameComponent::SetupNetworkCallbacks()
         bs.Read(position);
 
         netPlayerManager->CreateNetPlayer(networkId, position, defGlobalIndex);
-    });
+        });
+
     network->AddCreateNetPlayersCallback("CreateNetPlayers", [this](BitStream& bs) {
         int count = 0;
         bs.Read(count);
@@ -215,7 +248,34 @@ void NetMainGameComponent::SetupNetworkCallbacks()
 
             netPlayerManager->CreateNetPlayers(networkId, position, defGlobalIndex);
         }
-    });
+        });
+
+    network->AddDestroyLocalNetPlayerCallback("DestroyLocalNetPlayer", [this]() {
+        netPlayerManager->DestroyLocalNetPlayer();
+        });
+
+    network->AddDestroyNetPlayerCallback("DestroyNetPlayer", [this](int networkId) {
+        netPlayerManager->DestroyNetPlayer(networkId);
+        });
+
+    network->AddDestroyNetPlayersCallback("DestroyNetPlayers", [this]() {
+        netPlayerManager->DestroyNetPlayers();
+        });
+}
+
+void NetMainGameComponent::ClearNetworkLifecycleCallbacks()
+{
+    network->RemoveCreateLocalNetPlayerCallback("CreateLocalNetPlayer");
+    network->RemoveCreateNetPlayerCallback("CreateNetPlayer");
+    network->RemoveCreateNetPlayersCallback("CreateNetPlayers");
+
+    network->RemoveDestroyLocalNetPlayerCallback("DestroyLocalNetPlayer");
+    network->RemoveDestroyNetPlayerCallback("DestroyNetPlayer");
+    network->RemoveDestroyNetPlayersCallback("DestroyNetPlayers");
+}
+
+void NetMainGameComponent::SetupNetworkMotionCallbacks()
+{
     network->AddNetPlayerMovementCallback("NetPlayerMovement", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector remotePosition = {};
@@ -226,7 +286,8 @@ void NetMainGameComponent::SetupNetworkCallbacks()
         bs.Read(movementAcceleration);
 
         netPlayerManager->ReceiveNetPlayerMovement(networkId, remotePosition, movementAcceleration);
-    });
+        });
+
     network->AddNetPlayerRotationCallback("NetPlayerRotation", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector up = {};
@@ -237,35 +298,29 @@ void NetMainGameComponent::SetupNetworkCallbacks()
         bs.Read(forward);
 
         netPlayerManager->ReceiveNetPlayerRotation(networkId, up, forward);
-    });
-    network->AddDestroyLocalNetPlayerCallback("DestroyLocalNetPlayer", [this]() {
-        netPlayerManager->DestroyLocalNetPlayer();
-    });
-    network->AddDestroyNetPlayerCallback("DestroyNetPlayer", [this](int networkId) {
-        netPlayerManager->DestroyNetPlayer(networkId);
-    });
-    network->AddDestroyNetPlayersCallback("DestroyNetPlayers", [this]() {
-        netPlayerManager->DestroyNetPlayers();
-    });
+        });
 }
 
-void NetMainGameComponent::ClearNetworkCallbacks()
+void NetMainGameComponent::ClearNetworkMotionCallbacks()
 {
-    if (network) {
-        network->RemoveConnectionNotificationCallback("ConnectionNotification");
-        network->RemoveDisconnectionNotificationCallback("DisconnectionNotification");
-        network->RemoveConnectionLostCallback("ConnectionLost");
-        network->RemoveConnectionAttemptFailedCallback("ConnectionAttemptFailed");
+    network->RemoveNetPlayerMovementCallback("NetPlayerMovement");
+    network->RemoveNetPlayerRotationCallback("NetPlayerRotation");
+}
 
-        network->RemoveCreateLocalNetPlayerCallback("CreateLocalNetPlayer");
+void NetMainGameComponent::SetupNetworkActionCallbacks()
+{
+    network->AddNetPlayerActionCallback("NetPlayerAction", [this](BitStream& bs) {
+        int networkId = -1;
+        uintptr_t actionOffset = 0;
 
-        network->RemoveCreateNetPlayerCallback("CreateNetPlayer");
-        network->RemoveCreateNetPlayersCallback("CreateNetPlayers");
+        bs.Read(networkId);
+        bs.Read(actionOffset);
 
-        network->RemoveNetPlayerMovementCallback("NetPlayerMovement");
-        network->RemoveNetPlayerRotationCallback("NetPlayerRotation");
+        netPlayerManager->ReceiveNetPlayerAction(networkId, actionOffset, bs);
+		});
+}
 
-        network->RemoveDestroyNetPlayerCallback("DestroyNetPlayer");
-        network->RemoveDestroyNetPlayersCallback("DestroyNetPlayers");
-    }
+void NetMainGameComponent::ClearNetworkActionCallbacks()
+{
+	network->RemoveNetPlayerActionCallback("NetPlayerAction");
 }

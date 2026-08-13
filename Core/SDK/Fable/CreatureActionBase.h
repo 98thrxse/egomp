@@ -4,8 +4,10 @@
 
 #include "../Utils/Hook.h"
 
-class CBaseClass
+class CCreatureActionBase
 {
 public:
+    char pad[0xA8];
+
     static void Hook();
 };

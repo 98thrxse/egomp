@@ -17,11 +17,12 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
     localNetPlayer->SetLocalId(localId);
     localNetPlayer->SetNetworkId(networkId);
 
+    if (networkId != 0)
+        TeleportClientToHostOnConnect(networkId, position);
+
     BroadcastLocalNetPlayerMovement(networkId);
     BroadcastLocalNetPlayerRotation(networkId);
-
-    if (networkId != 0)
-        TeleportLocalNetPlayerToHost(networkId, position);
+    BroadcastLocalNetPlayerAction(networkId);
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, C3DVector position, int defGlobalIndex)
@@ -88,6 +89,7 @@ void NetPlayerManager::DestroyLocalNetPlayer()
 
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
+    reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -113,6 +115,7 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
 
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
+    reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();
@@ -139,26 +142,26 @@ void NetPlayerManager::DestroyNetPlayers()
     }
 }
 
-void NetPlayerManager::TeleportLocalNetPlayerToHost(int networkId, C3DVector position)
+void NetPlayerManager::TeleportClientToHostOnConnect(int networkId, C3DVector position)
 {
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
     if (!creature) {
-        std::cout << "[NetPlayerManager::TeleportLocalNetPlayerToHost]: !creature" << std::endl;
+        std::cout << "[NetPlayerManager::TeleportClientToHostOnConnect]: !creature" << std::endl;
         return;
     }
 
     CDefString def;
     CCharString defName("");
 
-    ((CThing*)creature)->GetDefName(&def);
+    reinterpret_cast<CThing*>(creature)->GetDefName(&def);
     CDefStringTable::Get()->GetString(&defName, def.TablePos);
 
     CDefinitionManager* definitionManager = CDefinitionManager::Get();
     int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
 
-    CTCPhysicsBase* physicsTC = ((CThing*)creature)->PhysicsTC;
-    float facingAngleXY = ((CTCPhysicsStandard*)physicsTC)->GetFacingAngleXY();
+    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+    float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
 
     BroadcastCreateLocalNetPlayer(networkId, defGlobalIndex, position);
     world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
@@ -214,12 +217,12 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             return;
         }
 
-        C3DVector position = *((CThing*)creature)->GetPos();
+        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CDefString def;
         CCharString defName("");
 
-        ((CThing*)creature)->GetDefName(&def);
+        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
         CDefStringTable::Get()->GetString(&defName, def.TablePos);
 
         int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
@@ -240,12 +243,12 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             continue;
         }
 
-        C3DVector position = *((CThing*)creature)->GetPos();
+        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CDefString def;
         CCharString defName("");
 
-        ((CThing*)creature)->GetDefName(&def);
+        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
         CDefStringTable::Get()->GetString(&defName, def.TablePos);
 
         int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);

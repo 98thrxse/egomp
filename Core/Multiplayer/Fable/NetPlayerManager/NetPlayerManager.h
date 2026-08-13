@@ -1,12 +1,14 @@
 #pragma once
 
 #include <sstream>
+#include <unordered_map>
 
 #include "../../../SDK/Fable/SDK.h"
 #include "../../Network/Network.h"
 
 #include "../LocalNetPlayer/LocalNetPlayer.h"
 #include "../NetPlayer/NetPlayer.h"
+#include "../NetCreatureAction/NetCreatureAction.h"
 
 class NetPlayerManager
 {
@@ -22,6 +24,7 @@ public:
 
     void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
     void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
+    void ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -36,7 +39,7 @@ private:
     std::unique_ptr<LocalNetPlayer> localNetPlayer;
     std::vector<std::unique_ptr<NetPlayer>> netPlayers;
 
-    void TeleportLocalNetPlayerToHost(int networkId, C3DVector position);
+    void TeleportClientToHostOnConnect(int networkId, C3DVector position);
 
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
@@ -47,6 +50,7 @@ private:
 
     void BroadcastLocalNetPlayerMovement(int networkId);
     void BroadcastLocalNetPlayerRotation(int networkId);
+    void BroadcastLocalNetPlayerAction(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

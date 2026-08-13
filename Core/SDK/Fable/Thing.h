@@ -13,7 +13,9 @@
 class CThing
 {
 public:
-    char pad0[0x60];
+    char pad0[0x18];
+    uint64_t UniqueID;
+    char pad1[0x40];
     CTCPhysicsBase* PhysicsTC;
 
     C3DVector* GetPos();

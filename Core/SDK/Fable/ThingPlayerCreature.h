@@ -9,6 +9,9 @@
 #include "GameAction.h"
 #include "3DVector.h"
 #include "ThingPlayerCreatureInit.h"
+#include "CreatureAbilityDef.h"
+#include "CombatZone.h"
+#include "Thing.h"
 
 class CThingPlayerCreature
 {
@@ -17,6 +20,8 @@ public:
 	C3DVector MovementAcceleration;
 
 	static CThingPlayerCreature* Create(long, C3DVector const&, long, CThingPlayerCreatureInit const&);
+	char SetActionForMelee(CCreatureAbilityDef const&);
+	char SetPlayerCreatureActionForMelee(ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef);
 
 	void AddResolveMovementAccelerationCallback(const std::string& id, std::function<void()> callback) { resolveMovementAccelerationCallbacks[id] = callback; }
 	void RemoveResolveMovementAccelerationCallback(const std::string& id) { resolveMovementAccelerationCallbacks.erase(id); }
@@ -47,4 +52,10 @@ private:
 
 	static void(__thiscall* OApplyRelativeMovementAcceleration)(CThingPlayerCreature*, C3DVector const&, EGameAction);
 	static void __fastcall HApplyRelativeMovementAcceleration(CThingPlayerCreature* _this, void* _EDX, C3DVector const& vect, EGameAction game_action);
+
+	static char(__thiscall* OSetActionForMelee)(CThingPlayerCreature*, CCreatureAbilityDef const&);
+	static char __fastcall HSetActionForMelee(CThingPlayerCreature* _this, void* _EDX, CCreatureAbilityDef const& arg);
+
+	static char(__thiscall* OSetPlayerCreatureActionForMelee)(CThingPlayerCreature*, ECombatZone, C3DVector const&, CThing*, CCreatureAbilityDef const&);
+	static char __fastcall HSetPlayerCreatureActionForMelee(CThingPlayerCreature* _this, void* _EDX, ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef);
 };
