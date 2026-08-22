@@ -9,6 +9,8 @@
 #include "3DVector.h"
 #include "DefString.h"
 #include "PhysicsBase.h"
+#include "InterfaceType.h"
+#include "Base.h"
 
 class CThing
 {
@@ -20,6 +22,8 @@ public:
 
     C3DVector* GetPos();
     CDefString* GetDefName(CDefString* result);
+
+    CTCBase* GetTC(ETCInterfaceType id);
 
     static void Hook();
 

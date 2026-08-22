@@ -24,6 +24,7 @@ SDK::SDK()
 	INIT_HOOKS();
 	ADD_HOOK(0xBFEA1A, HGameMalloc, OGameMalloc);
 
+	CTCBase::Hook();
 	CBaseClass::Hook();
 	CCharString::Hook();
 	CDefString::Hook();
@@ -55,6 +56,10 @@ SDK::SDK()
 	CDefPointeeBase::Hook();
 	CTCStealth::Hook();
 	CGameScriptInterface::Hook();
+	CTCInventoryStats::Hook();
+	CTCHeroStats::Hook();
+	CTCHeroMorph::Hook();
+	CTCHeroExperience::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

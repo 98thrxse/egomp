@@ -1,5 +1,20 @@
 #include "Thing.h"
 
+CTCBase* CThing::GetTC(ETCInterfaceType id)
+{
+	void* p_Components = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(this) + 0x44);
+
+	typedef std::pair<ETCInterfaceType, CTCBase*>* (__thiscall* LowerBoundFn)(void*, const ETCInterfaceType*);
+	auto* v3 = ((LowerBoundFn)0x0040F020)(p_Components, &id);
+
+	auto* v4 = *reinterpret_cast<std::pair<ETCInterfaceType, CTCBase*>**>(reinterpret_cast<uintptr_t>(p_Components) + 4);
+
+	if (v3 == v4 || id < v3->first)
+		return v4->second;
+	else
+		return v3->second;
+}
+
 C3DVector* (__thiscall* CThing::OGetPos)(CThing*) = nullptr;
 C3DVector* __fastcall CThing::HGetPos(CThing* _this, void* _EDX) {
 	return OGetPos(_this);

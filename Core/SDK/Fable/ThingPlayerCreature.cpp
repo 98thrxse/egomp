@@ -41,7 +41,7 @@ void __fastcall CThingPlayerCreature::HResolveFacingDirection(CThingPlayerCreatu
 bool(__thiscall* CThingPlayerCreature::OWorldUpdate)(CThingPlayerCreature*) = nullptr;
 bool __fastcall CThingPlayerCreature::HWorldUpdate(CThingPlayerCreature* _this, void* _EDX)
 {
-	OWorldUpdate(_this);
+	return OWorldUpdate(_this);
 }
 
 void(__thiscall* CThingPlayerCreature::OUpdateWalkingControlForces)(CThingPlayerCreature*) = nullptr;
@@ -88,4 +88,5 @@ void CThingPlayerCreature::Hook()
 	ADD_HOOK(0x006AD3C0, HApplyRelativeMovementAcceleration, OApplyRelativeMovementAcceleration);
 	ADD_HOOK(0x006AABE0, HSetActionForMelee, OSetActionForMelee);
 	ADD_HOOK(0x006AA720, HSetPlayerCreatureActionForMelee, OSetPlayerCreatureActionForMelee);
+	ADD_HOOK(0x006AD9D0, HWorldUpdate, OWorldUpdate);
 }

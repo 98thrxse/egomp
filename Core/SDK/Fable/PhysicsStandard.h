@@ -21,7 +21,9 @@ public:
 
     CRightHandedSet* GetRHSet();
     void SetRHSet(CRightHandedSet const&);
-	float GetFacingAngleXY();
+
+    float GetFacingAngleXY();
+    void SetFacingAngleXY(float);
 
     static void Hook();
 private:
@@ -33,4 +35,7 @@ private:
 
     static float (__thiscall* OGetFacingAngleXY)(CTCPhysicsStandard*);
     static float __fastcall HGetFacingAngleXY(CTCPhysicsStandard* _this, void* _EDX);
+
+    static void(__thiscall* OSetFacingAngleXY)(CTCPhysicsStandard*, float);
+    static void __fastcall HSetFacingAngleXY(CTCPhysicsStandard* _this, void* _EDX, float xy);
 };

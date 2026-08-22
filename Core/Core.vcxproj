@@ -154,6 +154,7 @@
     <ClInclude Include="Multiplayer\Fable\NetPlayer\NetPlayer.h" />
     <ClInclude Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManager.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SDK\Fable\Base.h" />
     <ClInclude Include="SDK\Fable\CombatActionBase.h" />
     <ClInclude Include="SDK\Fable\CombatZone.h" />
     <ClInclude Include="SDK\Fable\CreatureAbility.h" />
@@ -172,6 +173,13 @@
     <ClInclude Include="SDK\Fable\DefPointeeBase.h" />
     <ClInclude Include="SDK\Fable\DefPointer.h" />
     <ClInclude Include="SDK\Fable\GameScriptInterface.h" />
+    <ClInclude Include="SDK\Fable\HeroExperience.h" />
+    <ClInclude Include="SDK\Fable\HeroMorph.h" />
+    <ClInclude Include="SDK\Fable\HeroStats.h" />
+    <ClInclude Include="SDK\Fable\HeroTrainableStatType.h" />
+    <ClInclude Include="SDK\Fable\HeroTrainingStatus.h" />
+    <ClInclude Include="SDK\Fable\InterfaceType.h" />
+    <ClInclude Include="SDK\Fable\InventoryStats.h" />
     <ClInclude Include="SDK\Fable\RightHandedSet.h" />
     <ClInclude Include="SDK\Fable\DefinitionManager.h" />
     <ClInclude Include="SDK\Fable\DefString.h" />
@@ -207,6 +215,7 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerLifecycle.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerMotion.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerSession.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerStats.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerUtils.cpp" />
     <ClCompile Include="Multiplayer\Network\Network.cpp" />
     <ClCompile Include="Multiplayer\Fable\LocalNetPlayer\LocalNetPlayer.cpp" />
@@ -222,6 +231,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SDK\Fable\Base.cpp" />
     <ClCompile Include="SDK\Fable\BaseClass.cpp" />
     <ClCompile Include="SDK\Fable\3DVector.cpp" />
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp" />
@@ -237,6 +247,10 @@
     <ClCompile Include="SDK\Fable\CoopSpirit.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActionBase.cpp" />
     <ClCompile Include="SDK\Fable\GameScriptInterface.cpp" />
+    <ClCompile Include="SDK\Fable\HeroExperience.cpp" />
+    <ClCompile Include="SDK\Fable\HeroMorph.cpp" />
+    <ClCompile Include="SDK\Fable\HeroStats.cpp" />
+    <ClCompile Include="SDK\Fable\InventoryStats.cpp" />
     <ClCompile Include="SDK\Fable\RightHandedSet.cpp" />
     <ClCompile Include="SDK\Fable\DefinitionManager.cpp" />
     <ClCompile Include="SDK\Fable\DefString.cpp" />

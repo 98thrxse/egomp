@@ -23,9 +23,10 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
     BroadcastLocalNetPlayerMovement(networkId);
     BroadcastLocalNetPlayerRotation(networkId);
     BroadcastLocalNetPlayerAction(networkId);
+    BroadcastLocalNetPlayerStats(networkId);
 }
 
-void NetPlayerManager::CreateNetPlayer(int networkId, C3DVector position, int defGlobalIndex)
+void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
 {
     int localId = GetFreeLocalId();
     playerManager->CreatePlayer(localId);
@@ -44,6 +45,10 @@ void NetPlayerManager::CreateNetPlayer(int networkId, C3DVector position, int de
 
     CThingPlayerCreatureInit init = {};
     CThingPlayerCreature* creature = CThingPlayerCreature::Create(defGlobalIndex, position, localId, init);
+    
+    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+    reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->SetFacingAngleXY(facingAngleXY);
+
     player->SetControlledCreature(creature);
 
     ApplyNetPlayerMovement(networkId);
@@ -51,16 +56,32 @@ void NetPlayerManager::CreateNetPlayer(int networkId, C3DVector position, int de
 
     if (localNetPlayer->GetNetworkId() == 0)
     {
-        BroadcastCreateNetPlayer(networkId, defGlobalIndex, position);
+        BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
         BroadcastCreateNetPlayers(networkId);
+
+        BroadcastAllLocalNetPlayerStats(
+            localNetPlayer->GetNetworkId(),
+            networkId
+        );
+
+        for (auto& netPlayer : netPlayers)
+        {
+            if (netPlayer->GetNetworkId() == networkId)
+                continue;
+
+            BroadcastAllLocalNetPlayerStats(
+                netPlayer->GetNetworkId(),
+                networkId
+            );
+        }
     }
 }
 
-void NetPlayerManager::CreateNetPlayers(int networkId, C3DVector position, int defGlobalIndex)
+void NetPlayerManager::CreateNetPlayers(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
 {
     if (networkId != localNetPlayer->GetNetworkId() && GetLocalIdFromNetworkId(networkId) == -1)
     {
-        CreateNetPlayer(networkId, position, defGlobalIndex);
+        CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
 }
 
@@ -87,9 +108,17 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCHeroStats* heroStats = reinterpret_cast<CTCHeroStats*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_STATS));
+
+    if (!heroStats) {
+        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !heroStats" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
+    heroStats->RemoveFrameUpdateCallback("FrameUpdate" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -112,10 +141,18 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         std::cout << "[NetPlayerManager::DestroyNetPlayer]: !creature: " << networkId << std::endl;
         return;
     }
+  
+    CTCHeroStats* heroStats = reinterpret_cast<CTCHeroStats*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_STATS));
+
+    if (!heroStats) {
+        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !heroStats" << std::endl;
+        return;
+    }
 
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
+    heroStats->RemoveFrameUpdateCallback("FrameUpdate" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();
@@ -163,35 +200,38 @@ void NetPlayerManager::TeleportClientToHostOnConnect(int networkId, C3DVector po
     CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
     float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
 
-    BroadcastCreateLocalNetPlayer(networkId, defGlobalIndex, position);
-    world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
-}
-
-void NetPlayerManager::BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position)
-{
-    world->AddUpdateRegionLoadCallback("BroadcastCreateLocalNetPlayer", [this, networkId, defGlobalIndex, position]() {
+    world->AddUpdateRegionLoadCallback("TeleportClientToHostOnConnect", [this, networkId, defGlobalIndex, position, facingAngleXY]() {
         if (world->RegionLoadStatus != CWorld::NOT_LOADING_REGION)
             return;
 
-        world->RemoveUpdateRegionLoadCallback("BroadcastCreateLocalNetPlayer");
-
-        SLNet::BitStream bs;
-        bs.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
-        bs.Write(networkId);
-        bs.Write(defGlobalIndex);
-        bs.Write(position);
-
-        network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed());
+        world->RemoveUpdateRegionLoadCallback("TeleportClientToHostOnConnect");
+        BroadcastCreateLocalNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
+        BroadcastAllLocalNetPlayerStats(networkId);
         });
+
+    world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
 }
 
-void NetPlayerManager::BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position)
+void NetPlayerManager::BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
+{
+        SLNet::BitStream bsOut;
+        bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
+        bsOut.Write(networkId);
+        bsOut.Write(defGlobalIndex);
+        bsOut.Write(position);
+        bsOut.Write(facingAngleXY);
+
+        network->SendToHost((const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
+}
+
+void NetPlayerManager::BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
 {
     SLNet::BitStream bsOut;
     bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
     bsOut.Write(networkId);
     bsOut.Write(defGlobalIndex);
     bsOut.Write(position);
+	bsOut.Write(facingAngleXY);
 
     network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
 }
@@ -217,8 +257,6 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             return;
         }
 
-        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
-
         CDefString def;
         CCharString defName("");
 
@@ -227,9 +265,15 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 
         int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
 
+        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
+
+        CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+        float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
+
         bsOut.Write(localNetPlayerNetworkId);
         bsOut.Write(defGlobalIndex);
         bsOut.Write(position);
+		bsOut.Write(facingAngleXY);
     }
 
     for (const auto& netPlayer : netPlayers)
@@ -243,8 +287,6 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             continue;
         }
 
-        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
-
         CDefString def;
         CCharString defName("");
 
@@ -253,9 +295,15 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 
         int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
 
+        C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
+
+        CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+        float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
+
         bsOut.Write(netPlayerNetworkId);
         bsOut.Write(defGlobalIndex);
         bsOut.Write(position);
+		bsOut.Write(facingAngleXY);
     }
 
     network->SendToClient(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());

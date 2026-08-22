@@ -1,7 +1,17 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs)
+void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bsIn)
 {
+    if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+    {
+        SLNet::BitStream bsOut;
+        bsOut.Write((SLNet::MessageID)ID_PLAYER_ACTION);
+        bsOut.Write(networkId);
+        bsOut.Write(actionOffset);
+
+        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+    }
+
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
     if (!creature)
@@ -18,7 +28,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
     case 0x012592D4: // CCreatureAction_PlayerInteractionGreet
     {
         int targetNetworkId = -1;
-        bs.Read(targetNetworkId);
+        bsIn.Read(targetNetworkId);
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_PlayerInteractionGreet(creatureBase, target);
@@ -34,9 +44,9 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         int targetNetworkId = -1;
         C3DVector requiredFacing, originalFacing;
 
-        bs.Read(targetNetworkId);
-        bs.Read(requiredFacing.X); bs.Read(requiredFacing.Y); bs.Read(requiredFacing.Z);
-        bs.Read(originalFacing.X); bs.Read(originalFacing.Y); bs.Read(originalFacing.Z);
+        bsIn.Read(targetNetworkId);
+        bsIn.Read(requiredFacing.X); bsIn.Read(requiredFacing.Y); bsIn.Read(requiredFacing.Z);
+        bsIn.Read(originalFacing.X); bsIn.Read(originalFacing.Y); bsIn.Read(originalFacing.Z);
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCombatAction_ControlledStrafeJump(creatureBase, target, requiredFacing, originalFacing);
@@ -45,7 +55,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
 	case 0x01277D3C: // CCreatureAction_KickThingOnGround
     {
         int targetNetworkId = -1;
-        bs.Read(targetNetworkId);
+        bsIn.Read(targetNetworkId);
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_KickThingOnGround(creatureBase, target);
@@ -60,8 +70,8 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         CDefPointer melee_ability{};
         CDefPointer* pmelee_ability = &melee_ability;
 
-        bs.Read(targetNetworkId);
-        bs.Read(required_facing.X); bs.Read(required_facing.Y); bs.Read(required_facing.Z);
+        bsIn.Read(targetNetworkId);
+        bsIn.Read(required_facing.X); bsIn.Read(required_facing.Y); bsIn.Read(required_facing.Z);
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
@@ -73,7 +83,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         CCreatureActionBase* pfollow_up_action = nullptr;
         long interruption_priority = 0;
 
-		bs.Read(interruption_priority);
+		bsIn.Read(interruption_priority);
 
         actionBuffer = NetCreatureAction::CCreatureAction_UnsheatheItemFromInventory(creatureBase, unsheathe_item, pfollow_up_action, interruption_priority);
         break;
@@ -83,7 +93,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         CCreatureActionBase* pfollow_up_action = nullptr;
         long interruption_group_id = 0;
 
-		bs.Read(interruption_group_id);
+		bsIn.Read(interruption_group_id);
 
         actionBuffer = NetCreatureAction::CCreatureAction_SheatheItemToInventory(creatureBase, pfollow_up_action, interruption_group_id);
         break;
@@ -127,7 +137,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             bs.Write(networkId);
             bs.Write(actionOffset);
 
-            // Local helper to resolve target network ID
+            // local helper to resolve target network ID
             auto getTargetNetworkId = [this](CThing* target) {
                 int targetNetworkId = -1;
                 if (target)
@@ -194,14 +204,12 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             {
                 int interuption_priority = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(&action) + 0x24);
 				bs.Write(interuption_priority);
-
                 break;
             }
             case 0x0125C83C: // CCreatureAction_SheatheItemToInventory
             {
                 int interruption_group_id = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(&action) + 0x20);
 				bs.Write(interruption_group_id);
-
                 break;
             }
             default:
@@ -209,10 +217,10 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             }
 
             if (localNetPlayer->GetNetworkId() == 0) {
-                network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, UNRELIABLE_SEQUENCED);
+                network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
             }
             else {
-                network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, UNRELIABLE_SEQUENCED);
+                network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
             }
         }
         });

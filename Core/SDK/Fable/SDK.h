@@ -4,6 +4,7 @@
 
 #include <MinHook/include/MinHook.h>
 
+#include "Base.h"
 #include "BaseClass.h"
 #include "CharString.h"
 #include "DefString.h"
@@ -35,6 +36,10 @@
 #include "DefPointeeBase.h"
 #include "Stealth.h"
 #include "GameScriptInterface.h"
+#include "InventoryStats.h"
+#include "HeroStats.h"
+#include "HeroMorph.h"
+#include "HeroExperience.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

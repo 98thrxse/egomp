@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <unordered_map>
+#include <chrono>
 
 #include "../../../SDK/Fable/SDK.h"
 #include "../../Network/Network.h"
@@ -19,12 +20,13 @@ public:
     void ConnectionNotification(int networkId, SystemAddress systemAddress);
 
     void CreateLocalNetPlayer(int networkId, C3DVector position);
-    void CreateNetPlayer(int networkId, C3DVector position, int defGlobalIndex);
-    void CreateNetPlayers(int networkId, C3DVector position, int defGlobalIndex);
+    void CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
+    void CreateNetPlayers(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
 
     void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
     void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
     void ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs);
+    void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -44,13 +46,15 @@ private:
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
 
-    void BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position);
-    void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position);
+    void BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
+    void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);
 
     void BroadcastLocalNetPlayerMovement(int networkId);
     void BroadcastLocalNetPlayerRotation(int networkId);
     void BroadcastLocalNetPlayerAction(int networkId);
+    void BroadcastLocalNetPlayerStats(int networkId);
+    void BroadcastAllLocalNetPlayerStats(int networkId, int targetNetworkId = -1);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

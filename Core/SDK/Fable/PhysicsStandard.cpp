@@ -33,9 +33,21 @@ float CTCPhysicsStandard::GetFacingAngleXY()
     return OGetFacingAngleXY(this);
 }
 
+void(__thiscall* CTCPhysicsStandard::OSetFacingAngleXY)(CTCPhysicsStandard*, float) = nullptr;
+void __fastcall CTCPhysicsStandard::HSetFacingAngleXY(CTCPhysicsStandard* _this, void* _EDX, float xy)
+{
+    OSetFacingAngleXY(_this, xy);
+}
+
+void CTCPhysicsStandard::SetFacingAngleXY(float xy)
+{
+    OSetFacingAngleXY(this, xy);
+}
+
 void CTCPhysicsStandard::Hook()
 {
     ADD_HOOK(0x00724BD0, HGetRHSet, OGetRHSet);
 	ADD_HOOK(0x007238E0, HSetRHSet, OSetRHSet);
     ADD_HOOK(0x00723B30, HGetFacingAngleXY, OGetFacingAngleXY);
+    ADD_HOOK(0x00723760, HSetFacingAngleXY, OSetFacingAngleXY);
 }

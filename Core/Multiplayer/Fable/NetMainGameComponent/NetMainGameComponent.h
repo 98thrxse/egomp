@@ -39,6 +39,9 @@ private:
 	void SetupNetworkActionCallbacks();
 	void ClearNetworkActionCallbacks();
 
+	void SetupNetworkStatsCallbacks();
+	void ClearNetworkStatsCallbacks();
+
 	void Selection();
 	void Options();
 	void Host();

@@ -180,7 +180,8 @@ void NetMainGameComponent::SetupNetworkCallbacks()
 	SetupNetworkSessionCallbacks();
 	SetupNetworkLifecycleCallbacks();
 	SetupNetworkMotionCallbacks();
-	SetupNetworkActionCallbacks();
+    SetupNetworkActionCallbacks();
+    SetupNetworkStatsCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
@@ -190,6 +191,7 @@ void NetMainGameComponent::ClearNetworkCallbacks()
         ClearNetworkLifecycleCallbacks();
         ClearNetworkMotionCallbacks();
         ClearNetworkActionCallbacks();
+        ClearNetworkStatsCallbacks();
     }
 }
 
@@ -222,14 +224,16 @@ void NetMainGameComponent::SetupNetworkLifecycleCallbacks()
 
     network->AddCreateNetPlayerCallback("CreateNetPlayer", [this](BitStream& bs) {
         int networkId = -1;
+        int defGlobalIndex = 0;
         C3DVector position = {};
-        int defGlobalIndex;
+		float facingAngleXY = 0;
 
         bs.Read(networkId);
         bs.Read(defGlobalIndex);
         bs.Read(position);
+        bs.Read(facingAngleXY);
 
-        netPlayerManager->CreateNetPlayer(networkId, position, defGlobalIndex);
+        netPlayerManager->CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
         });
 
     network->AddCreateNetPlayersCallback("CreateNetPlayers", [this](BitStream& bs) {
@@ -239,14 +243,16 @@ void NetMainGameComponent::SetupNetworkLifecycleCallbacks()
         for (int i = 0; i < count; i++)
         {
             int networkId = -1;
+            int defGlobalIndex = 0;
             C3DVector position = {};
-            int defGlobalIndex;
+            float facingAngleXY = 0;
 
             bs.Read(networkId);
             bs.Read(defGlobalIndex);
             bs.Read(position);
+            bs.Read(facingAngleXY);
 
-            netPlayerManager->CreateNetPlayers(networkId, position, defGlobalIndex);
+            netPlayerManager->CreateNetPlayers(networkId, defGlobalIndex, position, facingAngleXY);
         }
         });
 
@@ -323,4 +329,20 @@ void NetMainGameComponent::SetupNetworkActionCallbacks()
 void NetMainGameComponent::ClearNetworkActionCallbacks()
 {
 	network->RemoveNetPlayerActionCallback("NetPlayerAction");
+}
+
+void NetMainGameComponent::SetupNetworkStatsCallbacks()
+{
+    network->AddNetPlayerStatsCallback("NetPlayerStats", [this](BitStream& bs) {
+        int networkId = -1;
+
+        bs.Read(networkId);
+
+        netPlayerManager->ReceiveNetPlayerStats(networkId, bs);
+        });
+}
+
+void NetMainGameComponent::ClearNetworkStatsCallbacks()
+{
+    network->RemoveNetPlayerStatsCallback("NetPlayerStats");
 }
