@@ -182,6 +182,7 @@ void NetMainGameComponent::SetupNetworkCallbacks()
 	SetupNetworkMotionCallbacks();
     SetupNetworkActionCallbacks();
     SetupNetworkStatsCallbacks();
+    SetupNetworkAppearanceCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
@@ -192,6 +193,7 @@ void NetMainGameComponent::ClearNetworkCallbacks()
         ClearNetworkMotionCallbacks();
         ClearNetworkActionCallbacks();
         ClearNetworkStatsCallbacks();
+        ClearNetworkAppearanceCallbacks();
     }
 }
 
@@ -237,23 +239,7 @@ void NetMainGameComponent::SetupNetworkLifecycleCallbacks()
         });
 
     network->AddCreateNetPlayersCallback("CreateNetPlayers", [this](BitStream& bs) {
-        int count = 0;
-        bs.Read(count);
-
-        for (int i = 0; i < count; i++)
-        {
-            int networkId = -1;
-            int defGlobalIndex = 0;
-            C3DVector position = {};
-            float facingAngleXY = 0;
-
-            bs.Read(networkId);
-            bs.Read(defGlobalIndex);
-            bs.Read(position);
-            bs.Read(facingAngleXY);
-
-            netPlayerManager->CreateNetPlayers(networkId, defGlobalIndex, position, facingAngleXY);
-        }
+        netPlayerManager->CreateNetPlayers(bs);
         });
 
     network->AddDestroyLocalNetPlayerCallback("DestroyLocalNetPlayer", [this]() {
@@ -345,4 +331,20 @@ void NetMainGameComponent::SetupNetworkStatsCallbacks()
 void NetMainGameComponent::ClearNetworkStatsCallbacks()
 {
     network->RemoveNetPlayerStatsCallback("NetPlayerStats");
+}
+
+void NetMainGameComponent::SetupNetworkAppearanceCallbacks()
+{
+    network->AddNetPlayerAppearanceCallback("NetPlayerAppearance", [this](BitStream& bs) {
+        int networkId = -1;
+
+        bs.Read(networkId);
+
+        netPlayerManager->ReceiveNetPlayerAppearance(networkId, bs);
+        });
+}
+
+void NetMainGameComponent::ClearNetworkAppearanceCallbacks()
+{
+    network->RemoveNetPlayerAppearanceCallback("NetPlayerAppearance");
 }

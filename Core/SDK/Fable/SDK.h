@@ -40,6 +40,7 @@
 #include "HeroStats.h"
 #include "HeroMorph.h"
 #include "HeroExperience.h"
+#include "HeroAttachableAppearanceModifiers.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

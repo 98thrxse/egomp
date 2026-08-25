@@ -2,15 +2,15 @@
 
 enum EHeroTrainableStatType
 {
-    HeroStatStrengthPhysique = 0,
-    HeroStatStrengthHealth = 1,
-    HeroStatStrengthToughness = 2,
-    HeroStatSkillSpeed = 3,
-    HeroStatSkillAccuracy = 4,
-    HeroStatSkillStealth = 5,
-    HeroStatWillWeaponMagic = 6,
-    HeroStatWillAbilityMagic = 7,
-    HeroStatWillPureMagic = 8,
-    HeroStatWillMagicPower = 9,
-    NumberOfTrainableHeroStats = 10
+    HERO_STAT_STRENGTH_PHYSIQUE = 0x0,
+    HERO_STAT_STRENGTH_HEALTH = 0x1,
+    HERO_STAT_STRENGTH_TOUGHNESS = 0x2,
+    HERO_STAT_SKILL_SPEED = 0x3,
+    HERO_STAT_SKILL_ACCURACY = 0x4,
+    HERO_STAT_SKILL_STEALTH = 0x5,
+    HERO_STAT_WILL_WEAPON_MAGIC = 0x6,
+    HERO_STAT_WILL_ABILITY_MAGIC = 0x7,
+    HERO_STAT_WILL_PURE_MAGIC = 0x8,
+    HERO_STAT_WILL_MAGIC_POWER = 0x9,
+    NUMBER_OF_TRAINABLE_HERO_STATS = 0xA,
 };

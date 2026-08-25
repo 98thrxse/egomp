@@ -21,12 +21,13 @@ public:
 
     void CreateLocalNetPlayer(int networkId, C3DVector position);
     void CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
-    void CreateNetPlayers(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
+    void CreateNetPlayers(BitStream& bs);
 
     void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
     void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
     void ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs);
     void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
+    void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -53,8 +54,12 @@ private:
     void BroadcastLocalNetPlayerMovement(int networkId);
     void BroadcastLocalNetPlayerRotation(int networkId);
     void BroadcastLocalNetPlayerAction(int networkId);
+
     void BroadcastLocalNetPlayerStats(int networkId);
-    void BroadcastAllLocalNetPlayerStats(int networkId, int targetNetworkId = -1);
+    void BroadcastLocalNetPlayerAllStats(int networkId);
+
+    void BroadcastLocalNetPlayerAppearance(int networkId);
+    void BroadcastLocalNetPlayerAllAppearance(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

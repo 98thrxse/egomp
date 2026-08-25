@@ -24,6 +24,7 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
     BroadcastLocalNetPlayerRotation(networkId);
     BroadcastLocalNetPlayerAction(networkId);
     BroadcastLocalNetPlayerStats(networkId);
+    BroadcastLocalNetPlayerAppearance(networkId);
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -59,30 +60,43 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
         BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
         BroadcastCreateNetPlayers(networkId);
 
-        BroadcastAllLocalNetPlayerStats(
-            localNetPlayer->GetNetworkId(),
-            networkId
-        );
+        BroadcastLocalNetPlayerAllStats(localNetPlayer->GetNetworkId());
+        BroadcastLocalNetPlayerAllAppearance(localNetPlayer->GetNetworkId());
 
         for (auto& netPlayer : netPlayers)
         {
             if (netPlayer->GetNetworkId() == networkId)
                 continue;
 
-            BroadcastAllLocalNetPlayerStats(
-                netPlayer->GetNetworkId(),
-                networkId
-            );
+            BroadcastLocalNetPlayerAllStats(netPlayer->GetNetworkId());
+            BroadcastLocalNetPlayerAllAppearance(netPlayer->GetNetworkId());
         }
     }
 }
 
-void NetPlayerManager::CreateNetPlayers(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
+void NetPlayerManager::CreateNetPlayers(BitStream& bs)
 {
-    if (networkId != localNetPlayer->GetNetworkId() && GetLocalIdFromNetworkId(networkId) == -1)
+    int count = 0;
+    bs.Read(count);
+
+    for (int i = 0; i < count; i++)
     {
-        CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
+        int networkId = -1;
+        int defGlobalIndex = 0;
+        C3DVector position = {};
+        float facingAngleXY = 0;
+
+        bs.Read(networkId);
+        bs.Read(defGlobalIndex);
+        bs.Read(position);
+        bs.Read(facingAngleXY);
+
+        if (networkId != localNetPlayer->GetNetworkId() && GetLocalIdFromNetworkId(networkId) == -1)
+            CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
+
+    BroadcastLocalNetPlayerAllStats(localNetPlayer->GetNetworkId());
+    BroadcastLocalNetPlayerAllAppearance(localNetPlayer->GetNetworkId());
 }
 
 void NetPlayerManager::DestroyLocalNetPlayer()
@@ -115,10 +129,18 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCHeroAttachableAppearanceModifiers* appearanceModifiers = reinterpret_cast<CTCHeroAttachableAppearanceModifiers*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_ATTACHABLE_APPEARANCE_MODIFIERS));
+
+    if (!appearanceModifiers) {
+        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !appearanceModifiers" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
-    heroStats->RemoveFrameUpdateCallback("FrameUpdate" + std::to_string(networkId));
+    heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
+    appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -149,10 +171,18 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         return;
     }
 
+    CTCHeroAttachableAppearanceModifiers* appearanceModifiers = reinterpret_cast<CTCHeroAttachableAppearanceModifiers*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_ATTACHABLE_APPEARANCE_MODIFIERS));
+
+    if (!appearanceModifiers) {
+        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !appearanceModifiers" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
-    heroStats->RemoveFrameUpdateCallback("FrameUpdate" + std::to_string(networkId));
+    heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
+    appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();
@@ -206,7 +236,6 @@ void NetPlayerManager::TeleportClientToHostOnConnect(int networkId, C3DVector po
 
         world->RemoveUpdateRegionLoadCallback("TeleportClientToHostOnConnect");
         BroadcastCreateLocalNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
-        BroadcastAllLocalNetPlayerStats(networkId);
         });
 
     world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);

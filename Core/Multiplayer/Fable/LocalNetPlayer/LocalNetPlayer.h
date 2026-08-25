@@ -26,6 +26,7 @@ private:
     float health;
 
     std::vector<long> trainableStatLevels;
+    std::vector<std::vector<long>> appearanceModifiers;
 
 public:
     LocalNetPlayer();
@@ -72,4 +73,7 @@ public:
 
     void SetTrainableStatLevels(const std::vector<long>& trainableStatLevels);
     std::vector<long> GetAllTrainableStatLevels() const;
+
+    void SetAppearanceModifiers(const std::vector<std::vector<long>>& appearanceModifiers);
+    std::vector<std::vector<long>> GetAppearanceModifiers() const;
 };

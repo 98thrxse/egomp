@@ -27,7 +27,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 	float health = 0;
 	float maxHealth = 0;
 
-    std::vector<long> trainableLevels(NumberOfTrainableHeroStats, 0);
+    std::vector<long> trainableLevels(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
 
     int statsFlags = 0;
     bsIn.Read(statsFlags);
@@ -61,7 +61,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 
     if (statsFlags & TRAINABLE_LEVELS)
     {
-        for (int i = 0; i < NumberOfTrainableHeroStats; ++i)
+        for (int i = 0; i < NUMBER_OF_TRAINABLE_HERO_STATS; ++i)
         {
             long level = 0;
             bsIn.Read(level);
@@ -114,10 +114,10 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
-    if (!creature) {
-        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !creature" << std::endl;
+    if (!creature)
         return;
-    }
+
+    CThingPhysical* creaturePhysical = reinterpret_cast<CThingPhysical*>(creature);
 
     CTCHeroStats* heroStats = reinterpret_cast<CTCHeroStats*>(
         reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_STATS)
@@ -137,37 +137,73 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
         return;
     }
 
-    if (statsFlags & AGE)
-        heroStats->SetAge(age);
+    for (auto& netPlayer : netPlayers)
+    {
+        if (netPlayer && netPlayer->GetNetworkId() == networkId)
+        {
+            if (statsFlags & AGE)
+            {
+                heroStats->SetAge(age);
+                netPlayer->SetAge(age);
+            }
 
-    if (statsFlags & MORALITY)
-        heroStats->SetMorality(morality);
+            if (statsFlags & MORALITY)
+            {
+                heroStats->SetMorality(morality);
+                netPlayer->SetMorality(morality);
+            }
 
-    if (statsFlags & SUNTAN)
-        heroStats->SetSunTan(sunTan);
+            if (statsFlags & SUNTAN)
+            {
+                heroStats->SetSunTan(sunTan);
+                netPlayer->SetSunTan(sunTan);
+            }
 
-    if (statsFlags & FATNESS)
-        heroStats->SetFatness(fatness);
+            if (statsFlags & FATNESS)
+            {
+                heroStats->SetFatness(fatness);
+                netPlayer->SetFatness(fatness);
+            }
 
-    if (statsFlags & MONEY)
-        heroStats->SetMoney(money, false);
+            if (statsFlags & MONEY)
+            {
+                heroStats->SetMoney(money, false);
+                netPlayer->SetMoney(money);
+            }
 
-    if (statsFlags & RENOWN)
-        heroStats->ForceRenownLevelTo(renownLevel);
+            if (statsFlags & RENOWN)
+            {
+                heroStats->ForceRenownLevelTo(renownLevel);
+                netPlayer->SetRenownLevel(renownLevel);
+            }
 
-    if (statsFlags & STAMINA)
-        heroStats->ForceStaminaTo(stamina);
+            if (statsFlags & STAMINA)
+            {
+                heroStats->ForceStaminaTo(stamina);
+                netPlayer->SetStamina(stamina);
+            }
 
-    CThingPhysical* creaturePhysical = reinterpret_cast<CThingPhysical*>(creature);
+            if (statsFlags & TRAINABLE_LEVELS)
+            {
+                heroExperience->SetAllTrainableStatLevels(trainableLevels);
+                netPlayer->SetTrainableStatLevels(trainableLevels);
+            }
 
-	if (statsFlags & HEALTH)
-		creaturePhysical->SetHealth(health);
+            if (statsFlags & HEALTH)
+            {
+                creaturePhysical->SetHealth(health);
+                netPlayer->SetHealth(health);
+            }
 
-	if (statsFlags & MAXHEALTH)
-		creaturePhysical->SetMaxHealth(maxHealth, false);
+            if (statsFlags & MAXHEALTH)
+            {
+                creaturePhysical->SetMaxHealth(maxHealth, false);
+                netPlayer->SetMaxHealth(maxHealth);
+            }
 
-    if (statsFlags & TRAINABLE_LEVELS)
-		heroExperience->SetAllTrainableStatLevels(trainableLevels);
+            return;
+        }
+    }
 }
 
 void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
@@ -200,7 +236,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
     auto lastSendTime = std::chrono::steady_clock::now();
 
     heroStats->AddFrameUpdateCallback(
-        "FrameUpdate" + std::to_string(networkId),
+        "StatsFrameUpdate" + std::to_string(networkId),
         [this, networkId, creature, heroStats, heroExperience, lastSendTime]() mutable
         {
             auto now = std::chrono::steady_clock::now();
@@ -353,15 +389,13 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
     );
 }
 
-void NetPlayerManager::BroadcastAllLocalNetPlayerStats(
-    int networkId,
-    int targetNetworkId)
+void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
 {
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
-        std::cout << "[NetPlayerManager::BroadcastAllLocalNetPlayerStats]: !creature" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !creature" << std::endl;
         return;
     }
 
@@ -371,7 +405,7 @@ void NetPlayerManager::BroadcastAllLocalNetPlayerStats(
 
     if (!heroStats)
     {
-        std::cout << "[NetPlayerManager::BroadcastAllLocalNetPlayerStats]: !heroStats" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !heroStats" << std::endl;
         return;
     }
 
@@ -381,7 +415,7 @@ void NetPlayerManager::BroadcastAllLocalNetPlayerStats(
 
     if (!heroExperience)
     {
-        std::cout << "[NetPlayerManager::BroadcastAllLocalNetPlayerStats]: !heroExperience" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !heroExperience" << std::endl;
         return;
     }
 
@@ -452,18 +486,6 @@ void NetPlayerManager::BroadcastAllLocalNetPlayerStats(
     {
         for (long level : trainableLevels)
             bs.Write(level);
-    }
-
-    if (targetNetworkId != -1)
-    {
-        network->SendToClient(
-            targetNetworkId,
-            (const char*)bs.GetData(),
-            bs.GetNumberOfBytesUsed(),
-            LOW_PRIORITY,
-            RELIABLE_ORDERED
-        );
-        return;
     }
 
     if (localNetPlayer->GetNetworkId() == 0)

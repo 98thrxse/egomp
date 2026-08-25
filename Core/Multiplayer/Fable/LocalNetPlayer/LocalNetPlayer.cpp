@@ -18,7 +18,8 @@ LocalNetPlayer::LocalNetPlayer() :
     maxHealth = 0.0f;
 	health = 0.0f;
 
-    trainableStatLevels = std::vector<long>(NumberOfTrainableHeroStats, 0);
+    trainableStatLevels = std::vector<long>(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
+    appearanceModifiers = std::vector<std::vector<long>>(NO_OF_APPEARANCE_MODIFIER_TYPES);
 }
 
 void LocalNetPlayer::SetNetworkId(int id)
@@ -159,4 +160,14 @@ void LocalNetPlayer::SetTrainableStatLevels(const std::vector<long>& trainableSt
 std::vector<long> LocalNetPlayer::GetAllTrainableStatLevels() const
 {
     return trainableStatLevels;
+}
+
+void LocalNetPlayer::SetAppearanceModifiers(const std::vector<std::vector<long>>& appearanceModifiers)
+{
+    this->appearanceModifiers = appearanceModifiers;
+}
+
+std::vector<std::vector<long>> LocalNetPlayer::GetAppearanceModifiers() const
+{
+    return appearanceModifiers;
 }

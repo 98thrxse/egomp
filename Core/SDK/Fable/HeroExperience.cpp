@@ -25,14 +25,14 @@ long CTCHeroExperience::GetTrainableStatLevel(EHeroTrainableStatType stat_type)
 std::vector<long> CTCHeroExperience::GetAllTrainableStatLevels()
 {
 	std::vector<long> levels;
-	for (int i = 0; i < NumberOfTrainableHeroStats; ++i)
+	for (int i = 0; i < NUMBER_OF_TRAINABLE_HERO_STATS; ++i)
 		levels.push_back(GetTrainableStatLevel((EHeroTrainableStatType)i));
 	return levels;
 }
 
 void CTCHeroExperience::SetAllTrainableStatLevels(const std::vector<long>& levels)
 {
-	for (size_t i = 0; i < levels.size() && i < NumberOfTrainableHeroStats; ++i)
+	for (size_t i = 0; i < levels.size() && i < NUMBER_OF_TRAINABLE_HERO_STATS; ++i)
 		ForceTrainableStatLevelTo((EHeroTrainableStatType)i, levels[i]);
 }
 

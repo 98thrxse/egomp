@@ -49,6 +49,10 @@ void Network::Update()
 			HandleNetPlayerStats(packet);
 			break;
 
+		case ID_PLAYER_APPEARANCE:
+			HandleNetPlayerAppearance(packet);
+			break;
+
 		case ID_DISCONNECTION_NOTIFICATION:
 			HandleDisconnectionNotification(packet);
 			break;
@@ -217,6 +221,21 @@ void Network::HandleNetPlayerStats(SLNet::Packet* packet)
 	SLNet::BitStream bs(packet->data, packet->length, false);
 
 	for (const auto& pair : netPlayerStatsCallbacks)
+	{
+		if (pair.second)
+		{
+			bs.ResetReadPointer();
+			bs.IgnoreBytes(sizeof(SLNet::MessageID));
+			pair.second(bs);
+		}
+	}
+}
+
+void Network::HandleNetPlayerAppearance(SLNet::Packet* packet)
+{
+	SLNet::BitStream bs(packet->data, packet->length, false);
+
+	for (const auto& pair : netPlayerAppearanceCallbacks)
 	{
 		if (pair.second)
 		{

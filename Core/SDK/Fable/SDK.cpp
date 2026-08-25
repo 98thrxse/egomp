@@ -60,6 +60,7 @@ SDK::SDK()
 	CTCHeroStats::Hook();
 	CTCHeroMorph::Hook();
 	CTCHeroExperience::Hook();
+	CTCHeroAttachableAppearanceModifiers::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

@@ -173,6 +173,8 @@
     <ClInclude Include="SDK\Fable\DefPointeeBase.h" />
     <ClInclude Include="SDK\Fable\DefPointer.h" />
     <ClInclude Include="SDK\Fable\GameScriptInterface.h" />
+    <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifiers.h" />
+    <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifierType.h" />
     <ClInclude Include="SDK\Fable\HeroExperience.h" />
     <ClInclude Include="SDK\Fable\HeroMorph.h" />
     <ClInclude Include="SDK\Fable\HeroStats.h" />
@@ -212,6 +214,7 @@
     <ClCompile Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAction.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAppearance.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerLifecycle.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerMotion.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerSession.cpp" />
@@ -247,6 +250,7 @@
     <ClCompile Include="SDK\Fable\CoopSpirit.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActionBase.cpp" />
     <ClCompile Include="SDK\Fable\GameScriptInterface.cpp" />
+    <ClCompile Include="SDK\Fable\HeroAttachableAppearanceModifiers.cpp" />
     <ClCompile Include="SDK\Fable\HeroExperience.cpp" />
     <ClCompile Include="SDK\Fable\HeroMorph.cpp" />
     <ClCompile Include="SDK\Fable\HeroStats.cpp" />
