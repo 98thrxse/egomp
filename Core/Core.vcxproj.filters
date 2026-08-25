@@ -401,5 +401,8 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAppearance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerExperience.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

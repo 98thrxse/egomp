@@ -10,8 +10,7 @@ enum Stats : int
     RENOWN = 1 << 5,
     STAMINA = 1 << 6,
 	HEALTH = 1 << 7,
-	MAXHEALTH = 1 << 8,
-    TRAINABLE_LEVELS = 1 << 9
+	MAXHEALTH = 1 << 8
 };
 
 void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bsIn)
@@ -59,16 +58,6 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 	if (statsFlags & MAXHEALTH)
 		bsIn.Read(maxHealth);
 
-    if (statsFlags & TRAINABLE_LEVELS)
-    {
-        for (int i = 0; i < NUMBER_OF_TRAINABLE_HERO_STATS; ++i)
-        {
-            long level = 0;
-            bsIn.Read(level);
-            trainableLevels[i] = level;
-        }
-    }
-
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
         SLNet::BitStream bsOut;
@@ -103,12 +92,6 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 		if (statsFlags & MAXHEALTH)
 			bsOut.Write(maxHealth);
 
-        if (statsFlags & TRAINABLE_LEVELS)
-        {
-            for (long level : trainableLevels)
-                bsOut.Write(level);
-        }
-
         network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), LOW_PRIORITY, RELIABLE_ORDERED);
     }
 
@@ -125,15 +108,6 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 
     if (!heroStats) {
         std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !heroStats" << std::endl;
-        return;
-    }
-
-    CTCHeroExperience* heroExperience = reinterpret_cast<CTCHeroExperience*>(
-        reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_EXPERIENCE)
-        );
-
-    if (!heroExperience) {
-        std::cout << "[NetPlayerManager::ReceiveNetPlayerStats]: !heroExperience" << std::endl;
         return;
     }
 
@@ -183,12 +157,6 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
                 netPlayer->SetStamina(stamina);
             }
 
-            if (statsFlags & TRAINABLE_LEVELS)
-            {
-                heroExperience->SetAllTrainableStatLevels(trainableLevels);
-                netPlayer->SetTrainableStatLevels(trainableLevels);
-            }
-
             if (statsFlags & HEALTH)
             {
                 creaturePhysical->SetHealth(health);
@@ -224,20 +192,11 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
         return;
     }
 
-    CTCHeroExperience* heroExperience = reinterpret_cast<CTCHeroExperience*>(
-        reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_EXPERIENCE)
-        );
-
-    if (!heroExperience) {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerStats]: !heroExperience" << std::endl;
-        return;
-    }
-
     auto lastSendTime = std::chrono::steady_clock::now();
 
     heroStats->AddFrameUpdateCallback(
         "StatsFrameUpdate" + std::to_string(networkId),
-        [this, networkId, creature, heroStats, heroExperience, lastSendTime]() mutable
+        [this, networkId, creature, heroStats, lastSendTime]() mutable
         {
             auto now = std::chrono::steady_clock::now();
 
@@ -263,8 +222,6 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 
             float health = creaturePhysical->Health;
             float maxHealth = creaturePhysical->MaxHealth;
-
-            std::vector<long> trainableLevels = heroExperience->GetAllTrainableStatLevels();
 
             if (money != localNetPlayer->GetMoney())
                 statsFlags |= MONEY;
@@ -292,9 +249,6 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 
 			if (maxHealth != localNetPlayer->GetMaxHealth())
 				statsFlags |= MAXHEALTH;
-
-            if (trainableLevels != localNetPlayer->GetAllTrainableStatLevels())
-                statsFlags |= TRAINABLE_LEVELS;
 
             if (statsFlags == 0)
                 return;
@@ -358,14 +312,6 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
                 localNetPlayer->SetMaxHealth(maxHealth);
             }
 
-            if (statsFlags & TRAINABLE_LEVELS)
-            {
-                for (long level : trainableLevels)
-                    bs.Write(level);
-
-                localNetPlayer->SetTrainableStatLevels(trainableLevels);
-            }
-
             if (localNetPlayer->GetNetworkId() == 0)
             {
                 network->SendToAllClientsExcept(
@@ -389,13 +335,13 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
     );
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
+void NetPlayerManager::BroadcastNetPlayerStats(int networkId)
 {
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !creature" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerStats]: !creature" << std::endl;
         return;
     }
 
@@ -405,17 +351,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
 
     if (!heroStats)
     {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !heroStats" << std::endl;
-        return;
-    }
-
-    CTCHeroExperience* heroExperience = reinterpret_cast<CTCHeroExperience*>(
-        reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_EXPERIENCE)
-        );
-
-    if (!heroExperience)
-    {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllStats]: !heroExperience" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerStats]: !heroStats" << std::endl;
         return;
     }
 
@@ -428,8 +364,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
         RENOWN |
         STAMINA |
 		HEALTH |
-		MAXHEALTH |
-        TRAINABLE_LEVELS;
+		MAXHEALTH;
 
     int money = heroStats->Money;
     int morality = heroStats->Morality;
@@ -447,8 +382,6 @@ void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
 
     float health = creaturePhysical->Health;
     float maxHealth = creaturePhysical->MaxHealth;
-
-    std::vector<long> trainableLevels = heroExperience->GetAllTrainableStatLevels();
 
     SLNet::BitStream bs;
     bs.Write((SLNet::MessageID)ID_PLAYER_STATS);
@@ -481,12 +414,6 @@ void NetPlayerManager::BroadcastLocalNetPlayerAllStats(int networkId)
 
     if (statsFlags & MAXHEALTH)
         bs.Write(maxHealth);
-
-    if (statsFlags & TRAINABLE_LEVELS)
-    {
-        for (long level : trainableLevels)
-            bs.Write(level);
-    }
 
     if (localNetPlayer->GetNetworkId() == 0)
     {

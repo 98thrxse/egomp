@@ -183,6 +183,7 @@ void NetMainGameComponent::SetupNetworkCallbacks()
     SetupNetworkActionCallbacks();
     SetupNetworkStatsCallbacks();
     SetupNetworkAppearanceCallbacks();
+    SetupNetworkExperienceCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
@@ -194,6 +195,7 @@ void NetMainGameComponent::ClearNetworkCallbacks()
         ClearNetworkActionCallbacks();
         ClearNetworkStatsCallbacks();
         ClearNetworkAppearanceCallbacks();
+        ClearNetworkExperienceCallbacks();
     }
 }
 
@@ -347,4 +349,20 @@ void NetMainGameComponent::SetupNetworkAppearanceCallbacks()
 void NetMainGameComponent::ClearNetworkAppearanceCallbacks()
 {
     network->RemoveNetPlayerAppearanceCallback("NetPlayerAppearance");
+}
+
+void NetMainGameComponent::SetupNetworkExperienceCallbacks()
+{
+    network->AddNetPlayerExperienceCallback("NetPlayerExperience", [this](BitStream& bs) {
+        int networkId = -1;
+
+        bs.Read(networkId);
+
+        netPlayerManager->ReceiveNetPlayerExperience(networkId, bs);
+        });
+}
+
+void NetMainGameComponent::ClearNetworkExperienceCallbacks()
+{
+    network->RemoveNetPlayerExperienceCallback("NetPlayerExperience");
 }

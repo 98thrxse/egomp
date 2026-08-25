@@ -28,6 +28,7 @@ public:
     void ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs);
     void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
+    void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -56,10 +57,13 @@ private:
     void BroadcastLocalNetPlayerAction(int networkId);
 
     void BroadcastLocalNetPlayerStats(int networkId);
-    void BroadcastLocalNetPlayerAllStats(int networkId);
+    void BroadcastNetPlayerStats(int networkId);
 
     void BroadcastLocalNetPlayerAppearance(int networkId);
-    void BroadcastLocalNetPlayerAllAppearance(int networkId);
+    void BroadcastNetPlayerAppearance(int networkId);
+
+    void BroadcastLocalNetPlayerExperience(int networkId);
+    void BroadcastNetPlayerExperience(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

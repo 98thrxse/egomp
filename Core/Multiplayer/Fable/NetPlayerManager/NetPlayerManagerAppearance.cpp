@@ -162,7 +162,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
         {
             auto now = std::chrono::steady_clock::now();
 
-            if (now - lastSendTime < std::chrono::milliseconds(500))
+            if (now - lastSendTime < std::chrono::milliseconds(200))
                 return;
 
             lastSendTime = now;
@@ -243,13 +243,13 @@ void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
     );
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerAllAppearance(int networkId)
+void NetPlayerManager::BroadcastNetPlayerAppearance(int networkId)
 {
     CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllAppearance]: !creature" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerAppearance]: !creature" << std::endl;
         return;
     }
 
@@ -262,7 +262,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAllAppearance(int networkId)
 
     if (!appearanceModifiers)
     {
-        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAllAppearance]: !appearanceModifiers" << std::endl;
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerAppearance]: !appearanceModifiers" << std::endl;
         return;
     }
 

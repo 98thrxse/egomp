@@ -215,6 +215,7 @@
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAppearance.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerExperience.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerLifecycle.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerMotion.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerSession.cpp" />

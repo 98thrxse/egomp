@@ -1,5 +1,7 @@
 #include "HeroExperience.h"
 
+std::map<std::string, std::function<void()>> CTCHeroExperience::frameUpdateCallbacks;
+
 void(__thiscall* CTCHeroExperience::OForceTrainableStatLevelTo)(CTCHeroExperience*, EHeroTrainableStatType, long) = nullptr;
 void __fastcall CTCHeroExperience::HForceTrainableStatLevelTo(CTCHeroExperience* _this, void* _EDX, EHeroTrainableStatType stat_type, long level)
 {
@@ -36,8 +38,21 @@ void CTCHeroExperience::SetAllTrainableStatLevels(const std::vector<long>& level
 		ForceTrainableStatLevelTo((EHeroTrainableStatType)i, levels[i]);
 }
 
+void(__thiscall* CTCHeroExperience::OFrameUpdate)(CTCHeroExperience*) = nullptr;
+void __fastcall CTCHeroExperience::HFrameUpdate(CTCHeroExperience* _this, void* _EDX)
+{
+	OFrameUpdate(_this);
+
+	for (const auto& pair : frameUpdateCallbacks)
+	{
+		if (pair.second)
+			pair.second();
+	}
+}
+
 void CTCHeroExperience::Hook()
 {
 	ADD_HOOK(0x006D8A40, HForceTrainableStatLevelTo, OForceTrainableStatLevelTo);
 	ADD_HOOK(0x006D6520, HGetTrainableStatLevel, OGetTrainableStatLevel);
+	ADD_HOOK(0x006D8580, HFrameUpdate, OFrameUpdate);
 }
