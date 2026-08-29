@@ -6,6 +6,7 @@
 
 #include "Base.h"
 #include "BaseClass.h"
+#include "ParentDefClassBase.h"
 #include "CharString.h"
 #include "DefString.h"
 #include "DefStringTable.h"
@@ -41,6 +42,9 @@
 #include "HeroMorph.h"
 #include "HeroExperience.h"
 #include "HeroAttachableAppearanceModifiers.h"
+#include "AppearanceMorphBase.h"
+#include "DisplayEngine.h"
+#include "IEngine.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

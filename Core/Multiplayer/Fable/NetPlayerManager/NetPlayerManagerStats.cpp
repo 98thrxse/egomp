@@ -111,6 +111,19 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
         return;
     }
 
+    CTCHeroMorph* heroMorph =
+        reinterpret_cast<CTCHeroMorph*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(
+                TCI_APPEARANCE_MORPH
+            )
+            );
+
+    if (!heroMorph)
+    {
+        std::cout << "[NetPlayerManager::ReceiveNetPlayerMorph]: !heroMorph" << std::endl;
+        return;
+    }
+
     for (auto& netPlayer : netPlayers)
     {
         if (netPlayer && netPlayer->GetNetworkId() == networkId)

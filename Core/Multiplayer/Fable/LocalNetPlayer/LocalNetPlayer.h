@@ -27,6 +27,7 @@ private:
 
     std::vector<long> trainableStatLevels;
     std::vector<std::vector<long>> appearanceModifiers;
+    std::vector<long> tattooIndexes;
 
 public:
     LocalNetPlayer();
@@ -76,4 +77,7 @@ public:
 
     void SetAppearanceModifiers(const std::vector<std::vector<long>>& appearanceModifiers);
     std::vector<std::vector<long>> GetAppearanceModifiers() const;
+
+    void SetTattooIndexes(const std::vector<long>& tattooIndexes);
+    std::vector<long> GetAllTattooIndexes() const;
 };

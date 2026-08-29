@@ -8,6 +8,7 @@
 
 #include "World.h"
 #include "PlayerManager.h"
+#include "DisplayEngine.h"
 
 class CMainGameComponent
 {
@@ -16,6 +17,7 @@ public:
 
     CPlayerManager* GetPlayerManager();
     CWorld* GetWorld();
+    CDisplayEngine* GetDisplayEngine();
 
     void AddPostInitCallback(const std::string& id, std::function<void()> callback) { postInitCallbacks[id] = callback; }
     void RemovePostInitCallback(const std::string& id) { postInitCallbacks.erase(id); }

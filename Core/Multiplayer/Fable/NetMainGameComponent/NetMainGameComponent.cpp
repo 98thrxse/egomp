@@ -132,8 +132,7 @@ void NetMainGameComponent::Host()
     network = std::make_unique<Network>();
     netPlayerManager = std::make_unique<NetPlayerManager>(
         network.get(),
-        mainGameComponent->GetPlayerManager(),
-        mainGameComponent->GetWorld()
+        mainGameComponent
     );
 
     SetupNetworkCallbacks();
@@ -150,8 +149,7 @@ void NetMainGameComponent::Connect()
     network = std::make_unique<Network>();
     netPlayerManager = std::make_unique<NetPlayerManager>(
         network.get(),
-        mainGameComponent->GetPlayerManager(),
-        mainGameComponent->GetWorld()
+        mainGameComponent
     );
 
     SetupNetworkCallbacks();
@@ -184,6 +182,7 @@ void NetMainGameComponent::SetupNetworkCallbacks()
     SetupNetworkStatsCallbacks();
     SetupNetworkAppearanceCallbacks();
     SetupNetworkExperienceCallbacks();
+    SetupNetworkMorphCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
@@ -196,6 +195,7 @@ void NetMainGameComponent::ClearNetworkCallbacks()
         ClearNetworkStatsCallbacks();
         ClearNetworkAppearanceCallbacks();
         ClearNetworkExperienceCallbacks();
+        ClearNetworkMorphCallbacks();
     }
 }
 
@@ -365,4 +365,20 @@ void NetMainGameComponent::SetupNetworkExperienceCallbacks()
 void NetMainGameComponent::ClearNetworkExperienceCallbacks()
 {
     network->RemoveNetPlayerExperienceCallback("NetPlayerExperience");
+}
+
+void NetMainGameComponent::SetupNetworkMorphCallbacks()
+{
+    network->AddNetPlayerMorphCallback("NetPlayerMorph", [this](BitStream& bs) {
+        int networkId = -1;
+
+        bs.Read(networkId);
+
+        netPlayerManager->ReceiveNetPlayerMorph(networkId, bs);
+        });
+}
+
+void NetMainGameComponent::ClearNetworkMorphCallbacks()
+{
+    network->RemoveNetPlayerMorphCallback("NetPlayerMorph");
 }

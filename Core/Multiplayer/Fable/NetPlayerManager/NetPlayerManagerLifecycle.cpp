@@ -26,6 +26,7 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
     BroadcastLocalNetPlayerStats(networkId);
     BroadcastLocalNetPlayerAppearance(networkId);
     BroadcastLocalNetPlayerExperience(networkId);
+    BroadcastLocalNetPlayerMorph(networkId);
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -64,6 +65,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
         BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
         BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
         BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
+        BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
 
         for (auto& netPlayer : netPlayers)
         {
@@ -73,6 +75,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
             BroadcastNetPlayerStats(netPlayer->GetNetworkId());
             BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
             BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
+            BroadcastNetPlayerMorph(netPlayer->GetNetworkId());
         }
     }
 }
@@ -101,6 +104,7 @@ void NetPlayerManager::CreateNetPlayers(BitStream& bs)
     BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
+    BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
 }
 
 void NetPlayerManager::DestroyLocalNetPlayer()
@@ -147,12 +151,20 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCHeroMorph* heroMorph = reinterpret_cast<CTCHeroMorph*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_APPEARANCE_MORPH));
+
+    if (!heroMorph) {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !heroMorph" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
     heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
+    heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -197,12 +209,20 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         return;
     }
 
+    CTCHeroMorph* heroMorph = reinterpret_cast<CTCHeroMorph*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_APPEARANCE_MORPH));
+
+    if (!heroMorph) {
+        std::cout << "[NetPlayerManager::DestroyNetPlayer]: !heroMorph" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
     heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
+    heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();

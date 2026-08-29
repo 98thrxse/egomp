@@ -14,7 +14,7 @@
 class NetPlayerManager
 {
 public:
-    NetPlayerManager(Network* network, CPlayerManager* playerManager, CWorld* world);
+    NetPlayerManager(Network* network, CMainGameComponent* mainGameComponent);
     ~NetPlayerManager();
 
     void ConnectionNotification(int networkId, SystemAddress systemAddress);
@@ -29,6 +29,7 @@ public:
     void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
+    void ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -37,8 +38,12 @@ public:
 private:
     Network* network;
 
-    CPlayerManager* playerManager;
-    CWorld* world;
+    CMainGameComponent* mainGameComponent;
+    CPlayerManager* playerManager = mainGameComponent->GetPlayerManager();
+    CWorld* world = mainGameComponent->GetWorld();
+    CDisplayEngine* displayEngine = mainGameComponent->GetDisplayEngine();
+
+    CIEngine* iengine = displayEngine->Get3DEngine();
 
     std::unique_ptr<LocalNetPlayer> localNetPlayer;
     std::vector<std::unique_ptr<NetPlayer>> netPlayers;
@@ -47,6 +52,8 @@ private:
 
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
+
+    void RefreshNetPlayerMorph(CTCHeroMorph* heroMorph, int networkId);
 
     void BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
@@ -64,6 +71,9 @@ private:
 
     void BroadcastLocalNetPlayerExperience(int networkId);
     void BroadcastNetPlayerExperience(int networkId);
+
+    void BroadcastLocalNetPlayerMorph(int networkId);
+    void BroadcastNetPlayerMorph(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

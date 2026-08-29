@@ -48,6 +48,7 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerStatsCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerAppearanceCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerExperienceCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> netPlayerMorphCallbacks;
 
 	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
 	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
@@ -72,6 +73,7 @@ private:
 	void HandleNetPlayerStats(SLNet::Packet* packet);
 	void HandleNetPlayerAppearance(SLNet::Packet* packet);
 	void HandleNetPlayerExperience(SLNet::Packet* packet);
+	void HandleNetPlayerMorph(SLNet::Packet* packet);
 
 	void HandleDisconnectionNotification(SLNet::Packet* packet);
 	void HandleConnectionLost(SLNet::Packet* packet);
@@ -134,6 +136,9 @@ public:
 
 	void AddNetPlayerExperienceCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerExperienceCallbacks[id] = cb; }
 	void RemoveNetPlayerExperienceCallback(const std::string& id) { netPlayerExperienceCallbacks.erase(id); }
+	
+	void AddNetPlayerMorphCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerMorphCallbacks[id] = cb; }
+	void RemoveNetPlayerMorphCallback(const std::string& id) { netPlayerMorphCallbacks.erase(id); }
 
 	void AddDisconnectionNotificationCallback(const std::string& id, std::function<void(int)> cb) { disconnectionNotificationCallbacks[id] = cb; }
 	void RemoveDisconnectionNotificationCallback(const std::string& id) { disconnectionNotificationCallbacks.erase(id); }

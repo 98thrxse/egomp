@@ -61,6 +61,11 @@ CWorld* CMainGameComponent::GetWorld()
 	return *(CWorld**)((char*)this + 0x24);
 }
 
+CDisplayEngine* CMainGameComponent::GetDisplayEngine()
+{
+	return *(CDisplayEngine**)((char*)this + 0x28);
+}
+
 void CMainGameComponent::Hook()
 {
 	ADD_HOOK(0x004184BD, HInit, OInit);

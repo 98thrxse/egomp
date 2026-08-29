@@ -48,6 +48,9 @@ private:
 	void SetupNetworkExperienceCallbacks();
 	void ClearNetworkExperienceCallbacks();
 
+	void SetupNetworkMorphCallbacks();
+	void ClearNetworkMorphCallbacks();
+
 	void Selection();
 	void Options();
 	void Host();

@@ -61,6 +61,10 @@ SDK::SDK()
 	CTCHeroMorph::Hook();
 	CTCHeroExperience::Hook();
 	CTCHeroAttachableAppearanceModifiers::Hook();
+	CParentDefClassBase::Hook();
+	CTCAppearanceMorphBase::Hook();
+	CDisplayEngine::Hook();
+	CIEngine::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

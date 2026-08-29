@@ -2,12 +2,10 @@
 
 NetPlayerManager::NetPlayerManager(
     Network* network,
-    CPlayerManager* playerManager,
-    CWorld* world
+    CMainGameComponent* mainGameComponent
 )
     : network(network),
-    playerManager(playerManager),
-    world(world)
+    mainGameComponent(mainGameComponent)
 {
 }
 
