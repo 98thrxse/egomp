@@ -11,6 +11,8 @@
 class CPlayerManager
 {
 public:
+	char pad[0x2C];
+
 	void CreatePlayer(long player_number);
 	CPlayer* GetPlayer(long player_number);
 

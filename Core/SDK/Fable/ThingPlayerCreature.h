@@ -12,6 +12,8 @@
 #include "CreatureAbilityDef.h"
 #include "CombatZone.h"
 #include "Thing.h"
+#include "ThingObject.h"
+#include "CharString.h"
 
 class CThingPlayerCreature
 {
@@ -22,6 +24,7 @@ public:
 	static CThingPlayerCreature* Create(long, C3DVector const&, long, CThingPlayerCreatureInit const&);
 	char SetActionForMelee(CCreatureAbilityDef const&);
 	char SetPlayerCreatureActionForMelee(ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef);
+	CThingObject* CreateAndAddObjectToInventory(long def_index, long quick_access_slot, bool silent, CCharString const& script_name);
 
 	void AddResolveMovementAccelerationCallback(const std::string& id, std::function<void()> callback) { resolveMovementAccelerationCallbacks[id] = callback; }
 	void RemoveResolveMovementAccelerationCallback(const std::string& id) { resolveMovementAccelerationCallbacks.erase(id); }
@@ -58,4 +61,7 @@ private:
 
 	static char(__thiscall* OSetPlayerCreatureActionForMelee)(CThingPlayerCreature*, ECombatZone, C3DVector const&, CThing*, CCreatureAbilityDef const&);
 	static char __fastcall HSetPlayerCreatureActionForMelee(CThingPlayerCreature* _this, void* _EDX, ECombatZone combatZone, C3DVector const& vector, CThing* thing, CCreatureAbilityDef const& abilityDef);
+
+	static CThingObject* (__thiscall* OCreateAndAddObjectToInventory)(CThingPlayerCreature*, long, long, bool, CCharString const&);
+	static CThingObject* __fastcall HCreateAndAddObjectToInventory(CThingPlayerCreature* _this, void* _EDX, long def_index, long quick_access_slot, bool silent, CCharString const& script_name);
 };

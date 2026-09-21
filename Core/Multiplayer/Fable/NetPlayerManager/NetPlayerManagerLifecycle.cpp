@@ -22,11 +22,12 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
 
     BroadcastLocalNetPlayerMovement(networkId);
     BroadcastLocalNetPlayerRotation(networkId);
-    BroadcastLocalNetPlayerAction(networkId);
     BroadcastLocalNetPlayerStats(networkId);
     BroadcastLocalNetPlayerAppearance(networkId);
     BroadcastLocalNetPlayerExperience(networkId);
     BroadcastLocalNetPlayerMorph(networkId);
+    BroadcastLocalNetPlayerWeapons(networkId);
+    BroadcastLocalNetPlayerAction(networkId);
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -66,6 +67,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
         BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
         BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
         BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
+        BroadcastNetPlayerWeapons(localNetPlayer->GetNetworkId());
 
         for (auto& netPlayer : netPlayers)
         {
@@ -76,6 +78,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
             BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
             BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
             BroadcastNetPlayerMorph(netPlayer->GetNetworkId());
+            BroadcastNetPlayerWeapons(netPlayer->GetNetworkId());
         }
     }
 }
@@ -105,6 +108,7 @@ void NetPlayerManager::CreateNetPlayers(BitStream& bs)
     BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
+    BroadcastNetPlayerWeapons(localNetPlayer->GetNetworkId());
 }
 
 void NetPlayerManager::DestroyLocalNetPlayer()
@@ -158,6 +162,15 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
+        );
+
+    if (!inventoryWeapons) {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !inventoryWeapons" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
@@ -165,6 +178,7 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
+    inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -216,6 +230,15 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         return;
     }
 
+    CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
+        );
+
+    if (!inventoryWeapons) {
+        std::cout << "[NetPlayerManager::DestroyNetPlayer]: !inventoryWeapons" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
@@ -223,6 +246,7 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
+    inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();

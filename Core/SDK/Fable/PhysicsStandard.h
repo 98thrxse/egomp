@@ -12,7 +12,7 @@
 class CTCPhysicsStandard
 {
 public:
-    char pad[0x44];
+	char pad0[0x40];
 
     C3DVector OffsetVector3D;
     CRightHandedSet RHSet;

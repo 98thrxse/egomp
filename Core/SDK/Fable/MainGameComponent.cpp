@@ -53,17 +53,17 @@ void __fastcall CMainGameComponent::HShutdown(CMainGameComponent* _this, void* _
 
 CPlayerManager* CMainGameComponent::GetPlayerManager()
 {
-	return *(CPlayerManager**)((char*)this + 0x1C);
+	return this->PPlayerManager;
 }
 
 CWorld* CMainGameComponent::GetWorld()
 {
-	return *(CWorld**)((char*)this + 0x24);
+	return this->PWorld;
 }
 
 CDisplayEngine* CMainGameComponent::GetDisplayEngine()
 {
-	return *(CDisplayEngine**)((char*)this + 0x28);
+	return this->PDisplayEngine;
 }
 
 void CMainGameComponent::Hook()

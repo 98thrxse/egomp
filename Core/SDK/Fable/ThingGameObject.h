@@ -9,5 +9,7 @@
 class CThingGameObject
 {
 public:
+    char pad[0xD0];
+
     static void Hook();
 };

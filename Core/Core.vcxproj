@@ -155,8 +155,11 @@
     <ClInclude Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SDK\Fable\Base.h" />
+    <ClInclude Include="SDK\Fable\BaseIntelligentPointer.h" />
+    <ClInclude Include="SDK\Fable\BaseObject.h" />
     <ClInclude Include="SDK\Fable\CombatActionBase.h" />
     <ClInclude Include="SDK\Fable\CombatZone.h" />
+    <ClInclude Include="SDK\Fable\Component.h" />
     <ClInclude Include="SDK\Fable\CreatureAbility.h" />
     <ClInclude Include="SDK\Fable\BaseClass.h" />
     <ClInclude Include="SDK\Fable\3DVector.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.h" />
     <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.h" />
     <ClInclude Include="SDK\Fable\AppearanceMorphBase.h" />
+    <ClInclude Include="SDK\Fable\DefIndex.h" />
     <ClInclude Include="SDK\Fable\DefPointeeBase.h" />
     <ClInclude Include="SDK\Fable\DefPointer.h" />
     <ClInclude Include="SDK\Fable\DisplayEngine.h" />
@@ -184,8 +188,12 @@
     <ClInclude Include="SDK\Fable\HeroTrainingStatus.h" />
     <ClInclude Include="SDK\Fable\IEngine.h" />
     <ClInclude Include="SDK\Fable\InterfaceType.h" />
+    <ClInclude Include="SDK\Fable\InventoryBase.h" />
+    <ClInclude Include="SDK\Fable\InventoryItem.h" />
     <ClInclude Include="SDK\Fable\InventoryStats.h" />
+    <ClInclude Include="SDK\Fable\InventoryWeapons.h" />
     <ClInclude Include="SDK\Fable\ParentDefClassBase.h" />
+    <ClInclude Include="SDK\Fable\PlayerMode.h" />
     <ClInclude Include="SDK\Fable\RightHandedSet.h" />
     <ClInclude Include="SDK\Fable\DefinitionManager.h" />
     <ClInclude Include="SDK\Fable\DefString.h" />
@@ -201,6 +209,7 @@
     <ClInclude Include="SDK\Fable\Thing.h" />
     <ClInclude Include="SDK\Fable\ThingCreatureBase.h" />
     <ClInclude Include="SDK\Fable\ThingGameObject.h" />
+    <ClInclude Include="SDK\Fable\ThingObject.h" />
     <ClInclude Include="SDK\Fable\ThingPhysical.h" />
     <ClInclude Include="SDK\Fable\ThingPlayerCreature.h" />
     <ClInclude Include="SDK\Fable\ThingPlayerCreatureInit.h" />
@@ -209,6 +218,7 @@
     <ClInclude Include="SDK\Fable\Player.h" />
     <ClInclude Include="SDK\Fable\PlayerManager.h" />
     <ClInclude Include="SDK\Fable\SDK.h" />
+    <ClInclude Include="SDK\Fable\Weapon.h" />
     <ClInclude Include="SDK\Fable\World.h" />
     <ClInclude Include="SDK\Fable\WorldMap.h" />
     <ClInclude Include="SDK\Utils\Hook.h" />
@@ -226,6 +236,7 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerSession.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerStats.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerUtils.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerWeapons.cpp" />
     <ClCompile Include="Multiplayer\Network\Network.cpp" />
     <ClCompile Include="Multiplayer\Fable\LocalNetPlayer\LocalNetPlayer.cpp" />
     <ClCompile Include="Multiplayer\Fable\Multiplayer.cpp" />
@@ -243,15 +254,19 @@
     <ClCompile Include="SDK\Fable\Base.cpp" />
     <ClCompile Include="SDK\Fable\BaseClass.cpp" />
     <ClCompile Include="SDK\Fable\3DVector.cpp" />
+    <ClCompile Include="SDK\Fable\BaseIntelligentPointer.cpp" />
+    <ClCompile Include="SDK\Fable\BaseObject.cpp" />
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp" />
     <ClCompile Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.cpp" />
     <ClCompile Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.cpp" />
+    <ClCompile Include="SDK\Fable\Component.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_InterruptableMidAttackAutoTurn.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_PlayerInteractionGreet.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_SheatheItemToInventory.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
+    <ClCompile Include="SDK\Fable\DefIndex.cpp" />
     <ClCompile Include="SDK\Fable\DefPointeeBase.cpp" />
     <ClCompile Include="SDK\Fable\DefPointer.cpp" />
     <ClCompile Include="SDK\Fable\CoopSpirit.cpp" />
@@ -263,7 +278,10 @@
     <ClCompile Include="SDK\Fable\HeroMorph.cpp" />
     <ClCompile Include="SDK\Fable\HeroStats.cpp" />
     <ClCompile Include="SDK\Fable\IEngine.cpp" />
+    <ClCompile Include="SDK\Fable\InventoryBase.cpp" />
+    <ClCompile Include="SDK\Fable\InventoryItem.cpp" />
     <ClCompile Include="SDK\Fable\InventoryStats.cpp" />
+    <ClCompile Include="SDK\Fable\InventoryWeapons.cpp" />
     <ClCompile Include="SDK\Fable\ParentDefClassBase.cpp" />
     <ClCompile Include="SDK\Fable\RightHandedSet.cpp" />
     <ClCompile Include="SDK\Fable\DefinitionManager.cpp" />
@@ -274,6 +292,8 @@
     <ClCompile Include="SDK\Fable\PhysicsControlled.cpp" />
     <ClCompile Include="SDK\Fable\PhysicsStandard.cpp" />
     <ClCompile Include="SDK\Fable\Stealth.cpp" />
+    <ClCompile Include="SDK\Fable\ThingObject.cpp" />
+    <ClCompile Include="SDK\Fable\Weapon.cpp" />
     <ClCompile Include="SDK\Fable\World.cpp" />
     <ClCompile Include="SDK\Fable\Thing.cpp" />
     <ClCompile Include="SDK\Fable\GamePlayerInterface.cpp" />

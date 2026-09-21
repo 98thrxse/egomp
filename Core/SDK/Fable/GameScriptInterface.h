@@ -7,6 +7,8 @@
 class CGameScriptInterface
 {
 public:
+    char pad[0x4C];
+
     static void Hook();
 
     void StartSneaking();

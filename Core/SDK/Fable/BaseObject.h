@@ -4,10 +4,10 @@
 
 #include "../Utils/Hook.h"
 
-class CTCInventoryStats
+class CBaseObject
 {
 public:
-    char pad[0x198];
+    char pad[0x8];
 
     static void Hook();
 };

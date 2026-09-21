@@ -29,6 +29,9 @@ private:
     std::vector<std::vector<long>> appearanceModifiers;
     std::vector<long> tattooIndexes;
 
+    int meleeIndex;
+    int rangedIndex;
+
 public:
     LocalNetPlayer();
     ~LocalNetPlayer() = default;
@@ -80,4 +83,10 @@ public:
 
     void SetTattooIndexes(const std::vector<long>& tattooIndexes);
     std::vector<long> GetAllTattooIndexes() const;
+
+    void SetMeleeWeaponIndex(int index);
+    int GetMeleeWeaponIndex() const;
+
+    void SetRangedWeaponIndex(int index);
+    int GetRangedWeaponIndex() const;
 };

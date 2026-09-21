@@ -9,5 +9,7 @@
 class CGamePlayerInterface
 {
 public:
+    char pad[0xBF0];
+
     static void Hook();
 };

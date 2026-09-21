@@ -36,9 +36,6 @@ private:
 	void SetupNetworkMotionCallbacks();
 	void ClearNetworkMotionCallbacks();
 
-	void SetupNetworkActionCallbacks();
-	void ClearNetworkActionCallbacks();
-
 	void SetupNetworkStatsCallbacks();
 	void ClearNetworkStatsCallbacks();
 
@@ -50,6 +47,12 @@ private:
 
 	void SetupNetworkMorphCallbacks();
 	void ClearNetworkMorphCallbacks();
+
+	void SetupNetworkWeaponsCallbacks();
+	void ClearNetworkWeaponsCallbacks();
+
+	void SetupNetworkActionCallbacks();
+	void ClearNetworkActionCallbacks();
 
 	void Selection();
 	void Options();

@@ -178,11 +178,12 @@ void NetMainGameComponent::SetupNetworkCallbacks()
 	SetupNetworkSessionCallbacks();
 	SetupNetworkLifecycleCallbacks();
 	SetupNetworkMotionCallbacks();
-    SetupNetworkActionCallbacks();
     SetupNetworkStatsCallbacks();
     SetupNetworkAppearanceCallbacks();
     SetupNetworkExperienceCallbacks();
     SetupNetworkMorphCallbacks();
+    SetupNetworkWeaponsCallbacks();
+    SetupNetworkActionCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
@@ -191,11 +192,12 @@ void NetMainGameComponent::ClearNetworkCallbacks()
         ClearNetworkSessionCallbacks();
         ClearNetworkLifecycleCallbacks();
         ClearNetworkMotionCallbacks();
-        ClearNetworkActionCallbacks();
         ClearNetworkStatsCallbacks();
         ClearNetworkAppearanceCallbacks();
         ClearNetworkExperienceCallbacks();
         ClearNetworkMorphCallbacks();
+        ClearNetworkWeaponsCallbacks();
+        ClearNetworkActionCallbacks();
     }
 }
 
@@ -381,4 +383,20 @@ void NetMainGameComponent::SetupNetworkMorphCallbacks()
 void NetMainGameComponent::ClearNetworkMorphCallbacks()
 {
     network->RemoveNetPlayerMorphCallback("NetPlayerMorph");
+}
+
+void NetMainGameComponent::SetupNetworkWeaponsCallbacks()
+{
+    network->AddNetPlayerWeaponsCallback("NetPlayerWeapons", [this](BitStream& bs) {
+        int networkId = -1;
+
+        bs.Read(networkId);
+
+        netPlayerManager->ReceiveNetPlayerWeapons(networkId, bs);
+        });
+}
+
+void NetMainGameComponent::ClearNetworkWeaponsCallbacks()
+{
+    network->RemoveNetPlayerWeaponsCallback("NetPlayerWeapons");
 }

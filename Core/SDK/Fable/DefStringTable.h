@@ -9,6 +9,8 @@
 class CDefStringTable
 {
 public:
+    char pad[0x38];
+
     static CDefStringTable* Get();
 
     CCharString* GetString(CCharString* result, int table_pos);

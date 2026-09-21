@@ -11,6 +11,8 @@
 class CTCCoopSpirit
 {
 public:
+    char pad[0x34];
+
     CTCCoopSpirit(CThing& thing);
     static void Hook();
 

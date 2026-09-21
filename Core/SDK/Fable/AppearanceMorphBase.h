@@ -10,6 +10,8 @@
 class CTCAppearanceMorphBase
 {
 public:
+    char pad[0xC];
+
     void UploadTextureMorphsToEngine(CIEngine&, std::set<long> const*, bool, float);
 
     static void Hook();

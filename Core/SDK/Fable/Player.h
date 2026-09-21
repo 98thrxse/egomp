@@ -10,6 +10,8 @@
 class CPlayer
 {
 public:
+    char pad[0x218];
+
     void InitCharacterAs(CCharString const& def_name);
     void CreateCharacter(CCharString const& def_name);
     CThingPlayerCreature* GetPControlledCreature();

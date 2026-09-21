@@ -9,10 +9,21 @@
 #include "World.h"
 #include "PlayerManager.h"
 #include "DisplayEngine.h"
+#include "GamePlayerInterface.h"
 
 class CMainGameComponent
 {
 public:
+	char pad0[0x10];
+
+	char pad1[0x4];  // CASoundBank* PSampleBank;
+	char pad2[0x8];  // CCountedPointer<NGameText::CDataBank> PTextBank;
+
+	CPlayerManager* PPlayerManager;          // boost::scoped_ptr<CPlayerManager>
+	CGamePlayerInterface* PPlayerInterface;  // boost::scoped_ptr<CGamePlayerInterface>
+	CWorld* PWorld;                          // boost::scoped_ptr<CWorld>
+	CDisplayEngine* PDisplayEngine;          // boost::scoped_ptr<CDisplayEngine>
+
     static CMainGameComponent* Get();
 
     CPlayerManager* GetPlayerManager();

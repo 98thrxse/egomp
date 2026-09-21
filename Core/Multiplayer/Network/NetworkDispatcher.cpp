@@ -41,10 +41,6 @@ void Network::Update()
 			HandleNetPlayerRotation(packet);
 			break;
 
-		case ID_PLAYER_ACTION:
-			HandleNetPlayerAction(packet);
-			break;
-
 		case ID_PLAYER_STATS:
 			HandleNetPlayerStats(packet);
 			break;
@@ -59,6 +55,14 @@ void Network::Update()
 
 		case ID_PLAYER_MORPH:
 			HandleNetPlayerMorph(packet);
+			break;
+
+		case ID_PLAYER_WEAPONS:
+			HandleNetPlayerWeapons(packet);
+			break;
+
+		case ID_PLAYER_ACTION:
+			HandleNetPlayerAction(packet);
 			break;
 
 		case ID_DISCONNECTION_NOTIFICATION:
@@ -209,21 +213,6 @@ void Network::HandleNetPlayerRotation(SLNet::Packet* packet)
 	}
 }
 
-void Network::HandleNetPlayerAction(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerActionCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
 void Network::HandleNetPlayerStats(SLNet::Packet* packet)
 {
 	SLNet::BitStream bs(packet->data, packet->length, false);
@@ -274,6 +263,36 @@ void Network::HandleNetPlayerMorph(SLNet::Packet* packet)
 	SLNet::BitStream bs(packet->data, packet->length, false);
 
 	for (const auto& pair : netPlayerMorphCallbacks)
+	{
+		if (pair.second)
+		{
+			bs.ResetReadPointer();
+			bs.IgnoreBytes(sizeof(SLNet::MessageID));
+			pair.second(bs);
+		}
+	}
+}
+
+void Network::HandleNetPlayerWeapons(SLNet::Packet* packet)
+{
+	SLNet::BitStream bs(packet->data, packet->length, false);
+
+	for (const auto& pair : netPlayerWeaponsCallbacks)
+	{
+		if (pair.second)
+		{
+			bs.ResetReadPointer();
+			bs.IgnoreBytes(sizeof(SLNet::MessageID));
+			pair.second(bs);
+		}
+	}
+}
+
+void Network::HandleNetPlayerAction(SLNet::Packet* packet)
+{
+	SLNet::BitStream bs(packet->data, packet->length, false);
+
+	for (const auto& pair : netPlayerActionCallbacks)
 	{
 		if (pair.second)
 		{

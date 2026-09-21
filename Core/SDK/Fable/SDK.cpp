@@ -56,7 +56,6 @@ SDK::SDK()
 	CDefPointeeBase::Hook();
 	CTCStealth::Hook();
 	CGameScriptInterface::Hook();
-	CTCInventoryStats::Hook();
 	CTCHeroStats::Hook();
 	CTCHeroMorph::Hook();
 	CTCHeroExperience::Hook();
@@ -65,6 +64,16 @@ SDK::SDK()
 	CTCAppearanceMorphBase::Hook();
 	CDisplayEngine::Hook();
 	CIEngine::Hook();
+	NInventory::CTCInventoryBase::Hook();
+	CTCInventoryStats::Hook();
+	CTCInventoryWeapons::Hook();
+	CTCInventoryItem::Hook();
+	NUISystem::CComponent::Hook();
+	CBaseIntelligentPointer::Hook();
+	CDefIndex::Hook();
+	CBaseObject::Hook();
+	CThingObject::Hook();
+	CTCWeapon::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

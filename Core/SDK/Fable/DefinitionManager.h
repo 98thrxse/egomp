@@ -9,6 +9,8 @@
 class CDefinitionManager
 {
 public:
+	char pad0[0xD0];
+
     static CDefinitionManager* Get();
     int GetDefGlobalIndexFromName(const CCharString* instantiation_name);
     static void Hook();

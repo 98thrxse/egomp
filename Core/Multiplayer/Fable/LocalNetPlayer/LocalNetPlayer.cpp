@@ -18,6 +18,9 @@ LocalNetPlayer::LocalNetPlayer() :
     maxHealth = 0.0f;
 	health = 0.0f;
 
+    meleeIndex = 0;
+    rangedIndex = 0;
+
     trainableStatLevels = std::vector<long>(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
     appearanceModifiers = std::vector<std::vector<long>>(NO_OF_APPEARANCE_MODIFIER_TYPES);
     tattooIndexes = std::vector<long>();
@@ -181,4 +184,24 @@ void LocalNetPlayer::SetTattooIndexes(const std::vector<long>& tattooIndexes)
 std::vector<long> LocalNetPlayer::GetAllTattooIndexes() const
 {
     return tattooIndexes;
+}
+
+void LocalNetPlayer::SetMeleeWeaponIndex(int index)
+{
+    this->meleeIndex = index;
+}
+
+int LocalNetPlayer::GetMeleeWeaponIndex() const
+{
+    return meleeIndex;
+}
+
+void LocalNetPlayer::SetRangedWeaponIndex(int index)
+{
+    this->rangedIndex = index;
+}
+
+int LocalNetPlayer::GetRangedWeaponIndex() const
+{
+    return rangedIndex;
 }

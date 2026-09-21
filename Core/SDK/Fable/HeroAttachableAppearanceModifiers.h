@@ -13,6 +13,8 @@
 class CTCHeroAttachableAppearanceModifiers
 {
 public:
+    char pad[0x48];
+
     std::vector<std::vector<long>> GetAllAppearanceModifierLists();
     void SetAllAppearanceModifierLists(const std::vector<std::vector<long>>& modifiers);
 

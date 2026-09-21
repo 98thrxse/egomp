@@ -30,6 +30,7 @@ public:
     void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs);
+	void ReceiveNetPlayerWeapons(int networkId, SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -74,6 +75,9 @@ private:
 
     void BroadcastLocalNetPlayerMorph(int networkId);
     void BroadcastNetPlayerMorph(int networkId);
+
+    void BroadcastLocalNetPlayerWeapons(int networkId);
+    void BroadcastNetPlayerWeapons(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

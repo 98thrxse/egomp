@@ -7,6 +7,8 @@
 class CTCStealth
 {
 public:
+    char pad[0x40];
+
     static void Hook();
 
     void StartSneaking();

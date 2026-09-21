@@ -19,6 +19,8 @@ public:
     uint64_t UniqueID;
     char pad1[0x40];
     CTCPhysicsBase* PhysicsTC;
+    char pad2[0x28];
+    uint16_t DefGlobalIndex;
 
     C3DVector* GetPos();
     CDefString* GetDefName(CDefString* result);

@@ -79,6 +79,17 @@ char CThingPlayerCreature::SetPlayerCreatureActionForMelee(ECombatZone combatZon
 	return OSetPlayerCreatureActionForMelee(this, combatZone, vector, thing, abilityDef);
 }
 
+CThingObject* (__thiscall* CThingPlayerCreature::OCreateAndAddObjectToInventory)(CThingPlayerCreature*, long, long, bool, CCharString const&) = nullptr;
+CThingObject* __fastcall CThingPlayerCreature::HCreateAndAddObjectToInventory(CThingPlayerCreature* _this, void* _EDX, long def_index, long quick_access_slot, bool silent, CCharString const& script_name)
+{
+	return OCreateAndAddObjectToInventory(_this, def_index, quick_access_slot, silent, script_name);
+}
+
+CThingObject* CThingPlayerCreature::CreateAndAddObjectToInventory(long def_index, long quick_access_slot, bool silent, CCharString const& script_name)
+{
+	return OCreateAndAddObjectToInventory(this, def_index, quick_access_slot, silent, script_name);
+}
+
 void CThingPlayerCreature::Hook()
 {
 	ADD_HOOK(0x006AC910, HCreate, OCreate);
@@ -89,4 +100,5 @@ void CThingPlayerCreature::Hook()
 	ADD_HOOK(0x006AABE0, HSetActionForMelee, OSetActionForMelee);
 	ADD_HOOK(0x006AA720, HSetPlayerCreatureActionForMelee, OSetPlayerCreatureActionForMelee);
 	ADD_HOOK(0x006AD9D0, HWorldUpdate, OWorldUpdate);
+	ADD_HOOK(0x006AC200, HCreateAndAddObjectToInventory, OCreateAndAddObjectToInventory);
 }

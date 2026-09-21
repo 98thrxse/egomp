@@ -2,7 +2,7 @@
 
 CIEngine* CDisplayEngine::Get3DEngine()
 {
-	return *(CIEngine**)((char*)this + 0x2C);
+	return this->Engine3D;
 }
 
 void CDisplayEngine::Hook()
