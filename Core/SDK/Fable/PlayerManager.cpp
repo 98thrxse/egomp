@@ -14,8 +14,12 @@ CPlayer* __fastcall CPlayerManager::HGetPlayer(CPlayerManager* _this, void* _EDX
 
 bool (__thiscall* CPlayerManager::OIsMultiplayerGameActive)(CPlayerManager*) = nullptr;
 bool __fastcall CPlayerManager::HIsMultiplayerGameActive(CPlayerManager* _this, void* _EDX) {
-	//return OIsMultiplayerGameActive(_this); // CRASH: disable native mp cut features
-	return false;
+	// CRASH: disable native mp cut features
+	if (IsMultiplayer()) {
+		return false;
+	}
+
+	return OIsMultiplayerGameActive(_this);
 }
 
 void CPlayerManager::CreatePlayer(long player_number)

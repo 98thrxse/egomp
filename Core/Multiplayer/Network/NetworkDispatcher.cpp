@@ -26,43 +26,47 @@ void Network::Update()
 			break;
 
 		case ID_CREATE_NET_PLAYER:
-			HandleCreateNetPlayer(packet);
+			HandlePacket(packet, createNetPlayerCallbacks);
 			break;
 
 		case ID_CREATE_NET_PLAYERS:
-			HandleCreateNetPlayers(packet);
+			HandlePacket(packet, createNetPlayersCallbacks);
 			break;
 
 		case ID_PLAYER_MOVEMENT:
-			HandleNetPlayerMovement(packet);
+			HandlePacket(packet, netPlayerMovementCallbacks);
 			break;
 
 		case ID_PLAYER_ROTATION:
-			HandleNetPlayerRotation(packet);
+			HandlePacket(packet, netPlayerRotationCallbacks);
 			break;
 
 		case ID_PLAYER_STATS:
-			HandleNetPlayerStats(packet);
+			HandlePacket(packet, netPlayerStatsCallbacks);
 			break;
 
 		case ID_PLAYER_APPEARANCE:
-			HandleNetPlayerAppearance(packet);
+			HandlePacket(packet, netPlayerAppearanceCallbacks);
 			break;
 
 		case ID_PLAYER_EXPERIENCE:
-			HandleNetPlayerExperience(packet);
+			HandlePacket(packet, netPlayerExperienceCallbacks);
 			break;
 
 		case ID_PLAYER_MORPH:
-			HandleNetPlayerMorph(packet);
+			HandlePacket(packet, netPlayerMorphCallbacks);
 			break;
 
 		case ID_PLAYER_WEAPONS:
-			HandleNetPlayerWeapons(packet);
+			HandlePacket(packet, netPlayerWeaponsCallbacks);
 			break;
 
 		case ID_PLAYER_ACTION:
-			HandleNetPlayerAction(packet);
+			HandlePacket(packet, netPlayerActionCallbacks);
+			break;
+
+		case ID_DESTROY_NET_PLAYER:
+			HandlePacket(packet, destroyNetPlayerCallbacks);
 			break;
 
 		case ID_DISCONNECTION_NOTIFICATION:
@@ -71,10 +75,6 @@ void Network::Update()
 
 		case ID_CONNECTION_LOST:
 			HandleConnectionLost(packet);
-			break;
-
-		case ID_DESTROY_NET_PLAYER:
-			HandleDestroyNetPlayer(packet);
 			break;
 
 		case ID_CONNECTION_ATTEMPT_FAILED:
@@ -102,17 +102,13 @@ void Network::HandleNewIncomingConnection(SLNet::Packet* packet)
 
 void Network::HandleConnectionRequestAccepted(SLNet::Packet* packet)
 {
-	SLNet::BitStream bs;
-	bs.Write((SLNet::MessageID)ID_CONNECTION_NOTIFICATION);
-	peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-
 	std::cout << "[Network::Update] ID_CONNECTION_REQUEST_ACCEPTED: "
 		<< packet->systemAddress.ToString() << std::endl;
 
-	for (const auto& pair : connectionAcceptedCallbacks)
+	for (const auto& pair : connectionRequestAcceptedCallbacks)
 	{
 		if (pair.second)
-			pair.second();
+			pair.second(packet->systemAddress);
 	}
 }
 
@@ -153,156 +149,6 @@ void Network::HandleCreateLocalNetPlayer(SLNet::Packet* packet)
 	}
 }
 
-void Network::HandleCreateNetPlayer(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : createNetPlayerCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleCreateNetPlayers(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : createNetPlayersCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerMovement(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerMovementCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerRotation(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerRotationCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerStats(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerStatsCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerAppearance(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerAppearanceCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerExperience(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerExperienceCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerMorph(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerMorphCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerWeapons(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerWeaponsCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
-void Network::HandleNetPlayerAction(SLNet::Packet* packet)
-{
-	SLNet::BitStream bs(packet->data, packet->length, false);
-
-	for (const auto& pair : netPlayerActionCallbacks)
-	{
-		if (pair.second)
-		{
-			bs.ResetReadPointer();
-			bs.IgnoreBytes(sizeof(SLNet::MessageID));
-			pair.second(bs);
-		}
-	}
-}
-
 void Network::HandleDisconnectionNotification(SLNet::Packet* packet)
 {
 	int networkId = GetNetworkIdFromAddress(packet->systemAddress);
@@ -310,12 +156,19 @@ void Network::HandleDisconnectionNotification(SLNet::Packet* packet)
 	std::cout << "[Network::Update] ID_DISCONNECTION_NOTIFICATION: "
 		<< packet->systemAddress.ToString() << " - " << networkId << std::endl;
 
-	RemoveConnection(networkId);
-
 	for (const auto& pair : disconnectionNotificationCallbacks)
 	{
 		if (pair.second)
 			pair.second(networkId);
+	}
+
+	for (auto connection = connections.begin(); connection != connections.end(); ++connection)
+	{
+		if (connection->networkId == networkId)
+		{
+			connections.erase(connection);
+			break;
+		}
 	}
 }
 
@@ -326,27 +179,19 @@ void Network::HandleConnectionLost(SLNet::Packet* packet)
 	std::cout << "[Network::Update] ID_CONNECTION_LOST: "
 		<< packet->systemAddress.ToString() << " - " << networkId << std::endl;
 
-	RemoveConnection(networkId);
-
 	for (const auto& pair : connectionLostCallbacks)
 	{
 		if (pair.second)
 			pair.second(networkId);
 	}
-}
 
-void Network::HandleDestroyNetPlayer(SLNet::Packet* packet)
-{
-	int networkId = -1;
-
-	SLNet::BitStream bs(packet->data, packet->length, false);
-	bs.IgnoreBytes(sizeof(SLNet::MessageID));
-	bs.Read(networkId);
-
-	for (const auto& pair : destroyNetPlayerCallbacks)
+	for (auto connection = connections.begin(); connection != connections.end(); ++connection)
 	{
-		if (pair.second)
-			pair.second(networkId);
+		if (connection->networkId == networkId)
+		{
+			connections.erase(connection);
+			break;
+		}
 	}
 }
 

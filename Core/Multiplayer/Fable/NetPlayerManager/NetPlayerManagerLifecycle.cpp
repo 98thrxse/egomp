@@ -1,9 +1,9 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
+void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY)
 {
     int localId = GetFreeLocalId();
-    CThingPlayerCreature* creature = GetCreatureFromLocalId(localId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(localId);
 
     if (!creature)
     {
@@ -17,8 +17,16 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position)
     localNetPlayer->SetLocalId(localId);
     localNetPlayer->SetNetworkId(networkId);
 
+	SetupLocalNetPlayer(networkId, creature, position, facingAngleXY);
+}
+
+void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY)
+{
     if (networkId != 0)
-        TeleportClientToHostOnConnect(networkId, position);
+    {
+        world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
+        BroadcastCreateLocalNetPlayer(networkId, creature, position, facingAngleXY);
+    }
 
     BroadcastLocalNetPlayerMovement(networkId);
     BroadcastLocalNetPlayerRotation(networkId);
@@ -63,23 +71,8 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
         BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
         BroadcastCreateNetPlayers(networkId);
 
-        BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
-        BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
-        BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
-        BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
-        BroadcastNetPlayerWeapons(localNetPlayer->GetNetworkId());
-
-        for (auto& netPlayer : netPlayers)
-        {
-            if (netPlayer->GetNetworkId() == networkId)
-                continue;
-
-            BroadcastNetPlayerStats(netPlayer->GetNetworkId());
-            BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
-            BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
-            BroadcastNetPlayerMorph(netPlayer->GetNetworkId());
-            BroadcastNetPlayerWeapons(netPlayer->GetNetworkId());
-        }
+        SetupNetPlayer();
+        SetupNetPlayers(networkId);
     }
 }
 
@@ -104,11 +97,31 @@ void NetPlayerManager::CreateNetPlayers(BitStream& bs)
             CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
 
+    SetupNetPlayer();
+}
+
+void NetPlayerManager::SetupNetPlayer()
+{
     BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerWeapons(localNetPlayer->GetNetworkId());
+}
+
+void NetPlayerManager::SetupNetPlayers(int networkId)
+{
+    for (auto& netPlayer : netPlayers)
+    {
+        if (netPlayer->GetNetworkId() == networkId)
+            continue;
+
+        BroadcastNetPlayerStats(netPlayer->GetNetworkId());
+        BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
+        BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
+        BroadcastNetPlayerMorph(netPlayer->GetNetworkId());
+        BroadcastNetPlayerWeapons(netPlayer->GetNetworkId());
+    }
 }
 
 void NetPlayerManager::DestroyLocalNetPlayer()
@@ -273,40 +286,17 @@ void NetPlayerManager::DestroyNetPlayers()
     }
 }
 
-void NetPlayerManager::TeleportClientToHostOnConnect(int networkId, C3DVector position)
+void NetPlayerManager::BroadcastCreateLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+        CDefString def;
+        CCharString defName("");
 
-    if (!creature) {
-        std::cout << "[NetPlayerManager::TeleportClientToHostOnConnect]: !creature" << std::endl;
-        return;
-    }
+        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
+        CDefStringTable::Get()->GetString(&defName, def.TablePos);
 
-    CDefString def;
-    CCharString defName("");
+        CDefinitionManager* definitionManager = CDefinitionManager::Get();
+        int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
 
-    reinterpret_cast<CThing*>(creature)->GetDefName(&def);
-    CDefStringTable::Get()->GetString(&defName, def.TablePos);
-
-    CDefinitionManager* definitionManager = CDefinitionManager::Get();
-    int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
-
-    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
-    float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
-
-    world->AddUpdateRegionLoadCallback("TeleportClientToHostOnConnect", [this, networkId, defGlobalIndex, position, facingAngleXY]() {
-        if (world->RegionLoadStatus != CWorld::NOT_LOADING_REGION)
-            return;
-
-        world->RemoveUpdateRegionLoadCallback("TeleportClientToHostOnConnect");
-        BroadcastCreateLocalNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
-        });
-
-    world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
-}
-
-void NetPlayerManager::BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
-{
         SLNet::BitStream bsOut;
         bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
         bsOut.Write(networkId);
@@ -342,7 +332,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
     if (localNetPlayer)
     {
         int localNetPlayerNetworkId = localNetPlayer->GetNetworkId();
-        CThingPlayerCreature* creature = GetCreatureFromNetworkId(localNetPlayerNetworkId);
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(localNetPlayerNetworkId);
 
         if (!creature)
         {
@@ -372,7 +362,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
     for (const auto& netPlayer : netPlayers)
     {
         int netPlayerNetworkId = netPlayer->GetNetworkId();
-        CThingPlayerCreature* creature = GetCreatureFromNetworkId(netPlayerNetworkId);
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayerNetworkId);
 
         if (!creature)
         {

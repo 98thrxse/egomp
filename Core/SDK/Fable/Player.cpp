@@ -73,6 +73,20 @@ void CPlayer::UninitCharacter()
     OUninitCharacter(this);
 }
 
+bool(__thiscall* CPlayer::OLocateCharacterStartHolySite)(CPlayer*, CThingHolySite**) = nullptr;
+bool __fastcall CPlayer::HLocateCharacterStartHolySite(
+    CPlayer* _this,
+    void* _EDX,
+    CThingHolySite** site)
+{
+    return OLocateCharacterStartHolySite(_this, site);
+}
+
+bool CPlayer::LocateCharacterStartHolySite(CThingHolySite** site)
+{
+    return OLocateCharacterStartHolySite(this, site);
+}
+
 void CPlayer::Hook()
 {
     ADD_HOOK(0x0048A070, HInitCharacterAs, OInitCharacterAs);
@@ -82,4 +96,5 @@ void CPlayer::Hook()
     ADD_HOOK(0x00488D10, HInitInterfaces, OInitInterfaces);
     ADD_HOOK(0x00487AF0, HUninitialise, OUninitialise);
     ADD_HOOK(0x00487BD0, HUninitCharacter, OUninitCharacter);
+    ADD_HOOK(0x00488B20, HLocateCharacterStartHolySite, OLocateCharacterStartHolySite);
 }

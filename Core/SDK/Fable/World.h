@@ -10,6 +10,8 @@
 #include "3DVector.h"
 #include "GameEvent.h"
 
+extern bool (*IsMultiplayer)();
+
 class CWorld
 {
 public:
@@ -38,6 +40,9 @@ public:
     void AddUpdateRegionLoadCallback(const std::string& id, std::function<void()> callback) { updateRegionLoadCallbacks[id] = callback; }
     void RemoveUpdateRegionLoadCallback(const std::string& id) { updateRegionLoadCallbacks.erase(id); }
 
+    void AddSetAsLoadingRegionCallback(const std::string& id, std::function<void(C3DVector const&, float, bool, bool, bool)> callback) { setAsLoadingRegionCallbacks[id] = callback; }
+    void RemoveSetAsLoadingRegionCallback(const std::string& id) { setAsLoadingRegionCallbacks.erase(id); }
+
     void EAMoveHeroToRegion(CGameEvent const* event);
     void HandleMoveHeroToRegionGameEvent(CGameEvent const& game_event);
     void SetAsLoadingRegion(C3DVector const& region_start_pos, float facing_angle_xy, bool via_teleporter, bool allow_during_cut_scenes, bool via_door);
@@ -46,6 +51,7 @@ public:
 
 private:
     static std::map<std::string, std::function<void()>> updateRegionLoadCallbacks;
+    static std::map<std::string, std::function<void(C3DVector const&, float, bool, bool, bool)>> setAsLoadingRegionCallbacks;
 
     static void(__thiscall* OEAMoveHeroToRegion)(CWorld*, CGameEvent const*);
     static void __fastcall HEAMoveHeroToRegion(CWorld* _this, void* _EDX, CGameEvent const* event);

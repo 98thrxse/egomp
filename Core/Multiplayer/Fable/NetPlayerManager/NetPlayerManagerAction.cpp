@@ -12,7 +12,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
     }
 
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
@@ -30,7 +30,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
 
-        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
+        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_PlayerInteractionGreet(creatureBase, target);
         break;
     }
@@ -48,7 +48,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         bsIn.Read(requiredFacing.X); bsIn.Read(requiredFacing.Y); bsIn.Read(requiredFacing.Z);
         bsIn.Read(originalFacing.X); bsIn.Read(originalFacing.Y); bsIn.Read(originalFacing.Z);
 
-        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
+        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCombatAction_ControlledStrafeJump(creatureBase, target, requiredFacing, originalFacing);
         break;
     }
@@ -57,7 +57,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
 
-        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
+        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_KickThingOnGround(creatureBase, target);
         break;
     }
@@ -73,7 +73,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         bsIn.Read(targetNetworkId);
         bsIn.Read(required_facing.X); bsIn.Read(required_facing.Y); bsIn.Read(required_facing.Z);
 
-        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
+        CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
         break;
     }
@@ -163,7 +163,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
 
 void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: !creature" << std::endl;
@@ -171,7 +171,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
     }
 
     reinterpret_cast<CThingCreatureBase*>(creature)->AddSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId), [this, networkId](CThingCreatureBase* _this, CCreatureActionBase const& action) {
-        CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
         if (!creature) {
             std::cout << "[NetPlayerManager::SetCurrentAction]: !creature" << std::endl;
@@ -199,7 +199,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
                 uint64_t targetUID = target->UniqueID;
                 for (auto& netPlayer : netPlayers)
                 {
-                    CThing* targetCreature = reinterpret_cast<CThing*>(GetCreatureFromNetworkId(netPlayer->GetNetworkId()));
+                    CThing* targetCreature = reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId()));
                     if (targetCreature && targetCreature->UniqueID == targetUID)
                     {
                         targetNetworkId = netPlayer->GetNetworkId();

@@ -1,21 +1,18 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::ReceiveNetPlayerWeapons(int networkId, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerWeapons(int networkId, long weapon_def_index)
 {
-    long weapon_def_index = 0;
-    bsIn.Read(weapon_def_index);
-
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
-        SLNet::BitStream bsOut;
-        bsOut.Write((SLNet::MessageID)ID_PLAYER_WEAPONS);
-        bsOut.Write(networkId);
-        bsOut.Write(weapon_def_index);
+        SLNet::BitStream bs;
+        bs.Write((SLNet::MessageID)ID_PLAYER_WEAPONS);
+        bs.Write(networkId);
+        bs.Write(weapon_def_index);
 
-        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
     }
 
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
         return;
@@ -44,7 +41,7 @@ void NetPlayerManager::ReceiveNetPlayerWeapons(int networkId, SLNet::BitStream& 
 
 void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerWeapons]: !creature" << std::endl;
@@ -64,10 +61,10 @@ void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
         "SetThingAsActiveWeaponCallback" + std::to_string(networkId),
         [this, networkId](CTCInventoryWeapons* _this, long weapon_def_index)
         {
-            CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+            CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
             if (!creature) {
-                std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerWeapons]: !creature" << std::endl;
+                std::cout << "[NetPlayerManager::SetThingAsActiveWeaponCallback]: !creature" << std::endl;
                 return;
             }
 
@@ -76,7 +73,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
                 );
 
             if (!inventoryWeapons) {
-                std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerWeapons]: !inventoryWeapons" << std::endl;
+                std::cout << "[NetPlayerManager::SetThingAsActiveWeaponCallback]: !inventoryWeapons" << std::endl;
                 return;
             }
 
@@ -113,7 +110,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
 
 void NetPlayerManager::BroadcastNetPlayerWeapons(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {

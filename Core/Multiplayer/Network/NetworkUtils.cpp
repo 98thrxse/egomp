@@ -1,51 +1,5 @@
 #include "Network.h"
 
-void Network::RemoveSelf()
-{
-	for (const auto& pair : destroyLocalNetPlayerCallbacks)
-	{
-		if (pair.second)
-			pair.second();
-	}
-
-	self = Connection{};
-}
-
-void Network::RemoveConnection(int networkId)
-{
-	for (const auto& pair : destroyNetPlayerCallbacks)
-	{
-		if (pair.second)
-			pair.second(networkId);
-	}
-
-	for (auto connection = connections.begin(); connection != connections.end(); ++connection)
-	{
-		if (connection->networkId == networkId)
-		{
-			connections.erase(connection);
-			break;
-		}
-	}
-}
-
-void Network::RemoveConnections()
-{
-	for (const auto& pair : destroyNetPlayersCallbacks)
-	{
-		if (pair.second)
-			pair.second();
-	}
-
-	connections.clear();
-}
-
-void Network::ClearSession()
-{
-	settings.ip.clear();
-	settings.port = 0;
-}
-
 int Network::GetFreeNetworkId()
 {
 	int networkId = 0;
@@ -95,4 +49,19 @@ SystemAddress Network::GetAddressFromNetworkId(int networkId) const
 	}
 
 	return SystemAddress();
+}
+
+void Network::HandlePacket(SLNet::Packet* packet, std::map<std::string, std::function<void(BitStream&)>>& callback)
+{
+	SLNet::BitStream bs(packet->data, packet->length, false);
+
+	for (const auto& pair : callback)
+	{
+		if (pair.second)
+		{
+			bs.ResetReadPointer();
+			bs.IgnoreBytes(sizeof(SLNet::MessageID));
+			pair.second(bs);
+		}
+	}
 }

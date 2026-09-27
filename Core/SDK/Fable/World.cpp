@@ -1,6 +1,7 @@
 #include "World.h"
 
 std::map<std::string, std::function<void()>> CWorld::updateRegionLoadCallbacks;
+std::map<std::string, std::function<void(C3DVector const&, float, bool, bool, bool)>> CWorld::setAsLoadingRegionCallbacks;
 
 CWorldMap* CWorld::GetWorldMap()
 {
@@ -32,6 +33,17 @@ void CWorld::HandleMoveHeroToRegionGameEvent(CGameEvent const& game_event)
 void(__thiscall* CWorld::OSetAsLoadingRegion)(CWorld*, C3DVector const&, float, bool, bool, bool) = nullptr;
 void __fastcall CWorld::HSetAsLoadingRegion(CWorld* _this, void* _EDX, C3DVector const& region_start_pos, float facing_angle_xy, bool via_teleporter, bool allow_during_cut_scenes, bool via_door)
 {
+    if (IsMultiplayer())
+    {
+        for (const auto& pair : setAsLoadingRegionCallbacks)
+        {
+            if (pair.second)
+                pair.second(region_start_pos, facing_angle_xy, via_teleporter, allow_during_cut_scenes, via_door);
+		}
+
+        return;
+	}
+
     OSetAsLoadingRegion(_this, region_start_pos, facing_angle_xy, via_teleporter, allow_during_cut_scenes, via_door);
 }
 

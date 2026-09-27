@@ -35,7 +35,7 @@ private:
 	std::vector<Connection> connections;
 
 	std::map<std::string, std::function<void()>> newIncomingCallbacks;
-	std::map<std::string, std::function<void()>> connectionAcceptedCallbacks;
+	std::map<std::string, std::function<void(SystemAddress)>> connectionRequestAcceptedCallbacks;
 	std::map<std::string, std::function<void(int, SystemAddress)>> connectionNotificationCallbacks;
 
 	std::map<std::string, std::function<void(BitStream&)>> createLocalNetPlayerCallbacks;
@@ -51,13 +51,12 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerWeaponsCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> netPlayerActionCallbacks;
 
-	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
-	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
-
 	std::map<std::string, std::function<void()>> destroyLocalNetPlayerCallbacks;
-	std::map<std::string, std::function<void(int)>> destroyNetPlayerCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> destroyNetPlayerCallbacks;
 	std::map<std::string, std::function<void()>> destroyNetPlayersCallbacks;
 
+	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
+	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
 	std::map<std::string, std::function<void()>> connectionAttemptFailedCallbacks;
 
 	void HandleNewIncomingConnection(SLNet::Packet* packet);
@@ -65,28 +64,12 @@ private:
 	void HandleConnectionNotification(SLNet::Packet* packet);
 
 	void HandleCreateLocalNetPlayer(SLNet::Packet* packet);
-	void HandleCreateNetPlayer(SLNet::Packet* packet);
-	void HandleCreateNetPlayers(SLNet::Packet* packet);
-
-	void HandleNetPlayerMovement(SLNet::Packet* packet);
-	void HandleNetPlayerRotation(SLNet::Packet* packet);
-	void HandleNetPlayerStats(SLNet::Packet* packet);
-	void HandleNetPlayerAppearance(SLNet::Packet* packet);
-	void HandleNetPlayerExperience(SLNet::Packet* packet);
-	void HandleNetPlayerMorph(SLNet::Packet* packet);
-	void HandleNetPlayerWeapons(SLNet::Packet* packet);
-	void HandleNetPlayerAction(SLNet::Packet* packet);
 
 	void HandleDisconnectionNotification(SLNet::Packet* packet);
 	void HandleConnectionLost(SLNet::Packet* packet);
-	void HandleDestroyNetPlayer(SLNet::Packet* packet);
-
 	void HandleConnectionAttemptFailed(SLNet::Packet* packet);
 
-	void RemoveSelf();
-	void RemoveConnection(int networkId);
-	void RemoveConnections();
-	void ClearSession();
+	void HandlePacket(SLNet::Packet* packet, std::map<std::string, std::function<void(BitStream&)>>& callback);
 
 	int GetFreeNetworkId();
 	int GetNetworkIdFromAddress(const SLNet::SystemAddress& address) const;
@@ -106,8 +89,8 @@ public:
 	void AddNewIncomingCallback(const std::string& id, std::function<void()> cb) { newIncomingCallbacks[id] = cb; }
 	void RemoveNewIncomingCallback(const std::string& id) { newIncomingCallbacks.erase(id); }
 
-	void AddConnectionAcceptedCallback(const std::string& id, std::function<void()> cb) { connectionAcceptedCallbacks[id] = cb; }
-	void RemoveConnectionAcceptedCallback(const std::string& id) { connectionAcceptedCallbacks.erase(id); }
+	void AddConnectionRequestAcceptedCallback(const std::string& id, std::function<void(SystemAddress)> cb) { connectionRequestAcceptedCallbacks[id] = cb; }
+	void RemoveConnectionRequestAcceptedCallback(const std::string& id) { connectionRequestAcceptedCallbacks.erase(id); }
 
 	void AddConnectionNotificationCallback(const std::string& id, std::function<void(int, SystemAddress)> cb) { connectionNotificationCallbacks[id] = cb; }
 	void RemoveConnectionNotificationCallback(const std::string& id) { connectionNotificationCallbacks.erase(id); }
@@ -145,20 +128,20 @@ public:
 	void AddNetPlayerActionCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerActionCallbacks[id] = cb; }
 	void RemoveNetPlayerActionCallback(const std::string& id) { netPlayerActionCallbacks.erase(id); }
 
+	void AddDestroyLocalNetPlayerCallback(const std::string& id, std::function<void()> cb) { destroyLocalNetPlayerCallbacks[id] = cb; }
+	void RemoveDestroyLocalNetPlayerCallback(const std::string& id) { destroyLocalNetPlayerCallbacks.erase(id); }
+
+	void AddDestroyNetPlayerCallback(const std::string& id, std::function<void(BitStream&)> cb) { destroyNetPlayerCallbacks[id] = cb; }
+	void RemoveDestroyNetPlayerCallback(const std::string& id) { destroyNetPlayerCallbacks.erase(id); }
+
+	void AddDestroyNetPlayersCallback(const std::string& id, std::function<void()> cb) { destroyNetPlayersCallbacks[id] = cb; }
+	void RemoveDestroyNetPlayersCallback(const std::string& id) { destroyNetPlayersCallbacks.erase(id); }
+
 	void AddDisconnectionNotificationCallback(const std::string& id, std::function<void(int)> cb) { disconnectionNotificationCallbacks[id] = cb; }
 	void RemoveDisconnectionNotificationCallback(const std::string& id) { disconnectionNotificationCallbacks.erase(id); }
 
 	void AddConnectionLostCallback(const std::string& id, std::function<void(int)> cb) { connectionLostCallbacks[id] = cb; }
 	void RemoveConnectionLostCallback(const std::string& id) { connectionLostCallbacks.erase(id); }
-
-	void AddDestroyLocalNetPlayerCallback(const std::string& id, std::function<void()> cb) { destroyLocalNetPlayerCallbacks[id] = cb; }
-	void RemoveDestroyLocalNetPlayerCallback(const std::string& id) { destroyLocalNetPlayerCallbacks.erase(id); }
-
-	void AddDestroyNetPlayerCallback(const std::string& id, std::function<void(int)> cb) { destroyNetPlayerCallbacks[id] = cb; }
-	void RemoveDestroyNetPlayerCallback(const std::string& id) { destroyNetPlayerCallbacks.erase(id); }
-
-	void AddDestroyNetPlayersCallback(const std::string& id, std::function<void()> cb) { destroyNetPlayersCallbacks[id] = cb; }
-	void RemoveDestroyNetPlayersCallback(const std::string& id) { destroyNetPlayersCallbacks.erase(id); }
 
 	void AddConnectionAttemptFailedCallback(const std::string& id, std::function<void()> cb) { connectionAttemptFailedCallbacks[id] = cb; }
 	void RemoveConnectionAttemptFailedCallback(const std::string& id) { connectionAttemptFailedCallbacks.erase(id); }

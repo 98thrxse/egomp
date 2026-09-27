@@ -6,6 +6,7 @@
 
 #include "CharString.h"
 #include "ThingPlayerCreature.h"
+#include "ThingHolySite.h"
 
 class CPlayer
 {
@@ -19,6 +20,7 @@ public:
     void InitInterfaces();
     void Uninitialise();
     void UninitCharacter();
+    bool LocateCharacterStartHolySite(CThingHolySite** site);
 
     static void Hook();
 
@@ -43,4 +45,10 @@ private:
 
     static void(__thiscall* OUninitCharacter)(CPlayer*);
     static void __fastcall HUninitCharacter(CPlayer* _this, void* _EDX);
+
+    static bool(__thiscall* OLocateCharacterStartHolySite)(CPlayer*, CThingHolySite**);
+    static bool __fastcall HLocateCharacterStartHolySite(
+        CPlayer* _this,
+        void* _EDX,
+        CThingHolySite** site);
 };

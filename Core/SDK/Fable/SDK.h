@@ -54,6 +54,7 @@
 #include "BaseObject.h"
 #include "ThingObject.h"
 #include "Weapon.h"
+#include "ThingHolySite.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

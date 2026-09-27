@@ -47,7 +47,7 @@ void NetPlayerManager::ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs
         );
     }
 
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
         return;
@@ -84,7 +84,7 @@ void NetPlayerManager::ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs
 
 void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
@@ -109,8 +109,29 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
 
     heroMorph->AddFrameUpdateCallback(
         "MorphFrameUpdate" + std::to_string(networkId),
-        [this, networkId, heroMorph, lastSendTime]() mutable
+        [this, networkId, lastSendTime]() mutable
         {
+            CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+            if (!creature)
+            {
+                std::cout << "[NetPlayerManager::MorphFrameUpdate]: !creature" << std::endl;
+                return;
+            }
+
+            CTCHeroMorph* heroMorph =
+                reinterpret_cast<CTCHeroMorph*>(
+                    reinterpret_cast<CThing*>(creature)->GetTC(
+                        TCI_APPEARANCE_MORPH
+                    )
+                    );
+
+            if (!heroMorph)
+            {
+                std::cout << "[NetPlayerManager::MorphFrameUpdate]: !heroMorph" << std::endl;
+                return;
+            }
+
             auto now = std::chrono::steady_clock::now();
 
             if (now - lastSendTime < std::chrono::milliseconds(200))
@@ -169,7 +190,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
 
 void NetPlayerManager::BroadcastNetPlayerMorph(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {

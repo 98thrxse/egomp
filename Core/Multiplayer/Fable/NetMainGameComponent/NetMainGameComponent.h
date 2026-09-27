@@ -1,25 +1,26 @@
 #pragma once
 
 #include <iostream>
+#include <conio.h>
 
 #include "../../../SDK/Fable/SDK.h"
 #include "../../Network/Network.h"
 
 #include "../NetPlayerManager/NetPlayerManager.h"
+#include "../NetWorld/NetWorld.h"
 
 class NetMainGameComponent
 {
 public:
-	static NetMainGameComponent& GetInstance();
-
-	NetMainGameComponent();
+	NetMainGameComponent(std::unique_ptr<Network>& network);
 	~NetMainGameComponent();
 
 private:
 	CMainGameComponent* mainGameComponent;
+	std::unique_ptr<Network>& network;
 
-	std::unique_ptr<Network> network;
 	std::unique_ptr<NetPlayerManager> netPlayerManager;
+	std::unique_ptr<NetWorld> netWorld;
 
 	void SetupCallbacks();
 	void ClearCallbacks();
@@ -27,35 +28,19 @@ private:
 	void SetupNetworkCallbacks();
 	void ClearNetworkCallbacks();
 
-	void SetupNetworkSessionCallbacks();
-	void ClearNetworkSessionCallbacks();
+	void SetupSessionCallbacks();
+	void ClearSessionCallbacks();
 
-	void SetupNetworkLifecycleCallbacks();
-	void ClearNetworkLifecycleCallbacks();
+	void SetupWorldCallbacks();
+	void ClearWorldCallbacks();
 
-	void SetupNetworkMotionCallbacks();
-	void ClearNetworkMotionCallbacks();
-
-	void SetupNetworkStatsCallbacks();
-	void ClearNetworkStatsCallbacks();
-
-	void SetupNetworkAppearanceCallbacks();
-	void ClearNetworkAppearanceCallbacks();
-
-	void SetupNetworkExperienceCallbacks();
-	void ClearNetworkExperienceCallbacks();
-
-	void SetupNetworkMorphCallbacks();
-	void ClearNetworkMorphCallbacks();
-
-	void SetupNetworkWeaponsCallbacks();
-	void ClearNetworkWeaponsCallbacks();
-
-	void SetupNetworkActionCallbacks();
-	void ClearNetworkActionCallbacks();
+	void SetupPlayerManagerCallbacks();
+	void ClearPlayerManagerCallbacks();
 
 	void Selection();
 	void Options();
+	void Clear();
+
 	void Host();
 	void Connect();
 	void Disconnect();
@@ -63,4 +48,6 @@ private:
 	void HandleMainGameComponentPostInit();
 	void HandleMainGameComponentUpdate();
 	void HandleMainGameComponentShutdown();
+
+	void ClearInputBuffer();
 };

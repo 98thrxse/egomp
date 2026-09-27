@@ -8,6 +8,8 @@
 
 #include "Player.h"
 
+extern bool (*IsMultiplayer)();
+
 class CPlayerManager
 {
 public:

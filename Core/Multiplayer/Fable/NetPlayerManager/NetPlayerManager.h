@@ -19,9 +19,13 @@ public:
 
     void ConnectionNotification(int networkId, SystemAddress systemAddress);
 
-    void CreateLocalNetPlayer(int networkId, C3DVector position);
+    void CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY);
+	void SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
+
     void CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void CreateNetPlayers(BitStream& bs);
+    void SetupNetPlayer();
+    void SetupNetPlayers(int networkId);
 
     void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
     void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
@@ -30,7 +34,7 @@ public:
     void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs);
-	void ReceiveNetPlayerWeapons(int networkId, SLNet::BitStream& bs);
+    void ReceiveNetPlayerWeapons(int networkId, long weapon_def_index);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -49,14 +53,12 @@ private:
     std::unique_ptr<LocalNetPlayer> localNetPlayer;
     std::vector<std::unique_ptr<NetPlayer>> netPlayers;
 
-    void TeleportClientToHostOnConnect(int networkId, C3DVector position);
-
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
 
     void RefreshNetPlayerMorph(CTCHeroMorph* heroMorph, int networkId);
 
-    void BroadcastCreateLocalNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
+    void BroadcastCreateLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);
 
@@ -81,8 +83,8 @@ private:
 
     void BroadcastDestroyNetPlayer(int networkId);
 
-    CThingPlayerCreature* GetCreatureFromNetworkId(int networkId) const;
-    CThingPlayerCreature* GetCreatureFromLocalId(int localId) const;
+    CThingPlayerCreature* GetPlayerCreatureFromNetworkId(int networkId) const;
+    CThingPlayerCreature* GetPlayerCreatureFromLocalId(int localId) const;
 
     int GetFreeLocalId();
     int GetLocalIdFromNetworkId(int networkId) const;

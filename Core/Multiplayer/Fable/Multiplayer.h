@@ -10,7 +10,10 @@ public:
 	static Multiplayer& GetInstance();
 	Multiplayer();
 
+	static bool IsActive();
+
 private:
 	SDK& sdk;
-	NetMainGameComponent& net;
+	std::unique_ptr<Network> network;
+	std::unique_ptr<NetMainGameComponent> netMainGameComponent;
 };

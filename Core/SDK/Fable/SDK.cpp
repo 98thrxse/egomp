@@ -17,8 +17,6 @@ void* SDK::GameMalloc(unsigned int size)
 	return OGameMalloc(size);
 }
 
-C3DVector* SDK::GOverridePlayerStartPos = (C3DVector*)(0x13B8650);
-
 SDK::SDK()
 {
 	INIT_HOOKS();
@@ -74,6 +72,7 @@ SDK::SDK()
 	CBaseObject::Hook();
 	CThingObject::Hook();
 	CTCWeapon::Hook();
+	CThingHolySite::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

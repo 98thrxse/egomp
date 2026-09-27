@@ -12,6 +12,8 @@
 #include "InterfaceType.h"
 #include "Base.h"
 
+extern bool (*IsMultiplayer)();
+
 class CThing
 {
 public:
@@ -21,6 +23,12 @@ public:
     CTCPhysicsBase* PhysicsTC;
     char pad2[0x28];
     uint16_t DefGlobalIndex;
+
+    bool IsInLimbo();
+    void SetInLimbo(bool on);
+
+    bool IsToKillOnLevelUnload();
+    void SetToKillOnLevelUnload(bool on);
 
     C3DVector* GetPos();
     CDefString* GetDefName(CDefString* result);
@@ -38,4 +46,10 @@ private:
 
     static CDefString* (__thiscall* OGetDefName)(CThing*, CDefString*);
     static CDefString* __fastcall HGetDefName(CThing* _this, void* _EDX, CDefString* result);
+
+    static void (__thiscall* OSetToKillOnLevelUnload)(CThing*, bool);
+    static void __fastcall HSetToKillOnLevelUnload(CThing* _this, void* _EDX, bool on);
+
+    static void(__thiscall* OSetInLimbo)(CThing*, bool);
+    static void __fastcall HSetInLimbo(CThing* _this, void* _EDX, bool on);
 };

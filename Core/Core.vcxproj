@@ -147,6 +147,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.h" />
     <ClInclude Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.h" />
+    <ClInclude Include="Multiplayer\Fable\NetWorld\NetWorld.h" />
     <ClInclude Include="Multiplayer\Network\NetworkMessages.h" />
     <ClInclude Include="Multiplayer\Network\Network.h" />
     <ClInclude Include="Multiplayer\Fable\LocalNetPlayer\LocalNetPlayer.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="SDK\Fable\Thing.h" />
     <ClInclude Include="SDK\Fable\ThingCreatureBase.h" />
     <ClInclude Include="SDK\Fable\ThingGameObject.h" />
+    <ClInclude Include="SDK\Fable\ThingHolySite.h" />
     <ClInclude Include="SDK\Fable\ThingObject.h" />
     <ClInclude Include="SDK\Fable\ThingPhysical.h" />
     <ClInclude Include="SDK\Fable\ThingPlayerCreature.h" />
@@ -227,6 +229,10 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentPlayerManager.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentSession.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentUtils.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentWorld.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAppearance.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerExperience.cpp" />
@@ -237,6 +243,8 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerStats.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerUtils.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerWeapons.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorld.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldSession.cpp" />
     <ClCompile Include="Multiplayer\Network\Network.cpp" />
     <ClCompile Include="Multiplayer\Fable\LocalNetPlayer\LocalNetPlayer.cpp" />
     <ClCompile Include="Multiplayer\Fable\Multiplayer.cpp" />
@@ -266,6 +274,7 @@
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
+    <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />
     <ClCompile Include="SDK\Fable\DefPointeeBase.cpp" />
     <ClCompile Include="SDK\Fable\DefPointer.cpp" />

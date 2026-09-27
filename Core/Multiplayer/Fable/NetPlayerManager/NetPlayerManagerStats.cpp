@@ -95,7 +95,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
         network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), LOW_PRIORITY, RELIABLE_ORDERED);
     }
 
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
         return;
@@ -189,7 +189,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 
 void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerStats]: !creature" << std::endl;
@@ -209,8 +209,24 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 
     heroStats->AddFrameUpdateCallback(
         "StatsFrameUpdate" + std::to_string(networkId),
-        [this, networkId, creature, heroStats, lastSendTime]() mutable
+        [this, networkId, lastSendTime]() mutable
         {
+            CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+            if (!creature) {
+                std::cout << "[NetPlayerManager::StatsFrameUpdate]: !creature" << std::endl;
+                return;
+            }
+
+            CTCHeroStats* heroStats = reinterpret_cast<CTCHeroStats*>(
+                reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_STATS)
+                );
+
+            if (!heroStats) {
+                std::cout << "[NetPlayerManager::StatsFrameUpdate]: !heroStats" << std::endl;
+                return;
+            }
+
             auto now = std::chrono::steady_clock::now();
 
             if (now - lastSendTime < std::chrono::milliseconds(200))
@@ -350,7 +366,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 
 void NetPlayerManager::BroadcastNetPlayerStats(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {

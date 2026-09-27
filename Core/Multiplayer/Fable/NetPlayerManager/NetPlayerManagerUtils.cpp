@@ -1,26 +1,26 @@
 #include "NetPlayerManager.h"
 
-CThingPlayerCreature* NetPlayerManager::GetCreatureFromNetworkId(int networkId) const
+CThingPlayerCreature* NetPlayerManager::GetPlayerCreatureFromNetworkId(int networkId) const
 {
     int localId = GetLocalIdFromNetworkId(networkId);
     CPlayer* player = playerManager->GetPlayer(localId);
 
     if (!player)
     {
-        std::cout << "[NetPlayerManager::GetCreatureFromNetworkId]: !player: " << networkId << std::endl;
+        std::cout << "[NetPlayerManager::GetPlayerCreatureFromNetworkId]: !player: " << networkId << std::endl;
         return nullptr;
     }
 
     return player->GetPControlledCreature();
 }
 
-CThingPlayerCreature* NetPlayerManager::GetCreatureFromLocalId(int localId) const
+CThingPlayerCreature* NetPlayerManager::GetPlayerCreatureFromLocalId(int localId) const
 {
     CPlayer* player = playerManager->GetPlayer(localId);
 
     if (!player)
     {
-        std::cout << "[NetPlayerManager::GetCreatureFromLocalId]: !player: " << localId << std::endl;
+        std::cout << "[NetPlayerManager::GetPlayerCreatureFromLocalId]: !player: " << localId << std::endl;
         return nullptr;
     }
 

@@ -89,7 +89,7 @@ void NetPlayerManager::ReceiveNetPlayerAppearance(int networkId, SLNet::BitStrea
         );
     }
 
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
         return;
@@ -133,7 +133,7 @@ void NetPlayerManager::ReceiveNetPlayerAppearance(int networkId, SLNet::BitStrea
 
 void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {
@@ -158,8 +158,29 @@ void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
 
     appearanceModifiers->AddFrameUpdateCallback(
         "AppearanceFrameUpdate" + std::to_string(networkId),
-        [this, networkId, appearanceModifiers, lastSendTime]() mutable
+        [this, networkId, lastSendTime]() mutable
         {
+            CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+            if (!creature)
+            {
+                std::cout << "[NetPlayerManager::AppearanceFrameUpdate]: !creature" << std::endl;
+                return;
+            }
+
+            CTCHeroAttachableAppearanceModifiers* appearanceModifiers =
+                reinterpret_cast<CTCHeroAttachableAppearanceModifiers*>(
+                    reinterpret_cast<CThing*>(creature)->GetTC(
+                        TCI_HERO_ATTACHABLE_APPEARANCE_MODIFIERS
+                    )
+                    );
+
+            if (!appearanceModifiers)
+            {
+                std::cout << "[NetPlayerManager::AppearanceFrameUpdate]: !appearanceModifiers" << std::endl;
+                return;
+            }
+
             auto now = std::chrono::steady_clock::now();
 
             if (now - lastSendTime < std::chrono::milliseconds(200))
@@ -245,7 +266,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
 
 void NetPlayerManager::BroadcastNetPlayerAppearance(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
     {

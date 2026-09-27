@@ -1,5 +1,7 @@
 #include "Multiplayer.h"
 
+bool (*IsMultiplayer)() = &Multiplayer::IsActive;
+
 Multiplayer& Multiplayer::GetInstance()
 {
     static Multiplayer instance;
@@ -7,7 +9,14 @@ Multiplayer& Multiplayer::GetInstance()
 }
 
 Multiplayer::Multiplayer()
-    : sdk(SDK::GetInstance()),
-    net(NetMainGameComponent::GetInstance())
+    : sdk(SDK::GetInstance())
 {
+    netMainGameComponent =
+        std::make_unique<NetMainGameComponent>(network);
+}
+
+bool Multiplayer::IsActive()
+{
+    Multiplayer& multiplayer = GetInstance();
+    return multiplayer.network && multiplayer.network->IsActive();
 }

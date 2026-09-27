@@ -2,7 +2,7 @@
 
 void NetPlayerManager::ApplyNetPlayerMovement(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::ApplyNetPlayerMovement]: !creature" << std::endl;
@@ -10,7 +10,7 @@ void NetPlayerManager::ApplyNetPlayerMovement(int networkId)
     }
 
     creature->AddResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId), [this, networkId]() {
-        CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
         
         if (!creature) {
             std::cout << "[NetPlayerManager::AddResolveMovementAccelerationCallback]: !creature" << std::endl;
@@ -34,7 +34,7 @@ void NetPlayerManager::ApplyNetPlayerMovement(int networkId)
 
                 float driftSq = (dx * dx) + (dy * dy) + (dz * dz);
 
-                if (driftSq > 1)
+                if (driftSq > 0.5f)
                 {
                     CTCPhysicsBase* physicsTC = thing->PhysicsTC;
                     physicsTC->SetPosition(remotePosition);
@@ -46,7 +46,7 @@ void NetPlayerManager::ApplyNetPlayerMovement(int networkId)
 
 void NetPlayerManager::ApplyNetPlayerRotation(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::ApplyNetPlayerRotation]: !creature" << std::endl;
@@ -54,7 +54,7 @@ void NetPlayerManager::ApplyNetPlayerRotation(int networkId)
     }
 
     creature->AddResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId), [this, networkId]() {
-        CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
         if (!creature) {
             std::cout << "[NetPlayerManager::AddResolveMovementAccelerationCallback]: !creature" << std::endl;
@@ -82,7 +82,7 @@ void NetPlayerManager::ApplyNetPlayerRotation(int networkId)
 
 void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerMovement]: !creature" << std::endl;
@@ -91,7 +91,14 @@ void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
 
     auto lastSendTime = std::chrono::steady_clock::now();
 
-    creature->AddResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId), [this, networkId, creature, lastSendTime]() mutable {
+    creature->AddResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId), [this, networkId, lastSendTime]() mutable {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+        if (!creature) {
+            std::cout << "[NetPlayerManager::ResolveMovementAcceleration]: !creature" << std::endl;
+            return;
+        }
+        
         auto now = std::chrono::steady_clock::now();
 
         if (now - lastSendTime < std::chrono::milliseconds(50))
@@ -124,7 +131,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
 
 void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
 {
-    CThingPlayerCreature* creature = GetCreatureFromNetworkId(networkId);
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature) {
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerRotation]: !creature" << std::endl;
@@ -133,7 +140,14 @@ void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
 
     auto lastSendTime = std::chrono::steady_clock::now();
 
-    creature->AddResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId), [this, networkId, creature, lastSendTime]() mutable {
+    creature->AddResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId), [this, networkId, lastSendTime]() mutable {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+        if (!creature) {
+            std::cout << "[NetPlayerManager::ResolveFacingDirection]: !creature" << std::endl;
+            return;
+        }
+        
         auto now = std::chrono::steady_clock::now();
 
         if (now - lastSendTime < std::chrono::milliseconds(50))
