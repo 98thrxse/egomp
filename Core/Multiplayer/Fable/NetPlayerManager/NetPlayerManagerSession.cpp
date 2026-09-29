@@ -2,21 +2,14 @@
 
 void NetPlayerManager::ConnectionNotification(int networkId, SystemAddress systemAddress)
 {
-    int localId = localNetPlayer->GetLocalId();
-    CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(localId);
+    C3DVector position =
+        world->GetSaveGameMarkerPos();
 
-    if (!creature) {
-        std::cout << "[NetPlayerManager::ConnectionNotification]: !creature" << std::endl;
-        return;
-    }
-
-    C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
-
-    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
-    float facingAngleXY = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
+    float facingAngleXY =
+        world->GetSaveGameMarkerAngleXY();
 
     SLNet::BitStream bs;
-    bs.Write((SLNet::MessageID)ID_CREATE_LOCAL_NET_PLAYER);
+    bs.Write((SLNet::MessageID)ID_LOCAL_NET_PLAYER_CREATE);
     bs.Write(networkId);
     bs.Write(position);
     bs.Write(facingAngleXY);

@@ -21,52 +21,56 @@ void Network::Update()
 			HandleConnectionNotification(packet);
 			break;
 
-		case ID_CREATE_LOCAL_NET_PLAYER:
+		case ID_LOCAL_NET_PLAYER_CREATE:
 			HandleCreateLocalNetPlayer(packet);
 			break;
 
-		case ID_CREATE_NET_PLAYER:
+		case ID_NET_PLAYER_CREATE:
 			HandlePacket(packet, createNetPlayerCallbacks);
 			break;
 
-		case ID_CREATE_NET_PLAYERS:
+		case ID_NET_PLAYERS_CREATE:
 			HandlePacket(packet, createNetPlayersCallbacks);
 			break;
 
 		case ID_PLAYER_MOVEMENT:
-			HandlePacket(packet, netPlayerMovementCallbacks);
+			HandlePacket(packet, playerMovementCallbacks);
 			break;
 
 		case ID_PLAYER_ROTATION:
-			HandlePacket(packet, netPlayerRotationCallbacks);
+			HandlePacket(packet, playerRotationCallbacks);
 			break;
 
 		case ID_PLAYER_STATS:
-			HandlePacket(packet, netPlayerStatsCallbacks);
+			HandlePacket(packet, playerStatsCallbacks);
 			break;
 
 		case ID_PLAYER_APPEARANCE:
-			HandlePacket(packet, netPlayerAppearanceCallbacks);
+			HandlePacket(packet, playerAppearanceCallbacks);
 			break;
 
 		case ID_PLAYER_EXPERIENCE:
-			HandlePacket(packet, netPlayerExperienceCallbacks);
+			HandlePacket(packet, playerExperienceCallbacks);
 			break;
 
 		case ID_PLAYER_MORPH:
-			HandlePacket(packet, netPlayerMorphCallbacks);
+			HandlePacket(packet, playerMorphCallbacks);
 			break;
 
 		case ID_PLAYER_WEAPONS:
-			HandlePacket(packet, netPlayerWeaponsCallbacks);
+			HandlePacket(packet, playerWeaponsCallbacks);
 			break;
 
 		case ID_PLAYER_ACTION:
-			HandlePacket(packet, netPlayerActionCallbacks);
+			HandlePacket(packet, playerActionCallbacks);
 			break;
 
-		case ID_DESTROY_NET_PLAYER:
+		case ID_NET_PLAYER_DESTROY:
 			HandlePacket(packet, destroyNetPlayerCallbacks);
+			break;
+
+		case ID_WORLD_SYNC:
+			HandlePacket(packet, syncWorldCallbacks);
 			break;
 
 		case ID_DISCONNECTION_NOTIFICATION:

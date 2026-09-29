@@ -27,6 +27,17 @@ CThingPlayerCreature* NetPlayerManager::GetPlayerCreatureFromLocalId(int localId
     return player->GetPControlledCreature();
 }
 
+int NetPlayerManager::GetDefGlobalIndexFromName(CThing* thing) const
+{
+    CDefString def;
+    CCharString defName("");
+
+    thing->GetDefName(&def);
+    defStringTable->GetString(&defName, def.TablePos);
+
+    return definitionManager->GetDefGlobalIndexFromName(&defName);
+}
+
 int NetPlayerManager::GetFreeLocalId()
 {
     for (int localId = 0;; ++localId)

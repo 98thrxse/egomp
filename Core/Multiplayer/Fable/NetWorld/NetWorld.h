@@ -8,13 +8,11 @@
 class NetWorld
 {
 public:
-    C3DVector RegionLoadStartPos;
-    float RegionLoadStartAngleXY;
-
     NetWorld(Network* network, CMainGameComponent* mainGameComponent);
     ~NetWorld();
 
     void ConnectionNotification(int networkId, SystemAddress systemAddress);
+    void SyncWorld(BitStream& bs);
 
 private:
     Network* network;

@@ -3,6 +3,11 @@
 void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY)
 {
     int localId = GetFreeLocalId();
+
+    localNetPlayer = std::make_unique<LocalNetPlayer>();
+    localNetPlayer->SetLocalId(localId);
+    localNetPlayer->SetNetworkId(networkId);
+
     CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(localId);
 
     if (!creature)
@@ -11,12 +16,6 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position, f
         return;
     }
 
-    if (!localNetPlayer)
-        localNetPlayer = std::make_unique<LocalNetPlayer>();
-
-    localNetPlayer->SetLocalId(localId);
-    localNetPlayer->SetNetworkId(networkId);
-
 	SetupLocalNetPlayer(networkId, creature, position, facingAngleXY);
 }
 
@@ -24,8 +23,8 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
 {
     if (networkId != 0)
     {
-        world->SetAsLoadingRegion(position, facingAngleXY, false, false, false);
-        BroadcastCreateLocalNetPlayer(networkId, creature, position, facingAngleXY);
+        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
+        BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
 
     BroadcastLocalNetPlayerMovement(networkId);
@@ -66,7 +65,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
     ApplyNetPlayerMovement(networkId);
     ApplyNetPlayerRotation(networkId);
 
-    if (localNetPlayer->GetNetworkId() == 0)
+    if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
         BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
         BroadcastCreateNetPlayers(networkId);
@@ -273,7 +272,7 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         }
     }
 
-    if (localNetPlayer->GetNetworkId() == 0)
+    if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
         BroadcastDestroyNetPlayer(networkId);
 }
 
@@ -286,48 +285,32 @@ void NetPlayerManager::DestroyNetPlayers()
     }
 }
 
-void NetPlayerManager::BroadcastCreateLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY)
-{
-        CDefString def;
-        CCharString defName("");
-
-        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
-        CDefStringTable::Get()->GetString(&defName, def.TablePos);
-
-        CDefinitionManager* definitionManager = CDefinitionManager::Get();
-        int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
-
-        SLNet::BitStream bsOut;
-        bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
-        bsOut.Write(networkId);
-        bsOut.Write(defGlobalIndex);
-        bsOut.Write(position);
-        bsOut.Write(facingAngleXY);
-
-        network->SendToHost((const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
-}
-
 void NetPlayerManager::BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
 {
-    SLNet::BitStream bsOut;
-    bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYER);
-    bsOut.Write(networkId);
-    bsOut.Write(defGlobalIndex);
-    bsOut.Write(position);
-	bsOut.Write(facingAngleXY);
+    SLNet::BitStream bs;
+    bs.Write((SLNet::MessageID)ID_NET_PLAYER_CREATE);
+    bs.Write(networkId);
+    bs.Write(defGlobalIndex);
+    bs.Write(position);
+    bs.Write(facingAngleXY);
 
-    network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
+    if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+    {
+        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed());
+    }
+    else
+    {
+        network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed());
+    }
 }
 
 void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 {
     SLNet::BitStream bsOut;
-    bsOut.Write((SLNet::MessageID)ID_CREATE_NET_PLAYERS);
+    bsOut.Write((SLNet::MessageID)ID_NET_PLAYERS_CREATE);
 
     int count = (int)netPlayers.size() + (localNetPlayer ? 1 : 0);
     bsOut.Write(count);
-
-    CDefinitionManager* definitionManager = CDefinitionManager::Get();
 
     if (localNetPlayer)
     {
@@ -340,14 +323,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             return;
         }
 
-        CDefString def;
-        CCharString defName("");
-
-        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
-        CDefStringTable::Get()->GetString(&defName, def.TablePos);
-
-        int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
-
+        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
         C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
@@ -370,14 +346,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             continue;
         }
 
-        CDefString def;
-        CCharString defName("");
-
-        reinterpret_cast<CThing*>(creature)->GetDefName(&def);
-        CDefStringTable::Get()->GetString(&defName, def.TablePos);
-
-        int defGlobalIndex = definitionManager->GetDefGlobalIndexFromName(&defName);
-
+        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
         C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
@@ -395,7 +364,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 void NetPlayerManager::BroadcastDestroyNetPlayer(int networkId)
 {
     SLNet::BitStream bsOut;
-    bsOut.Write((SLNet::MessageID)ID_DESTROY_NET_PLAYER);
+    bsOut.Write((SLNet::MessageID)ID_NET_PLAYER_DESTROY);
     bsOut.Write(networkId);
 
     network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());

@@ -42,18 +42,20 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayersCallbacks;
 
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerMovementCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerRotationCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerStatsCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerAppearanceCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerExperienceCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerMorphCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerWeaponsCallbacks;
-	std::map<std::string, std::function<void(BitStream&)>> netPlayerActionCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerMovementCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerRotationCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerStatsCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerAppearanceCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerExperienceCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerMorphCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerWeaponsCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerActionCallbacks;
 
 	std::map<std::string, std::function<void()>> destroyLocalNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> destroyNetPlayerCallbacks;
 	std::map<std::string, std::function<void()>> destroyNetPlayersCallbacks;
+
+	std::map<std::string, std::function<void(BitStream&)>> syncWorldCallbacks;
 
 	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
 	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
@@ -104,29 +106,29 @@ public:
 	void AddCreateNetPlayersCallback(const std::string& id, std::function<void(BitStream&)> cb) { createNetPlayersCallbacks[id] = cb; }
 	void RemoveCreateNetPlayersCallback(const std::string& id) { createNetPlayersCallbacks.erase(id); }
 
-	void AddNetPlayerMovementCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerMovementCallbacks[id] = cb; }
-	void RemoveNetPlayerMovementCallback(const std::string& id) { netPlayerMovementCallbacks.erase(id); }
+	void AddPlayerMovementCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerMovementCallbacks[id] = cb; }
+	void RemovePlayerMovementCallback(const std::string& id) { playerMovementCallbacks.erase(id); }
 
-	void AddNetPlayerRotationCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerRotationCallbacks[id] = cb; }
-	void RemoveNetPlayerRotationCallback(const std::string& id) { netPlayerRotationCallbacks.erase(id); }
+	void AddPlayerRotationCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerRotationCallbacks[id] = cb; }
+	void RemovePlayerRotationCallback(const std::string& id) { playerRotationCallbacks.erase(id); }
 
-	void AddNetPlayerStatsCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerStatsCallbacks[id] = cb; }
-	void RemoveNetPlayerStatsCallback(const std::string& id) { netPlayerStatsCallbacks.erase(id); }
+	void AddPlayerStatsCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerStatsCallbacks[id] = cb; }
+	void RemovePlayerStatsCallback(const std::string& id) { playerStatsCallbacks.erase(id); }
 	
-	void AddNetPlayerAppearanceCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerAppearanceCallbacks[id] = cb; }
-	void RemoveNetPlayerAppearanceCallback(const std::string& id) { netPlayerAppearanceCallbacks.erase(id); }
+	void AddPlayerAppearanceCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerAppearanceCallbacks[id] = cb; }
+	void RemovePlayerAppearanceCallback(const std::string& id) { playerAppearanceCallbacks.erase(id); }
 
-	void AddNetPlayerExperienceCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerExperienceCallbacks[id] = cb; }
-	void RemoveNetPlayerExperienceCallback(const std::string& id) { netPlayerExperienceCallbacks.erase(id); }
+	void AddPlayerExperienceCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerExperienceCallbacks[id] = cb; }
+	void RemovePlayerExperienceCallback(const std::string& id) { playerExperienceCallbacks.erase(id); }
 	
-	void AddNetPlayerMorphCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerMorphCallbacks[id] = cb; }
-	void RemoveNetPlayerMorphCallback(const std::string& id) { netPlayerMorphCallbacks.erase(id); }
+	void AddPlayerMorphCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerMorphCallbacks[id] = cb; }
+	void RemovePlayerMorphCallback(const std::string& id) { playerMorphCallbacks.erase(id); }
 
-	void AddNetPlayerWeaponsCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerWeaponsCallbacks[id] = cb; }
-	void RemoveNetPlayerWeaponsCallback(const std::string& id) { netPlayerWeaponsCallbacks.erase(id); }
+	void AddPlayerWeaponsCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerWeaponsCallbacks[id] = cb; }
+	void RemovePlayerWeaponsCallback(const std::string& id) { playerWeaponsCallbacks.erase(id); }
 
-	void AddNetPlayerActionCallback(const std::string& id, std::function<void(BitStream&)> cb) { netPlayerActionCallbacks[id] = cb; }
-	void RemoveNetPlayerActionCallback(const std::string& id) { netPlayerActionCallbacks.erase(id); }
+	void AddPlayerActionCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerActionCallbacks[id] = cb; }
+	void RemovePlayerActionCallback(const std::string& id) { playerActionCallbacks.erase(id); }
 
 	void AddDestroyLocalNetPlayerCallback(const std::string& id, std::function<void()> cb) { destroyLocalNetPlayerCallbacks[id] = cb; }
 	void RemoveDestroyLocalNetPlayerCallback(const std::string& id) { destroyLocalNetPlayerCallbacks.erase(id); }
@@ -136,6 +138,9 @@ public:
 
 	void AddDestroyNetPlayersCallback(const std::string& id, std::function<void()> cb) { destroyNetPlayersCallbacks[id] = cb; }
 	void RemoveDestroyNetPlayersCallback(const std::string& id) { destroyNetPlayersCallbacks.erase(id); }
+
+	void AddSyncWorldCallback(const std::string& id, std::function<void(BitStream&)> cb) { syncWorldCallbacks[id] = cb; }
+	void RemoveSyncWorldCallback(const std::string& id) { syncWorldCallbacks.erase(id); }
 
 	void AddDisconnectionNotificationCallback(const std::string& id, std::function<void(int)> cb) { disconnectionNotificationCallbacks[id] = cb; }
 	void RemoveDisconnectionNotificationCallback(const std::string& id) { disconnectionNotificationCallbacks.erase(id); }

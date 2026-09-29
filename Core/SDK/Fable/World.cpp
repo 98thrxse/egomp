@@ -76,6 +76,16 @@ void __fastcall CWorld::HEAControlledCreatureStartSneaking(CWorld* _this, void* 
     OEAControlledCreatureStartSneaking(_this, event);
 }
 
+C3DVector CWorld::GetSaveGameMarkerPos()
+{
+    return *(C3DVector*)((char*)this + 0x141);
+}
+
+float CWorld::GetSaveGameMarkerAngleXY()
+{
+    return *(float*)((char*)this + 0x150);
+}
+
 void CWorld::Hook()
 {
     ADD_HOOK(0x00629260, HEAMoveHeroToRegion, OEAMoveHeroToRegion);

@@ -46,8 +46,11 @@ private:
     CMainGameComponent* mainGameComponent;
     CPlayerManager* playerManager = mainGameComponent->GetPlayerManager();
     CWorld* world = mainGameComponent->GetWorld();
-    CDisplayEngine* displayEngine = mainGameComponent->GetDisplayEngine();
 
+    CDefinitionManager* definitionManager = CDefinitionManager::Get();
+    CDefStringTable* defStringTable = CDefStringTable::Get();
+
+    CDisplayEngine* displayEngine = mainGameComponent->GetDisplayEngine();
     CIEngine* iengine = displayEngine->Get3DEngine();
 
     std::unique_ptr<LocalNetPlayer> localNetPlayer;
@@ -58,7 +61,6 @@ private:
 
     void RefreshNetPlayerMorph(CTCHeroMorph* heroMorph, int networkId);
 
-    void BroadcastCreateLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);
 
@@ -85,6 +87,8 @@ private:
 
     CThingPlayerCreature* GetPlayerCreatureFromNetworkId(int networkId) const;
     CThingPlayerCreature* GetPlayerCreatureFromLocalId(int localId) const;
+
+    int GetDefGlobalIndexFromName(CThing* thing) const;
 
     int GetFreeLocalId();
     int GetLocalIdFromNetworkId(int networkId) const;

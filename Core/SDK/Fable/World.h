@@ -29,11 +29,10 @@ public:
         WAITING_FOR_FADE_IN = 0x9
     };
 
-    char pad[0x104];
+    char pad[0x198];
 
-    ERegionLoadStatus RegionLoadStatus;
-    C3DVector RegionLoadStartPos;
-    float RegionLoadStartAngleXY;
+    C3DVector GetSaveGameMarkerPos();
+    float GetSaveGameMarkerAngleXY();
 
     CWorldMap* GetWorldMap();
 

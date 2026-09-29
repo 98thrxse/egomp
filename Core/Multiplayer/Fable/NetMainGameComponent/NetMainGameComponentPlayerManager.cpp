@@ -49,7 +49,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Motion */
-    network->AddNetPlayerMovementCallback("NetPlayerMovement", [this](BitStream& bs) {
+    network->AddPlayerMovementCallback("PlayerMovement", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector remotePosition = {};
         C3DVector movementAcceleration = {};
@@ -61,7 +61,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         netPlayerManager->ReceiveNetPlayerMovement(networkId, remotePosition, movementAcceleration);
         });
 
-    network->AddNetPlayerRotationCallback("NetPlayerRotation", [this](BitStream& bs) {
+    network->AddPlayerRotationCallback("PlayerRotation", [this](BitStream& bs) {
         int networkId = -1;
         C3DVector up = {};
         C3DVector forward = {};
@@ -74,7 +74,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Stats */
-    network->AddNetPlayerStatsCallback("NetPlayerStats", [this](BitStream& bs) {
+    network->AddPlayerStatsCallback("PlayerStats", [this](BitStream& bs) {
         int networkId = -1;
 
         bs.Read(networkId);
@@ -83,7 +83,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Appearance */
-    network->AddNetPlayerAppearanceCallback("NetPlayerAppearance", [this](BitStream& bs) {
+    network->AddPlayerAppearanceCallback("PlayerAppearance", [this](BitStream& bs) {
         int networkId = -1;
 
         bs.Read(networkId);
@@ -92,7 +92,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Experience */
-    network->AddNetPlayerExperienceCallback("NetPlayerExperience", [this](BitStream& bs) {
+    network->AddPlayerExperienceCallback("PlayerExperience", [this](BitStream& bs) {
         int networkId = -1;
 
         bs.Read(networkId);
@@ -101,7 +101,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Morph */
-    network->AddNetPlayerMorphCallback("NetPlayerMorph", [this](BitStream& bs) {
+    network->AddPlayerMorphCallback("PlayerMorph", [this](BitStream& bs) {
         int networkId = -1;
 
         bs.Read(networkId);
@@ -110,7 +110,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Weapons */
-    network->AddNetPlayerWeaponsCallback("NetPlayerWeapons", [this](BitStream& bs) {
+    network->AddPlayerWeaponsCallback("PlayerWeapons", [this](BitStream& bs) {
         int networkId = -1;
         long weapon_def_index = 0;
 
@@ -121,7 +121,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 
 	/* Actions */
-    network->AddNetPlayerActionCallback("NetPlayerAction", [this](BitStream& bs) {
+    network->AddPlayerActionCallback("PlayerActions", [this](BitStream& bs) {
         int networkId = -1;
         uintptr_t actionOffset = 0;
 
@@ -144,24 +144,24 @@ void NetMainGameComponent::ClearPlayerManagerCallbacks()
     network->RemoveDestroyNetPlayersCallback("DestroyNetPlayers");
 
 	/* Motion */
-    network->RemoveNetPlayerMovementCallback("NetPlayerMovement");
-    network->RemoveNetPlayerRotationCallback("NetPlayerRotation");
+    network->RemovePlayerMovementCallback("PlayerMovement");
+    network->RemovePlayerRotationCallback("PlayerRotation");
 
 	/* Stats */
-    network->RemoveNetPlayerStatsCallback("NetPlayerStats");
+    network->RemovePlayerStatsCallback("PlayerStats");
 
 	/* Appearance */
-    network->RemoveNetPlayerAppearanceCallback("NetPlayerAppearance");
+    network->RemovePlayerAppearanceCallback("PlayerAppearance");
 
 	/* Experience */
-    network->RemoveNetPlayerExperienceCallback("NetPlayerExperience");
+    network->RemovePlayerExperienceCallback("PlayerExperience");
 
 	/* Morph */
-    network->RemoveNetPlayerMorphCallback("NetPlayerMorph");
+    network->RemovePlayerMorphCallback("PlayerMorph");
 
 	/* Weapons */
-    network->RemoveNetPlayerWeaponsCallback("NetPlayerWeapons");
+    network->RemovePlayerWeaponsCallback("PlayerWeapons");
 
 	/* Actions */
-    network->RemoveNetPlayerActionCallback("NetPlayerAction");
+    network->RemovePlayerActionCallback("PlayerActions");
 }
