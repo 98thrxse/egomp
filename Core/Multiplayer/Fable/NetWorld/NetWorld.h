@@ -11,8 +11,11 @@ public:
     NetWorld(Network* network, CMainGameComponent* mainGameComponent);
     ~NetWorld();
 
-    void ConnectionNotification(int networkId, SystemAddress systemAddress);
-    void SyncWorld(BitStream& bs);
+    void LoadRegion(C3DVector const& position,
+        float facingAngleXY,
+        bool teleporter,
+        bool duringCutScenes,
+        bool door);
 
 private:
     Network* network;

@@ -33,6 +33,7 @@ public:
 
     C3DVector GetSaveGameMarkerPos();
     float GetSaveGameMarkerAngleXY();
+    CWorld::ERegionLoadStatus GetRegionLoadStatus();
 
     CWorldMap* GetWorldMap();
 

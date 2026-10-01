@@ -288,7 +288,7 @@ void NetPlayerManager::DestroyNetPlayers()
 void NetPlayerManager::BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
 {
     SLNet::BitStream bs;
-    bs.Write((SLNet::MessageID)ID_NET_PLAYER_CREATE);
+    bs.Write((SLNet::MessageID)ID_PLAYER_CREATE);
     bs.Write(networkId);
     bs.Write(defGlobalIndex);
     bs.Write(position);
@@ -307,7 +307,7 @@ void NetPlayerManager::BroadcastCreateNetPlayer(int networkId, int defGlobalInde
 void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 {
     SLNet::BitStream bsOut;
-    bsOut.Write((SLNet::MessageID)ID_NET_PLAYERS_CREATE);
+    bsOut.Write((SLNet::MessageID)ID_PLAYERS_CREATE);
 
     int count = (int)netPlayers.size() + (localNetPlayer ? 1 : 0);
     bsOut.Write(count);
@@ -364,7 +364,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
 void NetPlayerManager::BroadcastDestroyNetPlayer(int networkId)
 {
     SLNet::BitStream bsOut;
-    bsOut.Write((SLNet::MessageID)ID_NET_PLAYER_DESTROY);
+    bsOut.Write((SLNet::MessageID)ID_PLAYER_DESTROY);
     bsOut.Write(networkId);
 
     network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed());

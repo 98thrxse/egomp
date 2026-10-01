@@ -54,7 +54,7 @@ bool Network::Host(unsigned short port)
 	SLNet::BitStream bs;
 	bs.Write(self.networkId);
 
-	for (const auto& pair : createLocalNetPlayerCallbacks)
+	for (const auto& pair : connectionNotificationCallbacks)
 	{
 		if (pair.second)
 			pair.second(bs);

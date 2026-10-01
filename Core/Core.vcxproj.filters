@@ -362,9 +362,6 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerSession.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Multiplayer\Network\NetworkUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -500,9 +497,6 @@
     <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldSession.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentSession.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -512,10 +506,10 @@
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentWorld.cpp">
+    <ClCompile Include="SDK\Fable\ThingHolySite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\Fable\ThingHolySite.cpp">
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

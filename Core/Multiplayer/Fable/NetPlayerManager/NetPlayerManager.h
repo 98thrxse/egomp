@@ -17,8 +17,6 @@ public:
     NetPlayerManager(Network* network, CMainGameComponent* mainGameComponent);
     ~NetPlayerManager();
 
-    void ConnectionNotification(int networkId, SystemAddress systemAddress);
-
     void CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY);
 	void SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
 

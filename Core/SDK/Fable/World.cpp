@@ -86,6 +86,11 @@ float CWorld::GetSaveGameMarkerAngleXY()
     return *(float*)((char*)this + 0x150);
 }
 
+CWorld::ERegionLoadStatus CWorld::GetRegionLoadStatus()
+{
+    return *(ERegionLoadStatus*)((char*)this + 0x104);
+}
+
 void CWorld::Hook()
 {
     ADD_HOOK(0x00629260, HEAMoveHeroToRegion, OEAMoveHeroToRegion);

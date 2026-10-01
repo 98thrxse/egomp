@@ -21,15 +21,11 @@ void Network::Update()
 			HandleConnectionNotification(packet);
 			break;
 
-		case ID_LOCAL_NET_PLAYER_CREATE:
-			HandleCreateLocalNetPlayer(packet);
-			break;
-
-		case ID_NET_PLAYER_CREATE:
+		case ID_PLAYER_CREATE:
 			HandlePacket(packet, createNetPlayerCallbacks);
 			break;
 
-		case ID_NET_PLAYERS_CREATE:
+		case ID_PLAYERS_CREATE:
 			HandlePacket(packet, createNetPlayersCallbacks);
 			break;
 
@@ -65,12 +61,8 @@ void Network::Update()
 			HandlePacket(packet, playerActionCallbacks);
 			break;
 
-		case ID_NET_PLAYER_DESTROY:
+		case ID_PLAYER_DESTROY:
 			HandlePacket(packet, destroyNetPlayerCallbacks);
-			break;
-
-		case ID_WORLD_SYNC:
-			HandlePacket(packet, syncWorldCallbacks);
 			break;
 
 		case ID_DISCONNECTION_NOTIFICATION:
@@ -97,10 +89,13 @@ void Network::HandleNewIncomingConnection(SLNet::Packet* packet)
 	std::cout << "[Network::Update] ID_NEW_INCOMING_CONNECTION: "
 		<< packet->systemAddress.ToString() << std::endl;
 
-	for (const auto& pair : newIncomingCallbacks)
+	int networkId = GetFreeNetworkId();
+	connections.push_back({ packet->systemAddress, networkId });
+
+	for (const auto& pair : newIncomingConnectionCallbacks)
 	{
 		if (pair.second)
-			pair.second();
+			pair.second(networkId, packet->systemAddress);
 	}
 }
 
@@ -118,21 +113,6 @@ void Network::HandleConnectionRequestAccepted(SLNet::Packet* packet)
 
 void Network::HandleConnectionNotification(SLNet::Packet* packet)
 {
-	int networkId = GetFreeNetworkId();
-	connections.push_back({ packet->systemAddress, networkId });
-
-	std::cout << "[Network::Update] ID_CONNECTION_NOTIFICATION: "
-		<< packet->systemAddress.ToString() << " - " << networkId << std::endl;
-
-	for (const auto& pair : connectionNotificationCallbacks)
-	{
-		if (pair.second)
-			pair.second(networkId, packet->systemAddress);
-	}
-}
-
-void Network::HandleCreateLocalNetPlayer(SLNet::Packet* packet)
-{
 	int networkId = -1;
 
 	SLNet::BitStream bs(packet->data, packet->length, false);
@@ -142,7 +122,10 @@ void Network::HandleCreateLocalNetPlayer(SLNet::Packet* packet)
 	self.networkId = networkId;
 	self.address = peer->GetMyBoundAddress();
 
-	for (const auto& pair : createLocalNetPlayerCallbacks)
+	std::cout << "[Network::Update] ID_CONNECTION_NOTIFICATION: "
+		<< packet->systemAddress.ToString() << " - " << networkId << std::endl;
+
+	for (const auto& pair : connectionNotificationCallbacks)
 	{
 		if (pair.second)
 		{

@@ -178,7 +178,6 @@ void NetMainGameComponent::Clear()
 void NetMainGameComponent::SetupNetworkCallbacks()
 {
 	SetupSessionCallbacks();
-	SetupWorldCallbacks();
 	SetupPlayerManagerCallbacks();
 }
 
@@ -186,7 +185,6 @@ void NetMainGameComponent::ClearNetworkCallbacks()
 {
     if (network) {
         ClearSessionCallbacks();
-		ClearWorldCallbacks();
         ClearPlayerManagerCallbacks();
     }
 }

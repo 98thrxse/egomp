@@ -3,18 +3,6 @@
 void NetMainGameComponent::SetupPlayerManagerCallbacks()
 {
     /* Lifecycle */
-    network->AddCreateLocalNetPlayerCallback("CreateLocalNetPlayer", [this](BitStream& bs) {
-        int networkId = -1;
-        C3DVector position = {};
-        float facingAngleXY = 0;
-
-        bs.Read(networkId);
-        bs.Read(position);
-        bs.Read(facingAngleXY);
-
-        netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
-        });
-
     network->AddCreateNetPlayerCallback("CreateNetPlayer", [this](BitStream& bs) {
         int networkId = -1;
         int defGlobalIndex = 0;
@@ -135,7 +123,6 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
 void NetMainGameComponent::ClearPlayerManagerCallbacks()
 {
 	/* Lifecycle */
-    network->RemoveCreateLocalNetPlayerCallback("CreateLocalNetPlayer");
     network->RemoveCreateNetPlayerCallback("CreateNetPlayer");
     network->RemoveCreateNetPlayersCallback("CreateNetPlayers");
 

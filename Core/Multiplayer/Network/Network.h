@@ -34,11 +34,10 @@ private:
 	Connection self;
 	std::vector<Connection> connections;
 
-	std::map<std::string, std::function<void()>> newIncomingCallbacks;
+	std::map<std::string, std::function<void(int, SystemAddress)>> newIncomingConnectionCallbacks;
 	std::map<std::string, std::function<void(SystemAddress)>> connectionRequestAcceptedCallbacks;
-	std::map<std::string, std::function<void(int, SystemAddress)>> connectionNotificationCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> connectionNotificationCallbacks;
 
-	std::map<std::string, std::function<void(BitStream&)>> createLocalNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayersCallbacks;
 
@@ -55,8 +54,6 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> destroyNetPlayerCallbacks;
 	std::map<std::string, std::function<void()>> destroyNetPlayersCallbacks;
 
-	std::map<std::string, std::function<void(BitStream&)>> syncWorldCallbacks;
-
 	std::map<std::string, std::function<void(int)>> disconnectionNotificationCallbacks;
 	std::map<std::string, std::function<void(int)>> connectionLostCallbacks;
 	std::map<std::string, std::function<void()>> connectionAttemptFailedCallbacks;
@@ -64,8 +61,6 @@ private:
 	void HandleNewIncomingConnection(SLNet::Packet* packet);
 	void HandleConnectionRequestAccepted(SLNet::Packet* packet);
 	void HandleConnectionNotification(SLNet::Packet* packet);
-
-	void HandleCreateLocalNetPlayer(SLNet::Packet* packet);
 
 	void HandleDisconnectionNotification(SLNet::Packet* packet);
 	void HandleConnectionLost(SLNet::Packet* packet);
@@ -88,17 +83,14 @@ public:
 
 	bool IsActive() const { return peer && peer->IsActive(); }
 
-	void AddNewIncomingCallback(const std::string& id, std::function<void()> cb) { newIncomingCallbacks[id] = cb; }
-	void RemoveNewIncomingCallback(const std::string& id) { newIncomingCallbacks.erase(id); }
+	void AddNewIncomingConnectionCallback(const std::string& id, std::function<void(int, SystemAddress)> cb) { newIncomingConnectionCallbacks[id] = cb; }
+	void RemoveNewIncomingConnectionCallback(const std::string& id) { newIncomingConnectionCallbacks.erase(id); }
 
 	void AddConnectionRequestAcceptedCallback(const std::string& id, std::function<void(SystemAddress)> cb) { connectionRequestAcceptedCallbacks[id] = cb; }
 	void RemoveConnectionRequestAcceptedCallback(const std::string& id) { connectionRequestAcceptedCallbacks.erase(id); }
 
-	void AddConnectionNotificationCallback(const std::string& id, std::function<void(int, SystemAddress)> cb) { connectionNotificationCallbacks[id] = cb; }
+	void AddConnectionNotificationCallback(const std::string& id, std::function<void(BitStream&)> cb) { connectionNotificationCallbacks[id] = cb; }
 	void RemoveConnectionNotificationCallback(const std::string& id) { connectionNotificationCallbacks.erase(id); }
-
-	void AddCreateLocalNetPlayerCallback(const std::string& id, std::function<void(BitStream&)> cb) { createLocalNetPlayerCallbacks[id] = cb; }
-	void RemoveCreateLocalNetPlayerCallback(const std::string& id) { createLocalNetPlayerCallbacks.erase(id); }
 
 	void AddCreateNetPlayerCallback(const std::string& id, std::function<void(BitStream&)> cb) { createNetPlayerCallbacks[id] = cb; }
 	void RemoveCreateNetPlayerCallback(const std::string& id) { createNetPlayerCallbacks.erase(id); }
@@ -138,9 +130,6 @@ public:
 
 	void AddDestroyNetPlayersCallback(const std::string& id, std::function<void()> cb) { destroyNetPlayersCallbacks[id] = cb; }
 	void RemoveDestroyNetPlayersCallback(const std::string& id) { destroyNetPlayersCallbacks.erase(id); }
-
-	void AddSyncWorldCallback(const std::string& id, std::function<void(BitStream&)> cb) { syncWorldCallbacks[id] = cb; }
-	void RemoveSyncWorldCallback(const std::string& id) { syncWorldCallbacks.erase(id); }
 
 	void AddDisconnectionNotificationCallback(const std::string& id, std::function<void(int)> cb) { disconnectionNotificationCallbacks[id] = cb; }
 	void RemoveDisconnectionNotificationCallback(const std::string& id) { disconnectionNotificationCallbacks.erase(id); }

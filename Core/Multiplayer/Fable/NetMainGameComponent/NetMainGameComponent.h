@@ -31,9 +31,6 @@ private:
 	void SetupSessionCallbacks();
 	void ClearSessionCallbacks();
 
-	void SetupWorldCallbacks();
-	void ClearWorldCallbacks();
-
 	void SetupPlayerManagerCallbacks();
 	void ClearPlayerManagerCallbacks();
 
@@ -48,6 +45,9 @@ private:
 	void HandleMainGameComponentPostInit();
 	void HandleMainGameComponentUpdate();
 	void HandleMainGameComponentShutdown();
+
+	void HandleNewIncomingConnection(int networkId, SystemAddress systemAddress);
+	void HandleConnectionNotification(BitStream& bs);
 
 	void ClearInputBuffer();
 };
