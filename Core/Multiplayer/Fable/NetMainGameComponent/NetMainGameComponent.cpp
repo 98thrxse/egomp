@@ -168,6 +168,7 @@ void NetMainGameComponent::Disconnect()
 
 void NetMainGameComponent::Clear()
 {
+    ClearSDKCallbacks();
     ClearNetworkCallbacks();
 
     netPlayerManager.reset();
@@ -177,14 +178,36 @@ void NetMainGameComponent::Clear()
 
 void NetMainGameComponent::SetupNetworkCallbacks()
 {
-	SetupSessionCallbacks();
-	SetupPlayerManagerCallbacks();
+	SetupNetworkSessionCallbacks();
+    SetupNetworkWorldCallbacks();
+    SetupNetworkPlayerManagerCallbacks();
 }
 
 void NetMainGameComponent::ClearNetworkCallbacks()
 {
     if (network) {
-        ClearSessionCallbacks();
-        ClearPlayerManagerCallbacks();
+        ClearNetworkSessionCallbacks();
+        ClearNetworkWorldCallbacks();
+        ClearNetworkPlayerManagerCallbacks();
     }
+}
+
+void NetMainGameComponent::ClearSDKCallbacks()
+{
+    ClearSDKWorldCallbacks();
+    ClearSDKGameScriptInterfaceCallbacks();
+}
+
+void NetMainGameComponent::ClearSDKWorldCallbacks()
+{
+    CWorld* world = mainGameComponent->GetWorld();
+    world->RemoveSetAsLoadingRegionCallback("SetAsLoadingRegion");
+}
+
+void NetMainGameComponent::ClearSDKGameScriptInterfaceCallbacks()
+{
+    CWorld* world = mainGameComponent->GetWorld();
+    CGameScriptInterface* gameScriptInterface = world->GetGameScriptInterface();
+
+    gameScriptInterface->RemoveSetTeleportingAsActiveCallback("SetTeleportingAsActive");
 }

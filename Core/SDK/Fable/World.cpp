@@ -8,6 +8,11 @@ CWorldMap* CWorld::GetWorldMap()
     return *(CWorldMap**)((char*)this + 0x14);
 }
 
+CGameScriptInterface* CWorld::GetGameScriptInterface()
+{
+    return *(CGameScriptInterface**)((char*)this + 0x38);
+}
+
 void (__thiscall* CWorld::OEAMoveHeroToRegion)(CWorld*, CGameEvent const*) = nullptr;
 void __fastcall CWorld::HEAMoveHeroToRegion(CWorld* _this, void* _EDX, CGameEvent const* event)
 {

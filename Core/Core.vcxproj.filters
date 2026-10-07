@@ -512,5 +512,8 @@
     <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

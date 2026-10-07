@@ -1,14 +1,15 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <functional>
-#include <iostream>
 
 #include "../Utils/Hook.h"
 
 #include "WorldMap.h"
 #include "3DVector.h"
 #include "GameEvent.h"
+#include "GameScriptInterface.h"
 
 extern bool (*IsMultiplayer)();
 
@@ -29,13 +30,16 @@ public:
         WAITING_FOR_FADE_IN = 0x9
     };
 
-    char pad[0x198];
+    char pad1[0x38];
+    CGameScriptInterface* PGameScriptInterface;
+    char pad2[0x160];
+
+    CWorldMap* GetWorldMap();
+    CGameScriptInterface* GetGameScriptInterface();
 
     C3DVector GetSaveGameMarkerPos();
     float GetSaveGameMarkerAngleXY();
     CWorld::ERegionLoadStatus GetRegionLoadStatus();
-
-    CWorldMap* GetWorldMap();
 
     void AddUpdateRegionLoadCallback(const std::string& id, std::function<void()> callback) { updateRegionLoadCallbacks[id] = callback; }
     void RemoveUpdateRegionLoadCallback(const std::string& id) { updateRegionLoadCallbacks.erase(id); }

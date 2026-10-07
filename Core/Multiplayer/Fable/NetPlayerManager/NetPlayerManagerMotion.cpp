@@ -16,14 +16,20 @@ void NetPlayerManager::ApplyNetPlayerMovement(int networkId)
             std::cout << "[NetPlayerManager::AddResolveMovementAccelerationCallback]: !creature" << std::endl;
             return;
         }
-        
+
         for (auto& netPlayer : netPlayers)
         {
             if (netPlayer && netPlayer->GetNetworkId() == networkId)
             {
-                creature->MovementAcceleration = netPlayer->GetMovementAcceleration();
-
                 CThing* thing = reinterpret_cast<CThing*>(creature);
+
+                if (thing->IsInLimbo())
+                {
+                    netPlayer->SetMovementAcceleration({ 0, 0, 0 });
+                    return;
+                }
+
+                creature->MovementAcceleration = netPlayer->GetMovementAcceleration();
 
                 C3DVector remotePosition = netPlayer->GetPosition();
                 C3DVector position = *thing->GetPos();
@@ -65,12 +71,16 @@ void NetPlayerManager::ApplyNetPlayerRotation(int networkId)
         {
             if (netPlayer && netPlayer->GetNetworkId() == networkId)
             {
+                CThing* thing = reinterpret_cast<CThing*>(creature);
+
+                if (thing->IsInLimbo())
+                    return;
+
                 CRightHandedSet rhSet = netPlayer->GetRHSet();
 
                 if (rhSet.Up.X == 0.f && rhSet.Up.Y == 0.f && rhSet.Up.Z == 0.f)
                     return;
 
-                CThing* thing = reinterpret_cast<CThing*>(creature);
                 CTCPhysicsBase* physicsTC = thing->PhysicsTC;
                 CTCPhysicsStandard* physicsStandard = reinterpret_cast<CTCPhysicsStandard*>(physicsTC);
                 physicsStandard->SetRHSet(rhSet);

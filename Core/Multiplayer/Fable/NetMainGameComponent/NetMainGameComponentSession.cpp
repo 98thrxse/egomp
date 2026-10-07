@@ -1,6 +1,6 @@
 #include "NetMainGameComponent.h"
 
-void NetMainGameComponent::SetupSessionCallbacks()
+void NetMainGameComponent::SetupNetworkSessionCallbacks()
 {
     network->AddNewIncomingConnectionCallback("NewIncomingConnection", [this](int networkId, SystemAddress systemAddress) {
 		HandleNewIncomingConnection(networkId, systemAddress);
@@ -11,17 +11,11 @@ void NetMainGameComponent::SetupSessionCallbacks()
         });
 
     network->AddDisconnectionNotificationCallback("DisconnectionNotification", [this](int networkId) {
-        if (networkId == 0)
-            Disconnect();
-        else
-            netPlayerManager->DestroyNetPlayer(networkId);
+        HandleDisconnectionOrLost(networkId);
         });
 
     network->AddConnectionLostCallback("ConnectionLost", [this](int networkId) {
-        if (networkId == 0)
-            Disconnect();
-        else
-            netPlayerManager->DestroyNetPlayer(networkId);
+        HandleDisconnectionOrLost(networkId);
         });
 
     network->AddConnectionAttemptFailedCallback("ConnectionAttemptFailed", [this]() {
@@ -29,7 +23,7 @@ void NetMainGameComponent::SetupSessionCallbacks()
         });
 }
 
-void NetMainGameComponent::ClearSessionCallbacks()
+void NetMainGameComponent::ClearNetworkSessionCallbacks()
 {
     network->RemoveNewIncomingConnectionCallback("NewIncomingConnection");
     network->RemoveConnectionNotificationCallback("ConnectionNotification");
@@ -53,6 +47,11 @@ void NetMainGameComponent::HandleNewIncomingConnection(int networkId, SystemAddr
     bool duringCutScenes = true;
     bool door = false;
 
+    BroadcastConnectionNotification(systemAddress, networkId, position, facingAngleXY, teleporter, duringCutScenes, door);
+}
+
+void NetMainGameComponent::BroadcastConnectionNotification(SystemAddress systemAddress, int networkId, C3DVector position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door)
+{
     SLNet::BitStream bs;
     bs.Write((SLNet::MessageID)ID_CONNECTION_NOTIFICATION);
     bs.Write(networkId);
@@ -68,6 +67,7 @@ void NetMainGameComponent::HandleNewIncomingConnection(int networkId, SystemAddr
 void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
 {
     CWorld* world = mainGameComponent->GetWorld();
+    CGameScriptInterface* gameScriptInterface = world->GetGameScriptInterface();
 
     int networkId = -1;
     C3DVector position = {};
@@ -85,17 +85,41 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
 
     if (networkId == 0)
     {
+        world->AddSetAsLoadingRegionCallback("SetAsLoadingRegion", [this, world, networkId](C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door) {
+            SetInLimboTillRegionLoaded(world, position);
+            world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
+            netWorld->BroadcastLoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
+            });
+
+        gameScriptInterface->AddSetTeleportingAsActiveCallback("SetTeleportingAsActive", [this, gameScriptInterface](bool active) {
+            gameScriptInterface->SetTeleportingAsActive(active);
+            });
+
         netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
-        return;
 	}
+    else
+    {
+        world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, world, gameScriptInterface, networkId, position, facingAngleXY]() {
+            if (world->GetRegionLoadStatus() != CWorld::NOT_LOADING_REGION)
+                return;
 
-    world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, world, networkId, position, facingAngleXY]() {
-        if (world->GetRegionLoadStatus() != CWorld::NOT_LOADING_REGION)
-            return;
+            world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
+            gameScriptInterface->SetTeleportingAsActive(false);
+            netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
+            });
 
-        world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
-		netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
-        });
+        gameScriptInterface->AddSetTeleportingAsActiveCallback("SetTeleportingAsActive", [this, gameScriptInterface](bool active) {
+            gameScriptInterface->SetTeleportingAsActive(false);
+            });
 
-    netWorld->LoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
+        world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
+    }
+}
+
+void NetMainGameComponent::HandleDisconnectionOrLost(int networkId)
+{
+    if (networkId == 0)
+        Disconnect();
+    else
+        netPlayerManager->DestroyNetPlayer(networkId);
 }

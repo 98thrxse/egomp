@@ -17,6 +17,7 @@ public:
 
 private:
 	CMainGameComponent* mainGameComponent;
+
 	std::unique_ptr<Network>& network;
 
 	std::unique_ptr<NetPlayerManager> netPlayerManager;
@@ -25,14 +26,21 @@ private:
 	void SetupCallbacks();
 	void ClearCallbacks();
 
+	void ClearSDKCallbacks();
+	void ClearSDKWorldCallbacks();
+	void ClearSDKGameScriptInterfaceCallbacks();
+
 	void SetupNetworkCallbacks();
 	void ClearNetworkCallbacks();
 
-	void SetupSessionCallbacks();
-	void ClearSessionCallbacks();
+	void SetupNetworkSessionCallbacks();
+	void ClearNetworkSessionCallbacks();
 
-	void SetupPlayerManagerCallbacks();
-	void ClearPlayerManagerCallbacks();
+	void SetupNetworkWorldCallbacks();
+	void ClearNetworkWorldCallbacks();
+
+	void SetupNetworkPlayerManagerCallbacks();
+	void ClearNetworkPlayerManagerCallbacks();
 
 	void Selection();
 	void Options();
@@ -42,6 +50,8 @@ private:
 	void Connect();
 	void Disconnect();
 
+	void BroadcastConnectionNotification(SystemAddress systemAddress, int networkId, C3DVector position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door);
+
 	void HandleMainGameComponentPostInit();
 	void HandleMainGameComponentUpdate();
 	void HandleMainGameComponentShutdown();
@@ -49,5 +59,8 @@ private:
 	void HandleNewIncomingConnection(int networkId, SystemAddress systemAddress);
 	void HandleConnectionNotification(BitStream& bs);
 
+	void HandleDisconnectionOrLost(int networkId);
+	
+	void SetInLimboTillRegionLoaded(CWorld* world, C3DVector position);
 	void ClearInputBuffer();
 };

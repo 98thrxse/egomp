@@ -1,6 +1,6 @@
 #include "NetMainGameComponent.h"
 
-void NetMainGameComponent::SetupPlayerManagerCallbacks()
+void NetMainGameComponent::SetupNetworkPlayerManagerCallbacks()
 {
     /* Lifecycle */
     network->AddCreateNetPlayerCallback("CreateNetPlayer", [this](BitStream& bs) {
@@ -120,7 +120,7 @@ void NetMainGameComponent::SetupPlayerManagerCallbacks()
         });
 }
 
-void NetMainGameComponent::ClearPlayerManagerCallbacks()
+void NetMainGameComponent::ClearNetworkPlayerManagerCallbacks()
 {
 	/* Lifecycle */
     network->RemoveCreateNetPlayerCallback("CreateNetPlayer");

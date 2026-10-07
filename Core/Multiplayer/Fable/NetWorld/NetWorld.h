@@ -11,7 +11,8 @@ public:
     NetWorld(Network* network, CMainGameComponent* mainGameComponent);
     ~NetWorld();
 
-    void LoadRegion(C3DVector const& position,
+    void BroadcastLoadRegion(
+        C3DVector const& position,
         float facingAngleXY,
         bool teleporter,
         bool duringCutScenes,

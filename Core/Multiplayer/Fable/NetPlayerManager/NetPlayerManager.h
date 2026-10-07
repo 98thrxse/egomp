@@ -38,6 +38,9 @@ public:
     void DestroyNetPlayer(int networkId);
     void DestroyNetPlayers();
 
+    void SetNetPlayersInLimbo(bool on);
+    void SetNetPlayersPosition(C3DVector position);
+
 private:
     Network* network;
 

@@ -14,15 +14,12 @@
 class CMainGameComponent
 {
 public:
-	char pad0[0x10];
+    char pad[0x1C];
 
-	char pad1[0x4];  // CASoundBank* PSampleBank;
-	char pad2[0x8];  // CCountedPointer<NGameText::CDataBank> PTextBank;
-
-	CPlayerManager* PPlayerManager;          // boost::scoped_ptr<CPlayerManager>
-	CGamePlayerInterface* PPlayerInterface;  // boost::scoped_ptr<CGamePlayerInterface>
-	CWorld* PWorld;                          // boost::scoped_ptr<CWorld>
-	CDisplayEngine* PDisplayEngine;          // boost::scoped_ptr<CDisplayEngine>
+	CPlayerManager* PPlayerManager;
+	CGamePlayerInterface* PPlayerInterface;
+	CWorld* PWorld;
+	CDisplayEngine* PDisplayEngine;
 
     static CMainGameComponent* Get();
 

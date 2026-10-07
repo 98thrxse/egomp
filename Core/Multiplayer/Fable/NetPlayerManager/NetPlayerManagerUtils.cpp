@@ -88,3 +88,35 @@ int NetPlayerManager::GetNetworkIdFromLocalId(int localId) const
 
     return -1;
 }
+
+void NetPlayerManager::SetNetPlayersInLimbo(bool on)
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+		CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersInLimbo]: !creature: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+		reinterpret_cast<CThing*>(creature)->SetInLimbo(on);
+    }
+}
+
+void NetPlayerManager::SetNetPlayersPosition(C3DVector position)
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersPosition]: !creature: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+        *reinterpret_cast<CThing*>(creature)->GetPos() = position;
+    }
+}
