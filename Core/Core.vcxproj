@@ -179,7 +179,9 @@
     <ClInclude Include="SDK\Fable\DefPointeeBase.h" />
     <ClInclude Include="SDK\Fable\DefPointer.h" />
     <ClInclude Include="SDK\Fable\DisplayEngine.h" />
+    <ClInclude Include="SDK\Fable\DParticleEmitter.h" />
     <ClInclude Include="SDK\Fable\GameScriptInterface.h" />
+    <ClInclude Include="SDK\Fable\Hero.h" />
     <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifiers.h" />
     <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifierType.h" />
     <ClInclude Include="SDK\Fable\HeroExperience.h" />
@@ -273,6 +275,8 @@
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.cpp" />
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
+    <ClCompile Include="SDK\Fable\DParticleEmitter.cpp" />
+    <ClCompile Include="SDK\Fable\Hero.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />
     <ClCompile Include="SDK\Fable\DefPointeeBase.cpp" />

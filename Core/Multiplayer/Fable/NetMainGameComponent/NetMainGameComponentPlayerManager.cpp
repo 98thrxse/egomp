@@ -15,6 +15,7 @@ void NetMainGameComponent::SetupNetworkPlayerManagerCallbacks()
         bs.Read(facingAngleXY);
 
         netPlayerManager->CreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
+        netPlayerManager->SetNetPlayerParticle(networkId, 766, position, false);
         });
 
     network->AddCreateNetPlayersCallback("CreateNetPlayers", [this](BitStream& bs) {
@@ -29,6 +30,7 @@ void NetMainGameComponent::SetupNetworkPlayerManagerCallbacks()
         int networkId = -1;
         bs.Read(networkId);
 
+        netPlayerManager->SetNetPlayerParticle(networkId, 767, {}, false);
         netPlayerManager->DestroyNetPlayer(networkId);
         });
 

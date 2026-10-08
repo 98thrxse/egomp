@@ -255,6 +255,12 @@
     <ClInclude Include="SDK\Fable\ThingHolySite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Fable\DParticleEmitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Fable\Hero.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -513,6 +519,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Fable\DParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Fable\Hero.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

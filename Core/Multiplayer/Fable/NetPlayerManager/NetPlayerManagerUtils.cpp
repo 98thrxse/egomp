@@ -89,6 +89,31 @@ int NetPlayerManager::GetNetworkIdFromLocalId(int localId) const
     return -1;
 }
 
+void NetPlayerManager::SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force)
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::SetNetPlayerParticle]: !creature: " << networkId << std::endl;
+        return;
+    }
+
+    if (position.X == 0 && position.Y == 0 && position.Z == 0)
+        position = *reinterpret_cast<CThing*>(creature)->GetPos();
+
+    CThing* particle = CTCDParticleEmitter::Create(particleTypeId, position, force);
+    CTCHero* hero = reinterpret_cast<CTCHero*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO));
+
+    if (!hero)
+    {
+        std::cout << "[NetPlayerManager::SetNetPlayerParticle]: !hero" << std::endl;
+        return;
+    }
+
+    hero->SetTeleportParticle(*particle);
+}
+
 void NetPlayerManager::SetNetPlayersInLimbo(bool on)
 {
     for (const auto& netPlayer : netPlayers)

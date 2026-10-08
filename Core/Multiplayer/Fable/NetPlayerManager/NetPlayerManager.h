@@ -40,6 +40,7 @@ public:
 
     void SetNetPlayersInLimbo(bool on);
     void SetNetPlayersPosition(C3DVector position);
+	void SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force);
 
 private:
     Network* network;

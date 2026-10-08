@@ -55,6 +55,8 @@
 #include "ThingObject.h"
 #include "Weapon.h"
 #include "ThingHolySite.h"
+#include "DParticleEmitter.h"
+#include "Hero.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

@@ -119,7 +119,12 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
 void NetMainGameComponent::HandleDisconnectionOrLost(int networkId)
 {
     if (networkId == 0)
+    {
         Disconnect();
+    }
     else
+    {
+        netPlayerManager->SetNetPlayerParticle(networkId, 767, {}, false);
         netPlayerManager->DestroyNetPlayer(networkId);
+    }
 }
