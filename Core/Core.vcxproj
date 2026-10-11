@@ -158,6 +158,7 @@
     <ClInclude Include="SDK\Fable\Base.h" />
     <ClInclude Include="SDK\Fable\BaseIntelligentPointer.h" />
     <ClInclude Include="SDK\Fable\BaseObject.h" />
+    <ClInclude Include="SDK\Fable\Combat.h" />
     <ClInclude Include="SDK\Fable\CombatActionBase.h" />
     <ClInclude Include="SDK\Fable\CombatZone.h" />
     <ClInclude Include="SDK\Fable\Component.h" />
@@ -265,6 +266,7 @@
     <ClCompile Include="SDK\Fable\3DVector.cpp" />
     <ClCompile Include="SDK\Fable\BaseIntelligentPointer.cpp" />
     <ClCompile Include="SDK\Fable\BaseObject.cpp" />
+    <ClCompile Include="SDK\Fable\Combat.cpp" />
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp" />
     <ClCompile Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.cpp" />
     <ClCompile Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.cpp" />

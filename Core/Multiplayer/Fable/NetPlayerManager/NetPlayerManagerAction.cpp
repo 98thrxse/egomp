@@ -15,10 +15,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
     if (!creature)
-    {
-        std::cout << "[NetPlayerManager::ReceiveNetPlayerAction]: !creature" << std::endl;
 		return;
-    }
 
     CThingCreatureBase& creatureBase = *reinterpret_cast<CThingCreatureBase*>(creature);
     void* actionBuffer = nullptr;
@@ -36,7 +33,27 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
     }
 	case 0x012761CC: // CCreatureAction_StartBlocking
     {
-        actionBuffer = NetCreatureAction::CCreatureAction_StartBlocking(creatureBase);
+		bool block = false;
+        bsIn.Read(block);
+
+        CTCCombat* combat = reinterpret_cast<CTCCombat*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_COMBAT));
+
+        if (!combat) {
+            std::cout << "[NetPlayerManager::ReceiveNetPlayerAction]: !combat" << std::endl;
+            return;
+        }
+
+        if (block)
+        {
+            actionBuffer = NetCreatureAction::CCreatureAction_StartBlocking(creatureBase);
+            combat->SetBlocking();
+        }
+        else
+        {
+			combat->UnsetBlocking();
+            return;
+        }
+
         break;
     }
 	case 0x01276974: // CCombatAction_ControlledStrafeJump
@@ -65,13 +82,37 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
     {
         int targetNetworkId = -1;
         C3DVector required_facing;
-        CThing* pweapon = nullptr;
-
-        CDefPointer melee_ability{};
-        CDefPointer* pmelee_ability = &melee_ability;
+        long weaponIndex = 0;
 
         bsIn.Read(targetNetworkId);
         bsIn.Read(required_facing.X); bsIn.Read(required_facing.Y); bsIn.Read(required_facing.Z);
+        bsIn.Read(weaponIndex);
+
+        CTCInventoryWeapons* inventoryWeapons =
+            reinterpret_cast<CTCInventoryWeapons*>(
+                reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS));
+
+        if (!inventoryWeapons)
+        {
+            std::cout << "[CCreatureAction_InterruptableMidAttackAutoTurn] !inventoryWeapons" << std::endl;
+            return;
+        }
+
+        CThing* pweapon = nullptr;
+        CThing* activeMelee = reinterpret_cast<CThing*>(inventoryWeapons->PActiveMeleeWeapon.GetPItem());
+        CThing* activeRanged = reinterpret_cast<CThing*>(inventoryWeapons->PActiveRangedWeapon.GetPItem());
+
+        if (activeMelee && activeMelee->DefGlobalIndex == weaponIndex)
+        {
+            pweapon = activeMelee;
+        }
+        else if (activeRanged && activeRanged->DefGlobalIndex == weaponIndex)
+        {
+            pweapon = activeRanged;
+        }
+
+        CDefPointer melee_ability{};
+        CDefPointer* pmelee_ability = &melee_ability;
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
         actionBuffer = NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
@@ -221,6 +262,8 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         }
         case 0x012761CC: // CCreatureAction_StartBlocking
         {
+            bool block = true;
+            bs.Write(block);
             break;
         }
         case 0x01276974: // CCombatAction_ControlledStrafeJump
@@ -248,10 +291,22 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
             int targetNetworkId = getTargetNetworkId(target);
 
-            C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(reinterpret_cast<uintptr_t>(&action) + 0x114);
+            C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(
+                reinterpret_cast<uintptr_t>(&action) + 0x114);
+
+            CBaseIntelligentPointer* pweapon =
+                reinterpret_cast<CBaseIntelligentPointer*>(
+                    reinterpret_cast<uintptr_t>(&action) + 0x120);
+
+            CThing* weapon =
+                reinterpret_cast<CThing*>(pweapon->GetPItem());
+
+            int weaponIndex =
+                weapon ? weapon->DefGlobalIndex : 0;
 
             bs.Write(targetNetworkId);
             bs.Write(requiredFacing.X); bs.Write(requiredFacing.Y); bs.Write(requiredFacing.Z);
+            bs.Write(weaponIndex);
             break;
         }
         case 0x0125CCBC: // CCreatureAction_UnsheatheItemFromInventory
@@ -282,7 +337,10 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             break;
         }
         default:
+        {
+            std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: Unknown actionOffset: " << std::hex << actionOffset << std::dec << std::endl;
             return;
+        }
         }
 
         if (localNetPlayer->GetNetworkId() == 0) {
@@ -292,4 +350,29 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
         }
     });
+
+    CTCCombat* combat = reinterpret_cast<CTCCombat*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_COMBAT));
+
+    if (!combat) {
+        std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: !combat" << std::endl;
+        return;
+    }
+
+    combat->AddUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId), [this, networkId]() {
+		uintptr_t actionOffset = 0x012761CC; // CCreatureAction_StartBlocking
+		bool block = false;
+
+        SLNet::BitStream bs;
+        bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
+        bs.Write(networkId);
+        bs.Write(actionOffset);
+        bs.Write(block);
+
+        if (localNetPlayer->GetNetworkId() == 0) {
+            network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+        }
+        else {
+            network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+        }
+        });
 }

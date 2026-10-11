@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <functional>
-#include <iostream>
 
 #include "../Utils/Hook.h"
 

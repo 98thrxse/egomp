@@ -75,6 +75,7 @@ SDK::SDK()
 	CThingHolySite::Hook();
 	CTCDParticleEmitter::Hook();
 	CTCHero::Hook();
+	CTCCombat::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();
