@@ -49,14 +49,20 @@ public:
     long GetTattooIndex(CDefPointeeBase* tattoo);
     void AddTattoo(long);
     void DoMorphUpdate();
+    void UpdateTextureMorphs();
+    void RemoveAllTattoos();
 
     void AddFrameUpdateCallback(const std::string& id, std::function<void()> callback) { frameUpdateCallbacks[id] = callback; }
     void RemoveFrameUpdateCallback(const std::string& id) { frameUpdateCallbacks.erase(id); }
+
+    void AddUpdateTextureMorphsCallback(const std::string& id, std::function<void()> callback) { updateTextureMorphsCallbacks[id] = callback; }
+    void RemoveUpdateTextureMorphsCallback(const std::string& id) { updateTextureMorphsCallbacks.erase(id); }
 
     static void Hook();
 
 private:
     static std::map<std::string, std::function<void()>> frameUpdateCallbacks;
+    static std::map<std::string, std::function<void()>> updateTextureMorphsCallbacks;
 
     static void(__thiscall* OAddTattoo)(CTCHeroMorph*, long);
     static void __fastcall HAddTattoo(CTCHeroMorph* _this, void* _EDX, long tattoo_def_index);
@@ -66,4 +72,10 @@ private:
 
     static void(__thiscall* ODoMorphUpdate)(CTCHeroMorph*);
     static void __fastcall HDoMorphUpdate(CTCHeroMorph* _this, void* _EDX);
+
+    static void(__thiscall* OUpdateTextureMorphs)(CTCHeroMorph*);
+    static void __fastcall HUpdateTextureMorphs(CTCHeroMorph* _this, void* _EDX);
+
+    static void(__thiscall* ORemoveAllTattoos)(CTCHeroMorph*);
+    static void __fastcall HRemoveAllTattoos(CTCHeroMorph* _this, void* _EDX);
 };

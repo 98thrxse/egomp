@@ -39,6 +39,7 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> connectionNotificationCallbacks;
 
 	std::map<std::string, std::function<void(BitStream&)>> loadRegionCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> loadedRegionCallbacks;
 
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayersCallbacks;
@@ -96,6 +97,9 @@ public:
 
 	void AddLoadRegionCallback(const std::string& id, std::function<void(BitStream&)> cb) { loadRegionCallbacks[id] = cb; }
 	void RemoveLoadRegionCallback(const std::string& id) { loadRegionCallbacks.erase(id); }
+
+	void AddLoadedRegionCallback(const std::string& id, std::function<void(BitStream&)> cb) { loadedRegionCallbacks[id] = cb; }
+	void RemoveLoadedRegionCallback(const std::string& id) { loadedRegionCallbacks.erase(id); }
 
 	void AddCreateNetPlayerCallback(const std::string& id, std::function<void(BitStream&)> cb) { createNetPlayerCallbacks[id] = cb; }
 	void RemoveCreateNetPlayerCallback(const std::string& id) { createNetPlayerCallbacks.erase(id); }

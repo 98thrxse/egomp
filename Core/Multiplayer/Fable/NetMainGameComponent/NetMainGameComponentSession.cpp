@@ -83,9 +83,11 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
     bs.Read(duringCutScenes);
     bs.Read(door);
 
+    SetNetworkId(networkId);
+
     if (networkId == 0)
     {
-        world->AddSetAsLoadingRegionCallback("SetAsLoadingRegion", [this, world, networkId](C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door) {
+        world->AddSetAsLoadingRegionCallback("SetAsLoadingRegion", [this, networkId, world](C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door) {
             SetInLimboTillRegionLoaded(world, position);
             world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
             netWorld->BroadcastLoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
@@ -99,7 +101,7 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
 	}
     else
     {
-        world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, world, gameScriptInterface, networkId, position, facingAngleXY]() {
+        world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, networkId, world, gameScriptInterface, position, facingAngleXY]() {
             if (world->GetRegionLoadStatus() != CWorld::NOT_LOADING_REGION)
                 return;
 

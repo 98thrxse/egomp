@@ -25,6 +25,10 @@ void Network::Update()
 			HandlePacket(packet, loadRegionCallbacks);
 			break;
 
+		case ID_WORLD_LOADED_REGION:
+			HandlePacket(packet, loadedRegionCallbacks);
+			break;
+
 		case ID_PLAYER_CREATE:
 			HandlePacket(packet, createNetPlayerCallbacks);
 			break;

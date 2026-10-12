@@ -4,7 +4,9 @@ void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position, f
 {
     int localId = GetFreeLocalId();
 
-    localNetPlayer = std::make_unique<LocalNetPlayer>();
+    if (!localNetPlayer)
+        localNetPlayer = std::make_unique<LocalNetPlayer>();
+
     localNetPlayer->SetLocalId(localId);
     localNetPlayer->SetNetworkId(networkId);
 
@@ -34,7 +36,7 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
     BroadcastLocalNetPlayerExperience(networkId);
     BroadcastLocalNetPlayerMorph(networkId);
     BroadcastLocalNetPlayerWeapons(networkId);
-    BroadcastLocalNetPlayerAction(networkId);
+    //BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -190,6 +192,7 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
+    heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
 
     localNetPlayer.reset();
@@ -258,6 +261,7 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
+    heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
 
     player->UninitCharacter();

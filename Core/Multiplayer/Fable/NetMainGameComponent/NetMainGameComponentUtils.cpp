@@ -2,6 +2,7 @@
 
 void NetMainGameComponent::SetInLimboTillRegionLoaded(CWorld* world, C3DVector position)
 {
+    netPlayerManager->SetNetPlayersAlpha(85);
     netPlayerManager->SetNetPlayersInLimbo(true);
 
     world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, world, position]() {
@@ -13,6 +14,7 @@ void NetMainGameComponent::SetInLimboTillRegionLoaded(CWorld* world, C3DVector p
 
         world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
         netPlayerManager->SetNetPlayersInLimbo(false);
+        netWorld->BroadcastLoadedRegion();
         });
 }
 
@@ -23,4 +25,16 @@ void NetMainGameComponent::ClearInputBuffer()
     while (_kbhit()) {
         (void)_getch();
     }
+}
+
+void NetMainGameComponent::SetNetworkId(int id)
+{
+    networkId = id;
+    netWorld->SetNetworkId(id);
+    netPlayerManager->SetNetworkId(id);
+}
+
+int NetMainGameComponent::GetNetworkId() const
+{
+    return networkId;
 }

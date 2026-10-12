@@ -1,10 +1,11 @@
 #include "HeroMorph.h"
 
 std::map<std::string, std::function<void()>> CTCHeroMorph::frameUpdateCallbacks;
+std::map<std::string, std::function<void()>> CTCHeroMorph::updateTextureMorphsCallbacks;
 
 void CTCHeroMorph::SetTattooIndexes(const std::vector<long>& indexes)
 {
-    Tattoos.clear();
+    this->RemoveAllTattoos();
 
     for (long index : indexes)
         AddTattoo(index);
@@ -60,6 +61,34 @@ void CTCHeroMorph::DoMorphUpdate()
     ODoMorphUpdate(this);
 }
 
+void(__thiscall* CTCHeroMorph::OUpdateTextureMorphs)(CTCHeroMorph*) = nullptr;
+void __fastcall CTCHeroMorph::HUpdateTextureMorphs(CTCHeroMorph* _this, void* _EDX)
+{
+    OUpdateTextureMorphs(_this);
+
+    for (const auto& pair : updateTextureMorphsCallbacks)
+    {
+        if (pair.second)
+            pair.second();
+    }
+}
+
+void CTCHeroMorph::UpdateTextureMorphs()
+{
+    OUpdateTextureMorphs(this);
+}
+
+void(__thiscall* CTCHeroMorph::ORemoveAllTattoos)(CTCHeroMorph*) = nullptr;
+void __fastcall CTCHeroMorph::HRemoveAllTattoos(CTCHeroMorph* _this, void* _EDX)
+{
+    ORemoveAllTattoos(_this);
+}
+
+void CTCHeroMorph::RemoveAllTattoos()
+{
+    ORemoveAllTattoos(this);
+}
+
 void(__thiscall* CTCHeroMorph::OFrameUpdate)(CTCHeroMorph*) = nullptr;
 void __fastcall CTCHeroMorph::HFrameUpdate(CTCHeroMorph* _this, void* _EDX)
 {
@@ -77,4 +106,6 @@ void CTCHeroMorph::Hook()
     ADD_HOOK(0x0071DA70, HAddTattoo, OAddTattoo);
     ADD_HOOK(0x0071CD30, HFrameUpdate, OFrameUpdate);
     ADD_HOOK(0x0071E130, HDoMorphUpdate, ODoMorphUpdate);
+    ADD_HOOK(0x0071DE80, HUpdateTextureMorphs, OUpdateTextureMorphs);
+    ADD_HOOK(0x0071CE30, HRemoveAllTattoos, ORemoveAllTattoos);
 }

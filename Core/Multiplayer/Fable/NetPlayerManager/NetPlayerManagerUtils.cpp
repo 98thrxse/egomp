@@ -1,5 +1,15 @@
 #include "NetPlayerManager.h"
 
+void NetPlayerManager::SetNetworkId(int id)
+{
+    networkId = id;
+}
+
+int NetPlayerManager::GetNetworkId() const
+{
+    return networkId;
+}
+
 CThingPlayerCreature* NetPlayerManager::GetPlayerCreatureFromNetworkId(int networkId) const
 {
     int localId = GetLocalIdFromNetworkId(networkId);
@@ -114,6 +124,19 @@ void NetPlayerManager::SetNetPlayerParticle(int networkId, long particleTypeId, 
     hero->SetTeleportParticle(*particle);
 }
 
+void NetPlayerManager::SetNetPlayerInLimbo(int networkId, bool on)
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::SetNetPlayerInLimbo]: !creature: " << networkId << std::endl;
+        return;
+    }
+
+    reinterpret_cast<CThing*>(creature)->SetInLimbo(on);
+}
+
 void NetPlayerManager::SetNetPlayersInLimbo(bool on)
 {
     for (const auto& netPlayer : netPlayers)
@@ -127,6 +150,53 @@ void NetPlayerManager::SetNetPlayersInLimbo(bool on)
         }
 
 		reinterpret_cast<CThing*>(creature)->SetInLimbo(on);
+    }
+}
+
+void NetPlayerManager::SetNetPlayerAlpha(int networkId, unsigned __int8 alpha)
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::SetNetPlayerAlpha]: !creature: " << networkId << std::endl;
+        return;
+    }
+
+    NGraphicAppearance::CTCGraphicAppearance* graphicAppearance = reinterpret_cast<NGraphicAppearance::CTCGraphicAppearance*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_GRAPHIC_APPEARANCE_NEW));
+
+    if (!graphicAppearance)
+    {
+        std::cout << "[NetPlayerManager::SetNetPlayerAlpha]: !graphicAppearance: " << networkId << std::endl;
+        return;
+    }
+
+    graphicAppearance->SetAlpha(alpha);
+}
+
+void NetPlayerManager::SetNetPlayersAlpha(unsigned __int8 alpha)
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+        
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersAlpha]: !creature: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+        NGraphicAppearance::CTCGraphicAppearance* graphicAppearance = reinterpret_cast<NGraphicAppearance::CTCGraphicAppearance*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(TCI_GRAPHIC_APPEARANCE_NEW));
+
+        if (!graphicAppearance)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersAlpha]: !graphicAppearance: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+        graphicAppearance->SetAlpha(alpha);
     }
 }
 

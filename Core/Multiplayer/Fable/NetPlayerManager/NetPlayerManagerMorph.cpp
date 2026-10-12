@@ -75,8 +75,13 @@ void NetPlayerManager::ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs
                 netPlayer->SetTattooIndexes(tattooIndexes);
             }
 
-            RefreshNetPlayerMorph(heroMorph, networkId);
-
+            reinterpret_cast<CTCAppearanceMorphBase*>(heroMorph)
+                ->UploadTextureMorphsToEngine(
+                    *iengine,
+                    nullptr,
+                    false,
+                    0.0f
+                );
             return;
         }
     }
@@ -104,6 +109,14 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
         std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerMorph]: !heroMorph" << std::endl;
         return;
     }
+
+    heroMorph->AddUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId), [this]()
+        {
+            for (auto& netPlayer : netPlayers)
+            {
+                RefreshNetPlayerMorph(netPlayer->GetNetworkId());
+            }
+        });
 
     auto lastSendTime = std::chrono::steady_clock::now();
 
@@ -251,10 +264,25 @@ void NetPlayerManager::BroadcastNetPlayerMorph(int networkId)
 }
 
 void NetPlayerManager::RefreshNetPlayerMorph(
-    CTCHeroMorph* heroMorph,
     int networkId)
 {
-    heroMorph->DoMorphUpdate();
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+        return;
+
+    CTCHeroMorph* heroMorph =
+        reinterpret_cast<CTCHeroMorph*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(
+                TCI_APPEARANCE_MORPH
+            )
+            );
+
+    if (!heroMorph)
+    {
+        std::cout << "[NetPlayerManager::RefreshNetPlayerMorph]: !heroMorph" << std::endl;
+        return;
+    }
 
     auto meshMorphSet =
         *reinterpret_cast<uintptr_t*>(
@@ -271,13 +299,5 @@ void NetPlayerManager::RefreshNetPlayerMorph(
     int localId = GetLocalIdFromNetworkId(networkId);
 
     for (auto morph = first; morph < last; morph += 0x14)
-        *reinterpret_cast<int*>(morph + 0x04) = localId + 1;
-
-    reinterpret_cast<CTCAppearanceMorphBase*>(heroMorph)
-        ->UploadTextureMorphsToEngine(
-            *iengine,
-            nullptr,
-            false,
-            0.0f
-        );
+        *reinterpret_cast<int*>(morph + 0x04) = localId;
 }

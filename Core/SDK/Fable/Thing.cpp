@@ -59,6 +59,24 @@ void CThing::SetInLimbo(bool on) {
 	OSetInLimbo(this, on);
 }
 
+void(__thiscall* CThing::OSetAsDrawable)(CThing*, bool) = nullptr;
+void __fastcall CThing::HSetAsDrawable(CThing* _this, void* _EDX, bool on) {
+	OSetAsDrawable(_this, on);
+}
+
+void CThing::SetAsDrawable(bool on) {
+	OSetAsDrawable(this, on);
+}
+
+void(__thiscall* CThing::OSetAsActivated)(CThing*, bool) = nullptr;
+void __fastcall CThing::HSetAsActivated(CThing* _this, void* _EDX, bool on) {
+	OSetAsActivated(_this, on);
+}
+
+void CThing::SetAsActivated(bool on) {
+	OSetAsActivated(this, on);
+}
+
 bool CThing::IsToKillOnLevelUnload()
 {
     return (*reinterpret_cast<uint8_t*>(
@@ -82,4 +100,6 @@ void CThing::Hook()
 	ADD_HOOK(0x004C7CC0, HGetDefName, OGetDefName);
 	ADD_HOOK(0x004C9C40, HSetToKillOnLevelUnload, OSetToKillOnLevelUnload);
 	ADD_HOOK(0x004C8CF0, HSetInLimbo, OSetInLimbo);
+	ADD_HOOK(0x004C8E50, HSetAsDrawable, OSetAsDrawable);
+	ADD_HOOK(0x004C7770, HSetAsActivated, OSetAsActivated);
 }

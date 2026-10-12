@@ -182,6 +182,7 @@
     <ClInclude Include="SDK\Fable\DisplayEngine.h" />
     <ClInclude Include="SDK\Fable\DParticleEmitter.h" />
     <ClInclude Include="SDK\Fable\GameScriptInterface.h" />
+    <ClInclude Include="SDK\Fable\GraphicAppearance.h" />
     <ClInclude Include="SDK\Fable\Hero.h" />
     <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifiers.h" />
     <ClInclude Include="SDK\Fable\HeroAttachableAppearanceModifierType.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerWeapons.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorld.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldRegion.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldUtils.cpp" />
     <ClCompile Include="Multiplayer\Network\Network.cpp" />
     <ClCompile Include="Multiplayer\Fable\LocalNetPlayer\LocalNetPlayer.cpp" />
     <ClCompile Include="Multiplayer\Fable\Multiplayer.cpp" />
@@ -278,6 +280,7 @@
     <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
     <ClCompile Include="SDK\Fable\DParticleEmitter.cpp" />
+    <ClCompile Include="SDK\Fable\GraphicAppearance.cpp" />
     <ClCompile Include="SDK\Fable\Hero.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />

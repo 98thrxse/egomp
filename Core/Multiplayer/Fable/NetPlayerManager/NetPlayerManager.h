@@ -17,6 +17,9 @@ public:
     NetPlayerManager(Network* network, CMainGameComponent* mainGameComponent);
     ~NetPlayerManager();
 
+    void SetNetworkId(int id);
+    int GetNetworkId() const;
+
     void CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY);
 	void SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
 
@@ -38,12 +41,19 @@ public:
     void DestroyNetPlayer(int networkId);
     void DestroyNetPlayers();
 
+    void SetNetPlayerInLimbo(int networkId, bool on);
     void SetNetPlayersInLimbo(bool on);
+
+    void SetNetPlayerAlpha(int networkId, unsigned __int8 alpha);
+    void SetNetPlayersAlpha(unsigned __int8 alpha);
+
     void SetNetPlayersPosition(C3DVector position);
 	void SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force);
 
 private:
     Network* network;
+
+    int networkId;
 
     CMainGameComponent* mainGameComponent;
     CPlayerManager* playerManager = mainGameComponent->GetPlayerManager();
@@ -61,7 +71,7 @@ private:
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
 
-    void RefreshNetPlayerMorph(CTCHeroMorph* heroMorph, int networkId);
+    void RefreshNetPlayerMorph(int networkId);
 
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);

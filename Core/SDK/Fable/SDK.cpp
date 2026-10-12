@@ -76,6 +76,7 @@ SDK::SDK()
 	CTCDParticleEmitter::Hook();
 	CTCHero::Hook();
 	CTCCombat::Hook();
+	NGraphicAppearance::CTCGraphicAppearance::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

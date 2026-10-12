@@ -264,6 +264,9 @@
     <ClInclude Include="SDK\Fable\Combat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Fable\GraphicAppearance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -531,6 +534,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Fable\Combat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Fable\GraphicAppearance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

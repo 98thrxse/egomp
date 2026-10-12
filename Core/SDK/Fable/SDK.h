@@ -58,6 +58,7 @@
 #include "DParticleEmitter.h"
 #include "Hero.h"
 #include "Combat.h"
+#include "GraphicAppearance.h"
 
 #include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
 #include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"

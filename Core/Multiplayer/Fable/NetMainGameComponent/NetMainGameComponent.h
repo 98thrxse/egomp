@@ -15,6 +15,9 @@ public:
 	NetMainGameComponent(std::unique_ptr<Network>& network);
 	~NetMainGameComponent();
 
+	void SetNetworkId(int id);
+	int GetNetworkId() const;
+
 private:
 	CMainGameComponent* mainGameComponent;
 
@@ -22,6 +25,8 @@ private:
 
 	std::unique_ptr<NetPlayerManager> netPlayerManager;
 	std::unique_ptr<NetWorld> netWorld;
+
+	int networkId;
 
 	void SetupCallbacks();
 	void ClearCallbacks();
