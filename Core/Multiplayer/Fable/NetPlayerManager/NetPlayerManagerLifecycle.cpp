@@ -1,8 +1,9 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY)
+void NetPlayerManager::CreateLocalNetPlayer(C3DVector position, float facingAngleXY)
 {
     int localId = GetFreeLocalId();
+    int networkId = GetNetworkId();
 
     if (!localNetPlayer)
         localNetPlayer = std::make_unique<LocalNetPlayer>();

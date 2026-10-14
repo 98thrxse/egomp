@@ -267,6 +267,9 @@
     <ClInclude Include="SDK\Fable\GraphicAppearance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Fable\GameTimeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -540,6 +543,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Fable\GraphicAppearance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Fable\GameTimeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldLifecycle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

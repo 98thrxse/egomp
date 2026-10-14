@@ -117,18 +117,6 @@ bool Network::Disconnect()
 
 	peer->Shutdown(1000);
 
-	for (const auto& pair : destroyNetPlayersCallbacks)
-	{
-		if (pair.second)
-			pair.second();
-	}
-
-	for (const auto& pair : destroyLocalNetPlayerCallbacks)
-	{
-		if (pair.second)
-			pair.second();
-	}
-
 	self = Connection{};
 	connections.clear();
 	settings.ip.clear();

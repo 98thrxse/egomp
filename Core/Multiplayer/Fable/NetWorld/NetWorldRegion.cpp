@@ -1,6 +1,6 @@
 #include "NetWorld.h"
 
-void NetWorld::BroadcastLoadRegion(C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door)
+void NetWorld::BroadcastNetLoadRegion(C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door)
 {
     SLNet::BitStream bs;
     bs.Write((SLNet::MessageID)ID_WORLD_LOAD_REGION);
@@ -13,7 +13,7 @@ void NetWorld::BroadcastLoadRegion(C3DVector const& position, float facingAngleX
     network->SendToAllClients((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_SEQUENCED);
 }
 
-void NetWorld::BroadcastLoadedRegion()
+void NetWorld::BroadcastNetLoadedRegion()
 {
     SLNet::BitStream bs;
     bs.Write((SLNet::MessageID)ID_WORLD_LOADED_REGION);
@@ -27,7 +27,7 @@ void NetWorld::BroadcastLoadedRegion()
     }
 }
 
-void NetWorld::ReceiveLoadedRegion(int netPlayerNetworkId)
+void NetWorld::ReceiveNetLoadedRegion(int netPlayerNetworkId)
 {
     if (networkId == 0)
     {

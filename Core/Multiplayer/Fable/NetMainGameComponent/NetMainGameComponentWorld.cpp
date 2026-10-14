@@ -22,12 +22,10 @@ void NetMainGameComponent::SetupNetworkWorldCallbacks()
         });
 
     network->AddLoadedRegionCallback("LoadedRegion", [this](BitStream& bsIn) {
-        CWorld* world = mainGameComponent->GetWorld();
-
         int netPlayerNetworkId = -1;
         bsIn.Read(netPlayerNetworkId);
 
-		netWorld->ReceiveLoadedRegion(netPlayerNetworkId);
+		netWorld->ReceiveNetLoadedRegion(netPlayerNetworkId);
         netPlayerManager->SetNetPlayerAlpha(netPlayerNetworkId, 255);
         });
 }
@@ -36,4 +34,5 @@ void NetMainGameComponent::ClearNetworkWorldCallbacks()
 {
     network->RemoveLoadRegionCallback("LoadRegion");
     network->RemoveLoadedRegionCallback("LoadedRegion");
+	network->RemoveWorldTimeCallback("WorldTime");
 }

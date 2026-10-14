@@ -40,6 +40,7 @@ private:
 
 	std::map<std::string, std::function<void(BitStream&)>> loadRegionCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> loadedRegionCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> worldTimeCallbacks;
 
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> createNetPlayersCallbacks;
@@ -100,6 +101,9 @@ public:
 
 	void AddLoadedRegionCallback(const std::string& id, std::function<void(BitStream&)> cb) { loadedRegionCallbacks[id] = cb; }
 	void RemoveLoadedRegionCallback(const std::string& id) { loadedRegionCallbacks.erase(id); }
+
+	void AddWorldTimeCallback(const std::string& id, std::function<void(BitStream&)> cb) { worldTimeCallbacks[id] = cb; }
+	void RemoveWorldTimeCallback(const std::string& id) { worldTimeCallbacks.erase(id); }
 
 	void AddCreateNetPlayerCallback(const std::string& id, std::function<void(BitStream&)> cb) { createNetPlayerCallbacks[id] = cb; }
 	void RemoveCreateNetPlayerCallback(const std::string& id) { createNetPlayerCallbacks.erase(id); }

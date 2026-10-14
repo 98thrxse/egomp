@@ -77,6 +77,7 @@ SDK::SDK()
 	CTCHero::Hook();
 	CTCCombat::Hook();
 	NGraphicAppearance::CTCGraphicAppearance::Hook();
+	CGameTimeManager::Hook();
 
 	CCreatureAction_PlayerInteractionGreet::Hook();
 	CCreatureAction_StartBlocking::Hook();

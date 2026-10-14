@@ -10,6 +10,7 @@
 #include "3DVector.h"
 #include "GameEvent.h"
 #include "GameScriptInterface.h"
+#include "GameTimeManager.h"
 
 extern bool (*IsMultiplayer)();
 
@@ -30,11 +31,16 @@ public:
         WAITING_FOR_FADE_IN = 0x9
     };
 
-    char pad1[0x38];
+    char pad0[0x14];
+    CWorldMap* PWorldMap;
+    char pad0b[0x4];
+    CGameTimeManager* PGameTimeManager;
+    char pad1[0x18];
     CGameScriptInterface* PGameScriptInterface;
-    char pad2[0x160];
+    char pad2[0x15C];
 
     CWorldMap* GetWorldMap();
+    CGameTimeManager* GetGameTimeManager();
     CGameScriptInterface* GetGameScriptInterface();
 
     C3DVector GetSaveGameMarkerPos();

@@ -164,6 +164,10 @@ void NetMainGameComponent::Disconnect()
 {
     ClearInputBuffer();
     network->Disconnect();
+
+    netWorld->DestroyNetWorld();
+    netPlayerManager->DestroyNetPlayers();
+    netPlayerManager->DestroyLocalNetPlayer();
 }
 
 void NetMainGameComponent::Clear()
@@ -195,19 +199,13 @@ void NetMainGameComponent::ClearNetworkCallbacks()
 void NetMainGameComponent::ClearSDKCallbacks()
 {
     ClearSDKWorldCallbacks();
-    ClearSDKGameScriptInterfaceCallbacks();
 }
 
 void NetMainGameComponent::ClearSDKWorldCallbacks()
 {
     CWorld* world = mainGameComponent->GetWorld();
-    world->RemoveSetAsLoadingRegionCallback("SetAsLoadingRegion");
-}
-
-void NetMainGameComponent::ClearSDKGameScriptInterfaceCallbacks()
-{
-    CWorld* world = mainGameComponent->GetWorld();
     CGameScriptInterface* gameScriptInterface = world->GetGameScriptInterface();
 
+    world->RemoveSetAsLoadingRegionCallback("SetAsLoadingRegion");
     gameScriptInterface->RemoveSetTeleportingAsActiveCallback("SetTeleportingAsActive");
 }

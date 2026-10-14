@@ -33,7 +33,6 @@ private:
 
 	void ClearSDKCallbacks();
 	void ClearSDKWorldCallbacks();
-	void ClearSDKGameScriptInterfaceCallbacks();
 
 	void SetupNetworkCallbacks();
 	void ClearNetworkCallbacks();

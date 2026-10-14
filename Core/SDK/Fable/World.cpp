@@ -5,12 +5,17 @@ std::map<std::string, std::function<void(C3DVector const&, float, bool, bool, bo
 
 CWorldMap* CWorld::GetWorldMap()
 {
-    return *(CWorldMap**)((char*)this + 0x14);
+    return this->PWorldMap;
+}
+
+CGameTimeManager* CWorld::GetGameTimeManager()
+{
+	return this->PGameTimeManager;
 }
 
 CGameScriptInterface* CWorld::GetGameScriptInterface()
 {
-    return *(CGameScriptInterface**)((char*)this + 0x38);
+	return this->PGameScriptInterface;
 }
 
 void (__thiscall* CWorld::OEAMoveHeroToRegion)(CWorld*, CGameEvent const*) = nullptr;

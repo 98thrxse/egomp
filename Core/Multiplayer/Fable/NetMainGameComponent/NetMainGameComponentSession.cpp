@@ -68,6 +68,7 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
 {
     CWorld* world = mainGameComponent->GetWorld();
     CGameScriptInterface* gameScriptInterface = world->GetGameScriptInterface();
+    CGameTimeManager* gameTimeManager = world->GetGameTimeManager();
 
     int networkId = -1;
     C3DVector position = {};
@@ -89,31 +90,41 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
     {
         world->AddSetAsLoadingRegionCallback("SetAsLoadingRegion", [this, networkId, world](C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door) {
             SetInLimboTillRegionLoaded(world, position);
+
             world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
-            netWorld->BroadcastLoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
+            netWorld->BroadcastNetLoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
             });
 
         gameScriptInterface->AddSetTeleportingAsActiveCallback("SetTeleportingAsActive", [this, gameScriptInterface](bool active) {
             gameScriptInterface->SetTeleportingAsActive(active);
             });
 
-        netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
+        netWorld->CreateNetWorld();
+        netPlayerManager->CreateLocalNetPlayer(position, facingAngleXY);
 	}
     else
     {
         world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, networkId, world, gameScriptInterface, position, facingAngleXY]() {
-            if (world->GetRegionLoadStatus() != CWorld::NOT_LOADING_REGION)
-                return;
+            if (world->GetRegionLoadStatus() == CWorld::READY_TO_BEGIN_FADE_OUT)
+            {
+                world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
 
-            world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
-            gameScriptInterface->SetTeleportingAsActive(false);
-            netPlayerManager->CreateLocalNetPlayer(networkId, position, facingAngleXY);
+                network->AddWorldTimeCallback("WorldTime", [this](BitStream& bs) {
+                    float time = 0;
+                    bs.Read(time);
+
+                    netWorld->ReceiveNetWorldTime(time);
+                    });
+
+                netPlayerManager->CreateLocalNetPlayer(position, facingAngleXY);
+            }
             });
 
         gameScriptInterface->AddSetTeleportingAsActiveCallback("SetTeleportingAsActive", [this, gameScriptInterface](bool active) {
             gameScriptInterface->SetTeleportingAsActive(false);
             });
 
+        gameScriptInterface->SetTeleportingAsActive(false);
         world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
     }
 }

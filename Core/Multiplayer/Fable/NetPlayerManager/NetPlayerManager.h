@@ -20,7 +20,7 @@ public:
     void SetNetworkId(int id);
     int GetNetworkId() const;
 
-    void CreateLocalNetPlayer(int networkId, C3DVector position, float facingAngleXY);
+    void CreateLocalNetPlayer(C3DVector position, float facingAngleXY);
 	void SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
 
     void CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);

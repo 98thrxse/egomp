@@ -8,6 +8,7 @@ enum NetworkMessages
 
     ID_WORLD_LOAD_REGION,
     ID_WORLD_LOADED_REGION,
+    ID_WORLD_TIME,
 
     ID_PLAYER_CREATE,
     ID_PLAYERS_CREATE,

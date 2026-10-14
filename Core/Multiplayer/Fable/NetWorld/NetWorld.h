@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <chrono>
 
 #include "../../../SDK/Fable/SDK.h"
 #include "../../Network/Network.h"
@@ -14,21 +15,28 @@ public:
     void SetNetworkId(int id);
     int GetNetworkId() const;
 
-    void BroadcastLoadRegion(
+    void CreateNetWorld();
+    void DestroyNetWorld();
+
+    void BroadcastNetLoadRegion(
         C3DVector const& position,
         float facingAngleXY,
         bool teleporter,
         bool duringCutScenes,
         bool door);
 
-    void BroadcastLoadedRegion();
-    void ReceiveLoadedRegion(int netPlayerNetworkId);
+    void BroadcastNetLoadedRegion();
+    void ReceiveNetLoadedRegion(int netPlayerNetworkId);
+
+	void BroadcastNetWorldTime();
+	void ReceiveNetWorldTime(float time);
 
 private:
     Network* network;
 
     CMainGameComponent* mainGameComponent;
     CWorld* world = mainGameComponent->GetWorld();
+    CGameTimeManager* gameTimeManager = world->GetGameTimeManager();
 
     int networkId;
 };

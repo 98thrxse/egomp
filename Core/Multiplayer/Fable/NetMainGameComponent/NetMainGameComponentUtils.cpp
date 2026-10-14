@@ -14,7 +14,7 @@ void NetMainGameComponent::SetInLimboTillRegionLoaded(CWorld* world, C3DVector p
 
         world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
         netPlayerManager->SetNetPlayersInLimbo(false);
-        netWorld->BroadcastLoadedRegion();
+        netWorld->BroadcastNetLoadedRegion();
         });
 }
 
@@ -30,6 +30,7 @@ void NetMainGameComponent::ClearInputBuffer()
 void NetMainGameComponent::SetNetworkId(int id)
 {
     networkId = id;
+
     netWorld->SetNetworkId(id);
     netPlayerManager->SetNetworkId(id);
 }
