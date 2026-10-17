@@ -80,6 +80,11 @@ void __fastcall CWorld::HSetAsPaused(CWorld* _this, void* _EDX, bool paused)
     OSetAsPaused(_this, paused);
 }
 
+void CWorld::SetAsPaused(bool paused)
+{
+    OSetAsPaused(this, paused);
+}
+
 void(__thiscall* CWorld::OEAControlledCreatureStartSneaking)(CWorld*, const CGameEvent*) = nullptr;
 void __fastcall CWorld::HEAControlledCreatureStartSneaking(CWorld* _this, void* _EDX, const CGameEvent* event)
 {

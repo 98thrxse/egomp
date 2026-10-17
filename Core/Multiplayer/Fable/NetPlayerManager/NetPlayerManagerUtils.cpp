@@ -99,6 +99,34 @@ int NetPlayerManager::GetNetworkIdFromLocalId(int localId) const
     return -1;
 }
 
+int NetPlayerManager::GetNetworkIdFromThing(CThing* thing) const
+{
+    if (thing)
+    {
+        uint64_t targetUID = thing->UniqueID;
+
+        if (localNetPlayer)
+        {
+            CThing* localNetCreature = reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(localNetPlayer->GetNetworkId()));
+            if (localNetCreature && localNetCreature->UniqueID == targetUID)
+            {
+                return localNetPlayer->GetNetworkId();
+            }
+		}
+
+        for (auto& netPlayer : netPlayers)
+        {
+            CThing* netCreature = reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId()));
+            if (netCreature && netCreature->UniqueID == targetUID)
+            {
+                return netPlayer->GetNetworkId();
+            }
+        }
+    }
+
+    return -1;
+}
+
 void NetPlayerManager::SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force)
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);

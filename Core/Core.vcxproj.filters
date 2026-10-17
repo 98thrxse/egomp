@@ -150,31 +150,7 @@
     <ClInclude Include="SDK\Fable\GameScriptInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_PlayerInteractionGreet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_InterruptableMidAttackAutoTurn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_SheatheItemToInventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\Fable\CombatActionBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Fable\InterfaceType.h">
@@ -268,6 +244,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Fable\GameTimeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Fable\Actions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -410,31 +389,7 @@
     <ClCompile Include="SDK\Fable\GameScriptInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_PlayerInteractionGreet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_InterruptableMidAttackAutoTurn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_SheatheItemToInventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Fable\InventoryStats.cpp">
@@ -552,6 +507,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Multiplayer\Fable\NetWorld\NetWorldLifecycle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Fable\Actions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

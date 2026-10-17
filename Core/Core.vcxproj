@@ -145,7 +145,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.h" />
     <ClInclude Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.h" />
     <ClInclude Include="Multiplayer\Fable\NetWorld\NetWorld.h" />
     <ClInclude Include="Multiplayer\Network\NetworkMessages.h" />
@@ -168,13 +167,6 @@
     <ClInclude Include="SDK\Fable\CoopSpirit.h" />
     <ClInclude Include="SDK\Fable\CreatureAbilityDef.h" />
     <ClInclude Include="SDK\Fable\CreatureActionBase.h" />
-    <ClInclude Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.h" />
-    <ClInclude Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.h" />
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_InterruptableMidAttackAutoTurn.h" />
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_PlayerInteractionGreet.h" />
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_SheatheItemToInventory.h" />
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.h" />
-    <ClInclude Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.h" />
     <ClInclude Include="SDK\Fable\AppearanceMorphBase.h" />
     <ClInclude Include="SDK\Fable\DefIndex.h" />
     <ClInclude Include="SDK\Fable\DefPointeeBase.h" />
@@ -198,6 +190,7 @@
     <ClInclude Include="SDK\Fable\InventoryItem.h" />
     <ClInclude Include="SDK\Fable\InventoryStats.h" />
     <ClInclude Include="SDK\Fable\InventoryWeapons.h" />
+    <ClInclude Include="SDK\Fable\Actions.h" />
     <ClInclude Include="SDK\Fable\ParentDefClassBase.h" />
     <ClInclude Include="SDK\Fable\PlayerMode.h" />
     <ClInclude Include="SDK\Fable\RightHandedSet.h" />
@@ -232,7 +225,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Multiplayer\Fable\NetCreatureAction\NetCreatureAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponent.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentPlayerManager.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetMainGameComponent\NetMainGameComponentSession.cpp" />
@@ -273,19 +265,13 @@
     <ClCompile Include="SDK\Fable\BaseObject.cpp" />
     <ClCompile Include="SDK\Fable\Combat.cpp" />
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp" />
-    <ClCompile Include="SDK\Fable\CombatActions\CombatAction_ControlledStrafeJump.cpp" />
-    <ClCompile Include="SDK\Fable\CombatActions\CombatAction_KickThingOnGround.cpp" />
     <ClCompile Include="SDK\Fable\Component.cpp" />
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_InterruptableMidAttackAutoTurn.cpp" />
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_PlayerInteractionGreet.cpp" />
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_SheatheItemToInventory.cpp" />
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_StartBlocking.cpp" />
-    <ClCompile Include="SDK\Fable\CreatureActions\CreatureAction_UnsheatheItemFromInventory.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
     <ClCompile Include="SDK\Fable\DParticleEmitter.cpp" />
     <ClCompile Include="SDK\Fable\GameTimeManager.cpp" />
     <ClCompile Include="SDK\Fable\GraphicAppearance.cpp" />
     <ClCompile Include="SDK\Fable\Hero.cpp" />
+    <ClCompile Include="SDK\Fable\Actions.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />
     <ClCompile Include="SDK\Fable\DefPointeeBase.cpp" />

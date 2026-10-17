@@ -9,7 +9,6 @@
 
 #include "../LocalNetPlayer/LocalNetPlayer.h"
 #include "../NetPlayer/NetPlayer.h"
-#include "../NetCreatureAction/NetCreatureAction.h"
 
 class NetPlayerManager
 {
@@ -30,7 +29,7 @@ public:
 
     void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
     void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
-    void ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bs);
+    void ReceiveNetPlayerAction(SLNet::BitStream& bs);
     void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
     void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
@@ -105,4 +104,5 @@ private:
     int GetFreeLocalId();
     int GetLocalIdFromNetworkId(int networkId) const;
     int GetNetworkIdFromLocalId(int localId) const;
+    int GetNetworkIdFromThing(CThing* thing) const;
 };

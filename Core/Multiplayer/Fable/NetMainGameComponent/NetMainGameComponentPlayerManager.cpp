@@ -112,13 +112,7 @@ void NetMainGameComponent::SetupNetworkPlayerManagerCallbacks()
 
 	/* Actions */
     network->AddPlayerActionCallback("PlayerActions", [this](BitStream& bs) {
-        int networkId = -1;
-        uintptr_t actionOffset = 0;
-
-        bs.Read(networkId);
-        bs.Read(actionOffset);
-
-        netPlayerManager->ReceiveNetPlayerAction(networkId, actionOffset, bs);
+        netPlayerManager->ReceiveNetPlayerAction(bs);
         });
 }
 

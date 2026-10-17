@@ -60,15 +60,7 @@
 #include "Combat.h"
 #include "GraphicAppearance.h"
 #include "GameTimeManager.h"
-
-#include "CreatureActions/CreatureAction_SheatheItemToInventory.h"
-#include "CreatureActions/CreatureAction_UnsheatheItemFromInventory.h"
-#include "CreatureActions/CreatureAction_InterruptableMidAttackAutoTurn.h"
-#include "CreatureActions/CreatureAction_PlayerInteractionGreet.h"
-#include "CreatureActions/CreatureAction_StartBlocking.h"
-
-#include "CombatActions/CombatAction_KickThingOnGround.h"
-#include "CombatActions/CombatAction_ControlledStrafeJump.h"
+#include "Actions.h"
 
 class SDK
 {

@@ -56,6 +56,7 @@ public:
     void EAMoveHeroToRegion(CGameEvent const* event);
     void HandleMoveHeroToRegionGameEvent(CGameEvent const& game_event);
     void SetAsLoadingRegion(C3DVector const& region_start_pos, float facing_angle_xy, bool via_teleporter, bool allow_during_cut_scenes, bool via_door);
+    void SetAsPaused(bool paused);
 
     static void Hook();
 

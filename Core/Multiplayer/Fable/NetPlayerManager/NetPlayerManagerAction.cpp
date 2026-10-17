@@ -1,15 +1,19 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOffset, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
 {
+	int networkId = -1;
+    uintptr_t vtableAddress = 0;
+
+    bsIn.Read(networkId);
+    bsIn.Read(vtableAddress);
+
+    SLNet::BitStream bsOut;
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
-        SLNet::BitStream bsOut;
         bsOut.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bsOut.Write(networkId);
-        bsOut.Write(actionOffset);
-
-        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+        bsOut.Write(vtableAddress);
     }
 
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
@@ -20,21 +24,27 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
     CThingCreatureBase& creatureBase = *reinterpret_cast<CThingCreatureBase*>(creature);
     void* actionBuffer = nullptr;
 
-    switch (actionOffset)
+    switch (vtableAddress)
     {
     case 0x012592D4: // CCreatureAction_PlayerInteractionGreet
     {
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
 
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+            bsOut.Write(targetNetworkId);
+
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
-        actionBuffer = NetCreatureAction::CCreatureAction_PlayerInteractionGreet(creatureBase, target);
+        actionBuffer = CreatureActions::CCreatureAction_PlayerInteractionGreet(creatureBase, target);
         break;
     }
 	case 0x012761CC: // CCreatureAction_StartBlocking
     {
 		bool block = false;
         bsIn.Read(block);
+
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+            bsOut.Write(block);
 
         CTCCombat* combat = reinterpret_cast<CTCCombat*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_COMBAT));
 
@@ -45,7 +55,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
 
         if (block)
         {
-            actionBuffer = NetCreatureAction::CCreatureAction_StartBlocking(creatureBase);
+            actionBuffer = CreatureActions::CCreatureAction_StartBlocking(creatureBase);
             combat->SetBlocking();
         }
         else
@@ -65,8 +75,15 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         bsIn.Read(requiredFacing.X); bsIn.Read(requiredFacing.Y); bsIn.Read(requiredFacing.Z);
         bsIn.Read(originalFacing.X); bsIn.Read(originalFacing.Y); bsIn.Read(originalFacing.Z);
 
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+        {
+            bsOut.Write(targetNetworkId);
+            bsOut.Write(requiredFacing.X); bsOut.Write(requiredFacing.Y); bsOut.Write(requiredFacing.Z);
+			bsOut.Write(originalFacing.X); bsOut.Write(originalFacing.Y); bsOut.Write(originalFacing.Z);
+        }
+
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
-        actionBuffer = NetCreatureAction::CCombatAction_ControlledStrafeJump(creatureBase, target, requiredFacing, originalFacing);
+        actionBuffer = CreatureActions::CCombatAction_ControlledStrafeJump(creatureBase, target, requiredFacing, originalFacing);
         break;
     }
 	case 0x01277D3C: // CCreatureAction_KickThingOnGround
@@ -74,8 +91,11 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
 
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+			bsOut.Write(targetNetworkId);
+
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
-        actionBuffer = NetCreatureAction::CCreatureAction_KickThingOnGround(creatureBase, target);
+        actionBuffer = CreatureActions::CCombatAction_KickThingOnGround(creatureBase, target);
         break;
     }
 	case 0x012778CC: // CCreatureAction_InterruptableMidAttackAutoTurn
@@ -87,6 +107,13 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         bsIn.Read(targetNetworkId);
         bsIn.Read(required_facing.X); bsIn.Read(required_facing.Y); bsIn.Read(required_facing.Z);
         bsIn.Read(weaponIndex);
+
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+        {
+            bsOut.Write(targetNetworkId);
+            bsOut.Write(required_facing.X); bsOut.Write(required_facing.Y); bsOut.Write(required_facing.Z);
+            bsOut.Write(weaponIndex);
+		}
 
         CTCInventoryWeapons* inventoryWeapons =
             reinterpret_cast<CTCInventoryWeapons*>(
@@ -115,11 +142,23 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
         CDefPointer* pmelee_ability = &melee_ability;
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
-        actionBuffer = NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
+        actionBuffer = CreatureActions::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
         break;
     }
     case 0x0125CCBC: // CCreatureAction_UnsheatheItemFromInventory
     {
+        int itemIndex = -1;
+        long interruption_priority = 0;
+
+        bsIn.Read(itemIndex);
+        bsIn.Read(interruption_priority);
+
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+        {
+            bsOut.Write(itemIndex);
+            bsOut.Write(interruption_priority);
+		}
+
         CTCInventoryWeapons* inventoryWeapons =
             reinterpret_cast<CTCInventoryWeapons*>(
                 reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS));
@@ -139,12 +178,6 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
             std::cout << "[CCreatureAction_UnsheatheItemFromInventory] !inventoryWeapons" << std::endl;
             return;
         }
-
-        int itemIndex = -1;
-        long interruption_priority = 0;
-
-        bsIn.Read(itemIndex);
-        bsIn.Read(interruption_priority);
 
         CThing* unsheatheItem = reinterpret_cast<CThing*>(creature);
 
@@ -179,22 +212,28 @@ void NetPlayerManager::ReceiveNetPlayerAction(int networkId, uintptr_t actionOff
 
         CCreatureActionBase* pfollow_up_action = nullptr;
 
-        actionBuffer = NetCreatureAction::CCreatureAction_UnsheatheItemFromInventory(creatureBase, *unsheatheItem, pfollow_up_action, interruption_priority);
+        actionBuffer = CreatureActions::CCreatureAction_UnsheatheItemFromInventory(creatureBase, *unsheatheItem, pfollow_up_action, interruption_priority);
         break;
     }
-    case 0x0125C83C: // CCreatureAction_SheatheItemToInventory
+	case 0x0125C83C: // CCreatureAction_SheatheItemToInventory
     {
         CCreatureActionBase* pfollow_up_action = nullptr;
         long interruption_group_id = 0;
 
 		bsIn.Read(interruption_group_id);
 
-        actionBuffer = NetCreatureAction::CCreatureAction_SheatheItemToInventory(creatureBase, pfollow_up_action, interruption_group_id);
+        if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+			bsOut.Write(interruption_group_id);
+
+        actionBuffer = CreatureActions::CCreatureAction_SheatheItemToInventory(creatureBase, pfollow_up_action, interruption_group_id);
         break;
     }
     default:
         return;
     }
+
+    if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
+        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
 
     if (actionBuffer)
     {
@@ -225,51 +264,32 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         if (thisUID != creatureUID)
             return;
 
-        uintptr_t actionOffset = *(uintptr_t*)&action;
+        uintptr_t vtableAddress = *reinterpret_cast<const uintptr_t*>(&action);
 
         SLNet::BitStream bs;
         bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bs.Write(networkId);
-        bs.Write(actionOffset);
+        bs.Write(vtableAddress);
 
-        // local helper to resolve target network ID
-        auto getTargetNetworkId = [this](CThing* target) {
-            int targetNetworkId = -1;
-            if (target)
-            {
-                uint64_t targetUID = target->UniqueID;
-                for (auto& netPlayer : netPlayers)
-                {
-                    CThing* targetCreature = reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId()));
-                    if (targetCreature && targetCreature->UniqueID == targetUID)
-                    {
-                        targetNetworkId = netPlayer->GetNetworkId();
-                        break;
-                    }
-                }
-            }
-            return targetNetworkId;
-            };
-
-        switch (actionOffset)
+        switch (vtableAddress)
         {
         case 0x012592D4: // CCreatureAction_PlayerInteractionGreet
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
-            int targetNetworkId = getTargetNetworkId(target);
+            int targetNetworkId = GetNetworkIdFromThing(target);
             bs.Write(targetNetworkId);
+            
             break;
         }
         case 0x012761CC: // CCreatureAction_StartBlocking
         {
-            bool block = true;
-            bs.Write(block);
+            bs.Write(true);
             break;
         }
         case 0x01276974: // CCombatAction_ControlledStrafeJump
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
-            int targetNetworkId = getTargetNetworkId(target);
+            int targetNetworkId = GetNetworkIdFromThing(target);
 
             C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(reinterpret_cast<uintptr_t>(&action) + 0x114);
             C3DVector originalFacing = *reinterpret_cast<const C3DVector*>(reinterpret_cast<uintptr_t>(&action) + 0x120);
@@ -277,19 +297,21 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             bs.Write(targetNetworkId);
             bs.Write(requiredFacing.X); bs.Write(requiredFacing.Y); bs.Write(requiredFacing.Z);
             bs.Write(originalFacing.X); bs.Write(originalFacing.Y); bs.Write(originalFacing.Z);
+            
             break;
         }
         case 0x01277D3C: // CCombatAction_KickThingOnGround
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
-            int targetNetworkId = getTargetNetworkId(target);
+            int targetNetworkId = GetNetworkIdFromThing(target);
             bs.Write(targetNetworkId);
+
             break;
         }
-        case 0x012778CC: // CCreatureAction_InterruptableMidAttackAutoTurn
+        case 0x012778CC: // CCreatureAction_InterruptableMidAttackAutoTurn - UNFINISHED (pmelee_ability)
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
-            int targetNetworkId = getTargetNetworkId(target);
+            int targetNetworkId = GetNetworkIdFromThing(target);
 
             C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(
                 reinterpret_cast<uintptr_t>(&action) + 0x114);
@@ -307,6 +329,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             bs.Write(targetNetworkId);
             bs.Write(requiredFacing.X); bs.Write(requiredFacing.Y); bs.Write(requiredFacing.Z);
             bs.Write(weaponIndex);
+
             break;
         }
         case 0x0125CCBC: // CCreatureAction_UnsheatheItemFromInventory
@@ -330,15 +353,16 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
 
             break;
         }
-        case 0x0125C83C: // CCreatureAction_SheatheItemToInventory
+        case 0x0125C83C: // CCreatureAction_SheatheItemToInventory - UNFINISHED (pfollow_up_action)
         {
             int interruption_group_id = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(&action) + 0x20);
 			bs.Write(interruption_group_id);
+
             break;
         }
         default:
         {
-            std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: Unknown actionOffset: " << std::hex << actionOffset << std::dec << std::endl;
+            std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: Unknown vtableAddress: " << std::hex << vtableAddress << std::dec << std::endl;
             return;
         }
         }
@@ -359,14 +383,11 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
     }
 
     combat->AddUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId), [this, networkId]() {
-		uintptr_t actionOffset = 0x012761CC; // CCreatureAction_StartBlocking
-		bool block = false;
-
         SLNet::BitStream bs;
         bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bs.Write(networkId);
-        bs.Write(actionOffset);
-        bs.Write(block);
+        bs.Write(0x012761CC);
+        bs.Write(false);
 
         if (localNetPlayer->GetNetworkId() == 0) {
             network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);

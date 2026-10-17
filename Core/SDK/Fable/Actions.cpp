@@ -1,6 +1,6 @@
-#include "NetCreatureAction.h"
+#include "Actions.h"
 
-void* NetCreatureAction::CCreatureAction_PlayerInteractionGreet(CThingCreatureBase& creatureBase, CThing* target)
+void* CreatureActions::CCreatureAction_PlayerInteractionGreet(CThingCreatureBase& creatureBase, CThing* target)
 {
     void* actionBuffer = ::operator new(0xB0);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&, CThing&);
@@ -8,7 +8,7 @@ void* NetCreatureAction::CCreatureAction_PlayerInteractionGreet(CThingCreatureBa
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCreatureAction_StartBlocking(CThingCreatureBase& creatureBase)
+void* CreatureActions::CCreatureAction_StartBlocking(CThingCreatureBase& creatureBase)
 {
     void* actionBuffer = ::operator new(0x114);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&);
@@ -16,7 +16,7 @@ void* NetCreatureAction::CCreatureAction_StartBlocking(CThingCreatureBase& creat
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCombatAction_ControlledStrafeJump(CThingCreatureBase& creatureBase, CThing* target, const C3DVector& requiredFacing, const C3DVector& originalFacing)
+void* CreatureActions::CCombatAction_ControlledStrafeJump(CThingCreatureBase& creatureBase, CThing* target, const C3DVector& requiredFacing, const C3DVector& originalFacing)
 {
     void* actionBuffer = ::operator new(0x130);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&, CThing&, const C3DVector&, const C3DVector&);
@@ -24,7 +24,7 @@ void* NetCreatureAction::CCombatAction_ControlledStrafeJump(CThingCreatureBase& 
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCreatureAction_KickThingOnGround(CThingCreatureBase& creatureBase, CThing* target)
+void* CreatureActions::CCombatAction_KickThingOnGround(CThingCreatureBase& creatureBase, CThing* target)
 {
     void* actionBuffer = ::operator new(0x130);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&, CThing&);
@@ -32,7 +32,7 @@ void* NetCreatureAction::CCreatureAction_KickThingOnGround(CThingCreatureBase& c
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(CThingCreatureBase& creatureBase, CThing* target, CThing* pweapon, const C3DVector& required_facing, CDefPointer* pmelee_ability)
+void* CreatureActions::CCreatureAction_InterruptableMidAttackAutoTurn(CThingCreatureBase& creatureBase, CThing* target, CThing* pweapon, const C3DVector& required_facing, CDefPointer* pmelee_ability)
 {
     void* actionBuffer = ::operator new(0x12C);
 
@@ -49,7 +49,7 @@ void* NetCreatureAction::CCreatureAction_InterruptableMidAttackAutoTurn(CThingCr
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCreatureAction_UnsheatheItemFromInventory(CThingCreatureBase& creatureBase, CThing& unsheathe_item, CCreatureActionBase* pfollow_up_action, long interruption_priority)
+void* CreatureActions::CCreatureAction_UnsheatheItemFromInventory(CThingCreatureBase& creatureBase, CThing& unsheathe_item, CCreatureActionBase* pfollow_up_action, long interruption_priority)
 {
     void* actionBuffer = ::operator new(0xB8);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&, CThing&, CCreatureActionBase*, long);
@@ -57,7 +57,7 @@ void* NetCreatureAction::CCreatureAction_UnsheatheItemFromInventory(CThingCreatu
     return actionBuffer;
 }
 
-void* NetCreatureAction::CCreatureAction_SheatheItemToInventory(CThingCreatureBase& creatureBase, CCreatureActionBase* pfollow_up_action, long interruption_group_id)
+void* CreatureActions::CCreatureAction_SheatheItemToInventory(CThingCreatureBase& creatureBase, CCreatureActionBase* pfollow_up_action, long interruption_group_id)
 {
     void* actionBuffer = ::operator new(0xB0);
     typedef void* (__thiscall* Ctor)(void*, CThingCreatureBase&, CCreatureActionBase*, long);

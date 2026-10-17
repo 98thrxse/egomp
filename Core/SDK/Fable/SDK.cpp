@@ -78,13 +78,4 @@ SDK::SDK()
 	CTCCombat::Hook();
 	NGraphicAppearance::CTCGraphicAppearance::Hook();
 	CGameTimeManager::Hook();
-
-	CCreatureAction_PlayerInteractionGreet::Hook();
-	CCreatureAction_StartBlocking::Hook();
-	CCreatureAction_InterruptableMidAttackAutoTurn::Hook();
-	CCreatureAction_UnsheatheItemFromInventory::Hook();
-	CCreatureAction_SheatheItemToInventory::Hook();
-
-	CCombatAction_KickThingOnGround::Hook();
-	CCombatAction_ControlledStrafeJump::Hook();
 };
