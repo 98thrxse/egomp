@@ -6,21 +6,28 @@ SDK& SDK::GetInstance()
 	return instance;
 }
 
-void* (__cdecl* SDK::OGameMalloc)(unsigned int size) = nullptr;
-void* __cdecl SDK::HGameMalloc(unsigned int size)
+HWND WINAPI SDK::HGetForegroundWindow()
 {
-	return OGameMalloc(size);
-}
+	if (IsMultiplayer())
+	{
+		HWND foreground = OGetForegroundWindow();
+		CSystemManager* systemManager = CSystemManager::GFGetSystemManager();
+		HWND gameWindow = *reinterpret_cast<HWND*>(systemManager + 0x94);
+		return gameWindow ? gameWindow : foreground;
+	}
 
-void* SDK::GameMalloc(unsigned int size)
-{
-	return OGameMalloc(size);
+	return OGetForegroundWindow();
 }
 
 SDK::SDK()
 {
 	INIT_HOOKS();
-	ADD_HOOK(0xBFEA1A, HGameMalloc, OGameMalloc);
+
+	ADD_HOOK(
+		reinterpret_cast<std::uintptr_t>(&GetForegroundWindow),
+		HGetForegroundWindow,
+		OGetForegroundWindow
+	);
 
 	CTCBase::Hook();
 	CBaseClass::Hook();
@@ -78,4 +85,6 @@ SDK::SDK()
 	CTCCombat::Hook();
 	NGraphicAppearance::CTCGraphicAppearance::Hook();
 	CGameTimeManager::Hook();
+	CSystemManager::Hook();
+	CInputManager::Hook();
 };

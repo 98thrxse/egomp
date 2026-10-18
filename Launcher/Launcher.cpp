@@ -1,123 +1,98 @@
-#include <iostream>
 #include <windows.h>
 
-BOOL StartEXE(wchar_t* gamePath, STARTUPINFOW& si, PROCESS_INFORMATION& pi)
+bool FileExists(const wchar_t* path)
 {
-    BOOL result = CreateProcessW(NULL, gamePath, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
-    if (!result)
+    DWORD attributes = GetFileAttributesW(path);
+    return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+void ShowError(const wchar_t* message)
+{
+    MessageBoxW(nullptr, message, L"Error", MB_ICONERROR);
+}
+
+bool Inject(HANDLE processHandle, const wchar_t* dllPath)
+{
+    SIZE_T dllPathSize = (wcslen(dllPath) + 1) * sizeof(wchar_t);
+    LPVOID remoteMemory = VirtualAllocEx(processHandle, nullptr, dllPathSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!remoteMemory) return false;
+
+    if (!WriteProcessMemory(processHandle, remoteMemory, dllPath, dllPathSize, nullptr))
     {
-        std::wcerr << L"[CreateProcessW] Error code: " << GetLastError() << L"." << std::endl;
+        VirtualFreeEx(processHandle, remoteMemory, 0, MEM_RELEASE);
         return false;
     }
 
-    return true;
+    HMODULE kernel32Module = GetModuleHandleW(L"kernel32.dll");
+    FARPROC loadLibraryAddress = kernel32Module ? GetProcAddress(kernel32Module, "LoadLibraryW") : nullptr;
+    if (!loadLibraryAddress) { VirtualFreeEx(processHandle, remoteMemory, 0, MEM_RELEASE); return false; }
+
+    HANDLE remoteThread = CreateRemoteThread(processHandle, nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(loadLibraryAddress), remoteMemory, 0, nullptr);
+    if (!remoteThread) { VirtualFreeEx(processHandle, remoteMemory, 0, MEM_RELEASE); return false; }
+
+    WaitForSingleObject(remoteThread, INFINITE);
+
+    DWORD exitCode = 0;
+    BOOL got = GetExitCodeThread(remoteThread, &exitCode);
+
+    CloseHandle(remoteThread);
+    VirtualFreeEx(processHandle, remoteMemory, 0, MEM_RELEASE);
+
+    return got && exitCode != 0;
 }
 
-BOOL InjectDLL(HANDLE hProcess, const wchar_t* corePath)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR lpCmdLine, _In_ int nCmdShow)
 {
-    SIZE_T size = (wcslen(corePath) + 1) * sizeof(wchar_t);
-    LPVOID remoteMemory = VirtualAllocEx(hProcess, NULL, size, MEM_COMMIT, PAGE_READWRITE);
-    if (!remoteMemory) {
-        std::wcerr << L"[VirtualAllocEx] Error code: " << GetLastError() << L"." << std::endl;
-        return false;
-    }
+    (void)hInstance; (void)hPrevInstance; (void)lpCmdLine; (void)nCmdShow;
 
-    BOOL writeSuccess = WriteProcessMemory(hProcess, remoteMemory, corePath, size, NULL);
-    if (!writeSuccess)
-    {
-        std::wcerr << L"[WriteProcessMemory] Error: " << GetLastError() << L"." << std::endl;
-        VirtualFreeEx(hProcess, remoteMemory, 0, MEM_RELEASE);
-        return false;
-    }
-
-    HMODULE kernel32Handle = GetModuleHandleW(L"kernel32.dll");
-    if (!kernel32Handle) {
-        std::wcerr << L"[GetModuleHandleW] Error code: " << GetLastError() << L"." << std::endl;
-        VirtualFreeEx(hProcess, remoteMemory, 0, MEM_RELEASE);
-        return false;
-    }
-    auto loadLibraryAddr = reinterpret_cast<LPTHREAD_START_ROUTINE>(
-        GetProcAddress(kernel32Handle, "LoadLibraryW")
-    );
-    if (!loadLibraryAddr) {
-        std::wcerr << L"[GetProcAddress] Error code: " << GetLastError() << L"." << std::endl;
-        VirtualFreeEx(hProcess, remoteMemory, 0, MEM_RELEASE);
-        return false;
-    }
-
-    HANDLE hThread = CreateRemoteThread(hProcess, NULL, NULL,
-        (LPTHREAD_START_ROUTINE)loadLibraryAddr, remoteMemory, NULL, NULL);
-    if (!hThread) {
-        std::wcerr << L"[CreateRemoteThread] Error code: " << GetLastError() << L"." << std::endl;
-        VirtualFreeEx(hProcess, remoteMemory, 0, MEM_RELEASE);
-        return false;
-    }
-
-    WaitForSingleObject(hThread, INFINITE);
-    CloseHandle(hThread);
-    VirtualFreeEx(hProcess, remoteMemory, 0, MEM_RELEASE);
-
-    return true;
-}
-
-BOOL FileExists(const std::wstring& path)
-{
-    return GetFileAttributesW(path.c_str()) != INVALID_FILE_ATTRIBUTES;
-}
-
-std::wstring GetDirectory(const std::wstring& fullPath)
-{
-    size_t pos = fullPath.find_last_of(L"\\/");
-    if (pos != std::wstring::npos)
-        return fullPath.substr(0, pos);
-    return L"";
-}
-
-BOOL CheckFilePath(wchar_t* gamePath, wchar_t* corePath)
-{
-    if (!FileExists(gamePath))
-    {
-        MessageBoxW(NULL, L"Fable.exe not found.", L"Error", MB_ICONERROR);
-        return false;
-    }
-
-    if (!FileExists(corePath))
-    {
-        MessageBoxW(NULL, L"EgoMP.dll not found.", L"Error", MB_ICONERROR);
-        return false;
-    }
-
-    return true;
-}
-
-int main()
-{
-    wchar_t gamePath[] = L"..\\Fable.exe";
-    wchar_t corePath[] = L"EgoMP.dll";
+    const wchar_t* exePath = L"..\\Fable.exe";
+    const wchar_t* dllRelativePath = L"EgoMP.dll";
 
     wchar_t fullDllPath[MAX_PATH];
-    if (!_wfullpath(fullDllPath, corePath, MAX_PATH)) return 1;
+    DWORD len = GetFullPathNameW(dllRelativePath, MAX_PATH, fullDllPath, nullptr);
+    if (!len || len >= MAX_PATH) { ShowError(L"Could not resolve `EgoMP.dll` path."); return 1; }
 
-    if (CheckFilePath(gamePath, fullDllPath))
+    if (!FileExists(exePath)) { ShowError(L"`Fable.exe` not found."); return 1; }
+    if (!FileExists(fullDllPath)) { ShowError(L"`EgoMP.dll` not found."); return 1; }
+
+    STARTUPINFOW startupInfo = { sizeof(startupInfo) };
+    PROCESS_INFORMATION processInfo = {};
+
+    if (!CreateProcessW(exePath, nullptr, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &startupInfo, &processInfo))
     {
-        STARTUPINFOW si = { sizeof(si) };
-        PROCESS_INFORMATION pi = { 0 };
-
-        if (StartEXE(gamePath, si, pi))
-        {
-            if (InjectDLL(pi.hProcess, fullDllPath))
-            {
-                ResumeThread(pi.hThread);
-            }
-            else
-            {
-                TerminateProcess(pi.hProcess, 0);
-            }
-
-            CloseHandle(pi.hThread);
-            CloseHandle(pi.hProcess);
-        }
+        ShowError(L"Failed to launch `Fable.exe`.");
+        return 1;
     }
 
-    return 0;
+    bool injected = false;
+    if (processInfo.hProcess)
+        injected = Inject(processInfo.hProcess, fullDllPath);
+
+    if (injected)
+    {
+        if (processInfo.hThread)
+        {
+            if (ResumeThread(processInfo.hThread) == (DWORD)-1)
+            {
+                ShowError(L"Failed to resume thread.");
+                if (processInfo.hProcess) TerminateProcess(processInfo.hProcess, 1);
+                injected = false;
+            }
+        }
+        else
+        {
+            ShowError(L"Missing thread handle.");
+            if (processInfo.hProcess) TerminateProcess(processInfo.hProcess, 1);
+            injected = false;
+        }
+    }
+    else
+    {
+        if (processInfo.hProcess) TerminateProcess(processInfo.hProcess, 1);
+    }
+
+    if (processInfo.hThread) CloseHandle(processInfo.hThread);
+    if (processInfo.hProcess) CloseHandle(processInfo.hProcess);
+
+    return injected ? 0 : 1;
 }

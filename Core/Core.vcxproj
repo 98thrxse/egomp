@@ -29,13 +29,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -81,6 +81,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -99,6 +100,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,6 +187,7 @@
     <ClInclude Include="SDK\Fable\HeroTrainableStatType.h" />
     <ClInclude Include="SDK\Fable\HeroTrainingStatus.h" />
     <ClInclude Include="SDK\Fable\IEngine.h" />
+    <ClInclude Include="SDK\Fable\InputManager.h" />
     <ClInclude Include="SDK\Fable\InterfaceType.h" />
     <ClInclude Include="SDK\Fable\InventoryBase.h" />
     <ClInclude Include="SDK\Fable\InventoryItem.h" />
@@ -205,6 +208,7 @@
     <ClInclude Include="SDK\Fable\PhysicsControlled.h" />
     <ClInclude Include="SDK\Fable\PhysicsStandard.h" />
     <ClInclude Include="SDK\Fable\Stealth.h" />
+    <ClInclude Include="SDK\Fable\SystemManager.h" />
     <ClInclude Include="SDK\Fable\Thing.h" />
     <ClInclude Include="SDK\Fable\ThingCreatureBase.h" />
     <ClInclude Include="SDK\Fable\ThingGameObject.h" />
@@ -222,6 +226,7 @@
     <ClInclude Include="SDK\Fable\World.h" />
     <ClInclude Include="SDK\Fable\WorldMap.h" />
     <ClInclude Include="SDK\Utils\Hook.h" />
+    <ClInclude Include="SDK\Utils\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -272,6 +277,8 @@
     <ClCompile Include="SDK\Fable\GraphicAppearance.cpp" />
     <ClCompile Include="SDK\Fable\Hero.cpp" />
     <ClCompile Include="SDK\Fable\Actions.cpp" />
+    <ClCompile Include="SDK\Fable\InputManager.cpp" />
+    <ClCompile Include="SDK\Fable\SystemManager.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />
     <ClCompile Include="SDK\Fable\DefPointeeBase.cpp" />

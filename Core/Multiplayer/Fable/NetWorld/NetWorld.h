@@ -29,7 +29,7 @@ public:
     void ReceiveNetLoadedRegion(int netPlayerNetworkId);
 
 	void BroadcastNetWorldTime();
-	void ReceiveNetWorldTime(float time);
+	void ReceiveNetWorldTime(BitStream& bs);
 
 private:
     Network* network;

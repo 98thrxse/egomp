@@ -1,5 +1,16 @@
 #include "NetPlayerManager.h"
 
+enum class Actions : uintptr_t
+{
+    CreatureAction_PlayerInteractionGreet = 0x012592D4,
+    CreatureAction_StartBlocking = 0x012761CC,
+    CombatAction_ControlledStrafeJump = 0x01276974,
+    CombatAction_KickThingOnGround = 0x01277D3C,
+    CreatureAction_InterruptableMidAttackAutoTurn = 0x012778CC,
+    CreatureAction_UnsheatheItemFromInventory = 0x0125CCBC,
+    CreatureAction_SheatheItemToInventory = 0x0125C83C
+};
+
 void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
 {
 	int networkId = -1;
@@ -24,9 +35,9 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
     CThingCreatureBase& creatureBase = *reinterpret_cast<CThingCreatureBase*>(creature);
     void* actionBuffer = nullptr;
 
-    switch (vtableAddress)
+    switch (static_cast<Actions>(vtableAddress))
     {
-    case 0x012592D4: // CCreatureAction_PlayerInteractionGreet
+    case Actions::CreatureAction_PlayerInteractionGreet:
     {
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
@@ -38,7 +49,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         actionBuffer = CreatureActions::CCreatureAction_PlayerInteractionGreet(creatureBase, target);
         break;
     }
-	case 0x012761CC: // CCreatureAction_StartBlocking
+	case Actions::CreatureAction_StartBlocking:
     {
 		bool block = false;
         bsIn.Read(block);
@@ -66,7 +77,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
 
         break;
     }
-	case 0x01276974: // CCombatAction_ControlledStrafeJump
+	case Actions::CombatAction_ControlledStrafeJump:
     {
         int targetNetworkId = -1;
         C3DVector requiredFacing, originalFacing;
@@ -86,7 +97,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         actionBuffer = CreatureActions::CCombatAction_ControlledStrafeJump(creatureBase, target, requiredFacing, originalFacing);
         break;
     }
-	case 0x01277D3C: // CCreatureAction_KickThingOnGround
+	case Actions::CombatAction_KickThingOnGround:
     {
         int targetNetworkId = -1;
         bsIn.Read(targetNetworkId);
@@ -98,7 +109,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         actionBuffer = CreatureActions::CCombatAction_KickThingOnGround(creatureBase, target);
         break;
     }
-	case 0x012778CC: // CCreatureAction_InterruptableMidAttackAutoTurn
+	case Actions::CreatureAction_InterruptableMidAttackAutoTurn:
     {
         int targetNetworkId = -1;
         C3DVector required_facing;
@@ -145,7 +156,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         actionBuffer = CreatureActions::CCreatureAction_InterruptableMidAttackAutoTurn(creatureBase, target, pweapon, required_facing, pmelee_ability);
         break;
     }
-    case 0x0125CCBC: // CCreatureAction_UnsheatheItemFromInventory
+    case Actions::CreatureAction_UnsheatheItemFromInventory:
     {
         int itemIndex = -1;
         long interruption_priority = 0;
@@ -215,7 +226,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         actionBuffer = CreatureActions::CCreatureAction_UnsheatheItemFromInventory(creatureBase, *unsheatheItem, pfollow_up_action, interruption_priority);
         break;
     }
-	case 0x0125C83C: // CCreatureAction_SheatheItemToInventory
+	case Actions::CreatureAction_SheatheItemToInventory:
     {
         CCreatureActionBase* pfollow_up_action = nullptr;
         long interruption_group_id = 0;
@@ -264,16 +275,27 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         if (thisUID != creatureUID)
             return;
 
-        uintptr_t vtableAddress = *reinterpret_cast<const uintptr_t*>(&action);
+        void* vptr = *reinterpret_cast<void* const*>(&action);
+        uintptr_t vtableAddress = reinterpret_cast<uintptr_t>(vptr);
+
+        const void* locator =
+            reinterpret_cast<void**>(vtableAddress)[-1];
+
+        const std::uint8_t* typeDescriptor =
+            *reinterpret_cast<const std::uint8_t* const*>(
+                reinterpret_cast<const std::uint8_t*>(locator) + 0x0C);
+
+        const char* rawName =
+            reinterpret_cast<const char*>(typeDescriptor + 0x08);
 
         SLNet::BitStream bs;
         bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bs.Write(networkId);
         bs.Write(vtableAddress);
 
-        switch (vtableAddress)
+        switch (static_cast<Actions>(vtableAddress))
         {
-        case 0x012592D4: // CCreatureAction_PlayerInteractionGreet
+        case Actions::CreatureAction_PlayerInteractionGreet:
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
             int targetNetworkId = GetNetworkIdFromThing(target);
@@ -281,12 +303,12 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             
             break;
         }
-        case 0x012761CC: // CCreatureAction_StartBlocking
+        case Actions::CreatureAction_StartBlocking:
         {
             bs.Write(true);
             break;
         }
-        case 0x01276974: // CCombatAction_ControlledStrafeJump
+        case Actions::CombatAction_ControlledStrafeJump:
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
             int targetNetworkId = GetNetworkIdFromThing(target);
@@ -300,7 +322,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
             
             break;
         }
-        case 0x01277D3C: // CCombatAction_KickThingOnGround
+        case Actions::CombatAction_KickThingOnGround:
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
             int targetNetworkId = GetNetworkIdFromThing(target);
@@ -308,7 +330,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
 
             break;
         }
-        case 0x012778CC: // CCreatureAction_InterruptableMidAttackAutoTurn - UNFINISHED (pmelee_ability)
+        case Actions::CreatureAction_InterruptableMidAttackAutoTurn: // UNFINISHED (pmelee_ability)
         {
             CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
             int targetNetworkId = GetNetworkIdFromThing(target);
@@ -332,7 +354,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
 
             break;
         }
-        case 0x0125CCBC: // CCreatureAction_UnsheatheItemFromInventory
+        case Actions::CreatureAction_UnsheatheItemFromInventory:
         {
             CBaseIntelligentPointer* pUnsheatheItem =
                 reinterpret_cast<CBaseIntelligentPointer*>(
@@ -353,7 +375,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
 
             break;
         }
-        case 0x0125C83C: // CCreatureAction_SheatheItemToInventory - UNFINISHED (pfollow_up_action)
+        case Actions::CreatureAction_SheatheItemToInventory: // UNFINISHED (pfollow_up_action)
         {
             int interruption_group_id = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(&action) + 0x20);
 			bs.Write(interruption_group_id);
@@ -362,7 +384,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         }
         default:
         {
-            std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: Unknown vtableAddress: " << std::hex << vtableAddress << std::dec << std::endl;
+            std::cout << "[NetPlayerManager::BroadcastLocalNetPlayerAction]: Unknown: " << rawName << " - " << std::hex << vtableAddress << std::dec << std::endl;
             return;
         }
         }
@@ -386,7 +408,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         SLNet::BitStream bs;
         bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bs.Write(networkId);
-        bs.Write(0x012761CC);
+        bs.Write(Actions::CreatureAction_StartBlocking);
         bs.Write(false);
 
         if (localNetPlayer->GetNetworkId() == 0) {

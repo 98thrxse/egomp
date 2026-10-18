@@ -4,6 +4,9 @@
 
 #include <MinHook/include/MinHook.h>
 
+#include "../Utils/Hook.h"
+#include "../Utils/Window.h"
+
 #include "Base.h"
 #include "BaseClass.h"
 #include "ParentDefClassBase.h"
@@ -61,16 +64,14 @@
 #include "GraphicAppearance.h"
 #include "GameTimeManager.h"
 #include "Actions.h"
+#include "SystemManager.h"
+#include "InputManager.h"
 
 class SDK
 {
 public:
 	SDK();
 	static SDK& GetInstance();
-	static void* GameMalloc(unsigned int size);
-	static C3DVector* GOverridePlayerStartPos;
-
 private:
-	static void* (__cdecl* OGameMalloc)(unsigned int size);
-	static void* __cdecl HGameMalloc(unsigned int size);
+	static HWND WINAPI HGetForegroundWindow();
 };

@@ -37,7 +37,7 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
     BroadcastLocalNetPlayerExperience(networkId);
     BroadcastLocalNetPlayerMorph(networkId);
     BroadcastLocalNetPlayerWeapons(networkId);
-    //BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
+    BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -149,6 +149,13 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCCombat* combat = reinterpret_cast<CTCCombat*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_COMBAT));
+
+    if (!combat) {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !combat" << std::endl;
+        return;
+    }
+
     CTCHeroStats* heroStats = reinterpret_cast<CTCHeroStats*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO_STATS));
 
     if (!heroStats) {
@@ -195,6 +202,7 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
+    combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -215,6 +223,13 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     if (!creature)
     {
         std::cout << "[NetPlayerManager::DestroyNetPlayer]: !creature: " << networkId << std::endl;
+        return;
+    }
+
+    CTCCombat* combat = reinterpret_cast<CTCCombat*>(reinterpret_cast<CThing*>(creature)->GetTC(TCI_COMBAT));
+
+    if (!combat) {
+        std::cout << "[NetPlayerManager::DestroyNetPlayer]: !combat" << std::endl;
         return;
     }
   
@@ -264,6 +279,7 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
+    combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
 
     player->UninitCharacter();
     player->Uninitialise();

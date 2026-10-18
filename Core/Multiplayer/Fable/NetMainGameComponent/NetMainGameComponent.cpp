@@ -1,7 +1,6 @@
 #define NOMINMAX
 
 #include "windows.h"
-#include <conio.h>
 #include <sstream>
 #include <string>
 
@@ -163,11 +162,12 @@ void NetMainGameComponent::Connect()
 void NetMainGameComponent::Disconnect()
 {
     ClearInputBuffer();
-    network->Disconnect();
 
     netWorld->DestroyNetWorld();
     netPlayerManager->DestroyNetPlayers();
     netPlayerManager->DestroyLocalNetPlayer();
+
+    network->Disconnect();
 }
 
 void NetMainGameComponent::Clear()

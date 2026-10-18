@@ -110,10 +110,7 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
                 world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
 
                 network->AddWorldTimeCallback("WorldTime", [this](BitStream& bs) {
-                    float time = 0;
-                    bs.Read(time);
-
-                    netWorld->ReceiveNetWorldTime(time);
+                    netWorld->ReceiveNetWorldTime(bs);
                     });
 
                 netPlayerManager->CreateLocalNetPlayer(position, facingAngleXY);

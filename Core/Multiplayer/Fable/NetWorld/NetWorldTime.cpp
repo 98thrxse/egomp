@@ -25,7 +25,10 @@ void NetWorld::BroadcastNetWorldTime()
         });
 }
 
-void NetWorld::ReceiveNetWorldTime(float time)
+void NetWorld::ReceiveNetWorldTime(BitStream& bs)
 {
+    float time = 0;
+    bs.Read(time);
+
 	gameTimeManager->Time = time;
 }
