@@ -18,6 +18,12 @@ public:
     void CreateNetWorld();
     void DestroyNetWorld();
 
+    void SaveTeleportingAsActive(bool);
+    void LoadTeleportingAsActive();
+
+    void SaveAsLoadingRegion(C3DVector, float);
+    void LoadAsLoadingRegion();
+
     void BroadcastNetLoadRegion(
         C3DVector const& position,
         float facingAngleXY,
@@ -35,8 +41,13 @@ private:
     Network* network;
 
     CMainGameComponent* mainGameComponent;
+
     CWorld* world = mainGameComponent->GetWorld();
+    CGameScriptInterface* gameScriptInterface = world->GetGameScriptInterface();
     CGameTimeManager* gameTimeManager = world->GetGameTimeManager();
 
     int networkId;
+    C3DVector position;
+    float facingAngleXY;
+    bool teleportingAsActive;
 };

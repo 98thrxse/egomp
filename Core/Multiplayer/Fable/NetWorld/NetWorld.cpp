@@ -7,6 +7,9 @@ NetWorld::NetWorld(
     : network(network),
     mainGameComponent(mainGameComponent)
 {
+    C3DVector position = {};
+    float facingAngleXY = 0;
+    bool teleportingAsActive = false;
 }
 
 NetWorld::~NetWorld()

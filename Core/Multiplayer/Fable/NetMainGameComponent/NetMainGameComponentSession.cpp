@@ -121,7 +121,10 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
             gameScriptInterface->SetTeleportingAsActive(false);
             });
 
+        netWorld->SaveTeleportingAsActive(gameScriptInterface->IsTeleportingActive());
         gameScriptInterface->SetTeleportingAsActive(false);
+
+        netWorld->SaveAsLoadingRegion(netPlayerManager->GetPlayerPosition(), netPlayerManager->GetPlayerFacingAngleXY());
         world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
     }
 }

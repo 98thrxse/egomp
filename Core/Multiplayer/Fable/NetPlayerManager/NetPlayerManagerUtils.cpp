@@ -243,3 +243,30 @@ void NetPlayerManager::SetNetPlayersPosition(C3DVector position)
         *reinterpret_cast<CThing*>(creature)->GetPos() = position;
     }
 }
+
+C3DVector NetPlayerManager::GetPlayerPosition()
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(0);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::GetNetPlayerPosition]: !creature: " << networkId << std::endl;
+        return { 0, 0, 0 };
+    }
+
+    return *reinterpret_cast<CThing*>(creature)->GetPos();
+}
+
+float NetPlayerManager::GetPlayerFacingAngleXY()
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(0);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::GetNetPlayerFacingAngleXY]: !creature: " << networkId << std::endl;
+        return 0;
+    }
+
+    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+    return reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
+}

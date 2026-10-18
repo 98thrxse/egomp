@@ -46,8 +46,12 @@ public:
     void SetNetPlayerAlpha(int networkId, unsigned __int8 alpha);
     void SetNetPlayersAlpha(unsigned __int8 alpha);
 
+    void SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force);
+
     void SetNetPlayersPosition(C3DVector position);
-	void SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force);
+
+    C3DVector GetPlayerPosition();
+    float GetPlayerFacingAngleXY();
 
 private:
     Network* network;

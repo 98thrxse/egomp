@@ -3,7 +3,6 @@
 void NetPlayerManager::CreateLocalNetPlayer(C3DVector position, float facingAngleXY)
 {
     int localId = GetFreeLocalId();
-    int networkId = GetNetworkId();
 
     if (!localNetPlayer)
         localNetPlayer = std::make_unique<LocalNetPlayer>();
@@ -37,7 +36,7 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
     BroadcastLocalNetPlayerExperience(networkId);
     BroadcastLocalNetPlayerMorph(networkId);
     BroadcastLocalNetPlayerWeapons(networkId);
-    BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
+    // BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)

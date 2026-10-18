@@ -17,6 +17,7 @@ public:
 
     void StartSneaking();
     void SetTeleportingAsActive(bool active);
+    bool IsTeleportingActive();
 
     void AddSetTeleportingAsActiveCallback(const std::string& id, std::function<void(bool)> callback) { setTeleportingAsActive[id] = callback; }
     void RemoveSetTeleportingAsActiveCallback(const std::string& id) { setTeleportingAsActive.erase(id); }
@@ -29,4 +30,7 @@ private:
 
     static void(__thiscall* OSetTeleportingAsActive)(CGameScriptInterface*, bool);
     static void __fastcall HSetTeleportingAsActive(CGameScriptInterface* _this, void* _EDX, bool active);
+
+    static bool(__thiscall* OIsTeleportingActive)(CGameScriptInterface*);
+    static bool __fastcall HIsTeleportingActive(CGameScriptInterface* _this, void* _EDX);
 };

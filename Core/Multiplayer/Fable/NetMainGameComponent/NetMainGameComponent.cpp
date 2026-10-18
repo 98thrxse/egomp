@@ -167,6 +167,12 @@ void NetMainGameComponent::Disconnect()
     netPlayerManager->DestroyNetPlayers();
     netPlayerManager->DestroyLocalNetPlayer();
 
+    if (networkId != 0)
+    {
+        netWorld->LoadAsLoadingRegion();
+        netWorld->LoadTeleportingAsActive();
+    }
+
     network->Disconnect();
 }
 

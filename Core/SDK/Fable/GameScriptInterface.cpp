@@ -35,8 +35,20 @@ void CGameScriptInterface::SetTeleportingAsActive(bool active)
     OSetTeleportingAsActive(this, active);
 }
 
+bool(__thiscall* CGameScriptInterface::OIsTeleportingActive)(CGameScriptInterface*) = nullptr;
+bool __fastcall CGameScriptInterface::HIsTeleportingActive(CGameScriptInterface* _this, void* _EDX)
+{
+    return OIsTeleportingActive(_this);
+}
+
+bool CGameScriptInterface::IsTeleportingActive()
+{
+    return OIsTeleportingActive(this);
+}
+
 void CGameScriptInterface::Hook()
 {
     ADD_HOOK(0x008A1300, HStartSneaking, OStartSneaking);
     ADD_HOOK(0x0088F410, HSetTeleportingAsActive, OSetTeleportingAsActive);
+    ADD_HOOK(0x0088F420, HIsTeleportingActive, OIsTeleportingActive);
 }
