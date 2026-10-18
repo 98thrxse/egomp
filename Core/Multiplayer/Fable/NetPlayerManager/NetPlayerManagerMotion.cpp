@@ -139,6 +139,32 @@ void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
         });
 }
 
+void NetPlayerManager::BroadcastNetPlayerMovement(int networkId)
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature) {
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerMovement]: !creature" << std::endl;
+        return;
+    }
+
+    C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
+    C3DVector movementAcceleration = creature->MovementAcceleration;
+
+    SLNet::BitStream bs;
+    bs.Write((SLNet::MessageID)ID_PLAYER_MOVEMENT);
+    bs.Write(networkId);
+    bs.Write(position);
+    bs.Write(movementAcceleration);
+
+    if (localNetPlayer->GetNetworkId() == 0) {
+        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+    }
+    else {
+        network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+    }
+}
+
 void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);

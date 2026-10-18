@@ -25,7 +25,7 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
 {
     if (networkId != 0)
     {
-        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
+        int defGlobalIndex = GetDefGlobalIndexFromThing(reinterpret_cast<CThing*>(creature));
         BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
 
@@ -36,7 +36,7 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
     BroadcastLocalNetPlayerExperience(networkId);
     BroadcastLocalNetPlayerMorph(networkId);
     BroadcastLocalNetPlayerWeapons(networkId);
-    // BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
+    //BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -103,6 +103,7 @@ void NetPlayerManager::CreateNetPlayers(BitStream& bs)
 
 void NetPlayerManager::SetupNetPlayer()
 {
+    BroadcastNetPlayerMovement(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
@@ -117,6 +118,7 @@ void NetPlayerManager::SetupNetPlayers(int networkId)
         if (netPlayer->GetNetworkId() == networkId)
             continue;
 
+        BroadcastNetPlayerMovement(netPlayer->GetNetworkId());
         BroadcastNetPlayerStats(netPlayer->GetNetworkId());
         BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
         BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
@@ -343,7 +345,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             return;
         }
 
-        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
+        int defGlobalIndex = GetDefGlobalIndexFromThing(reinterpret_cast<CThing*>(creature));
         C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
@@ -366,7 +368,7 @@ void NetPlayerManager::BroadcastCreateNetPlayers(int networkId)
             continue;
         }
 
-        int defGlobalIndex = GetDefGlobalIndexFromName(reinterpret_cast<CThing*>(creature));
+        int defGlobalIndex = GetDefGlobalIndexFromThing(reinterpret_cast<CThing*>(creature));
         C3DVector position = *(reinterpret_cast<CThing*>(creature))->GetPos();
 
         CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;

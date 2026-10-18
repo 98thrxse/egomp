@@ -37,4 +37,7 @@ private:
 
 	static CThing* (__thiscall* OGetItemOfTypeInInventory)(CTCInventoryWeapons*, long);
 	static CThing* __fastcall HGetItemOfTypeInInventory(CTCInventoryWeapons* _this, void* _EDX, long def_index);
+
+	static void (__thiscall* OReturnAllConfiscatedItems)(CTCInventoryWeapons*);
+	static void __fastcall HReturnAllConfiscatedItems(CTCInventoryWeapons* _this, void* _EDX);
 };

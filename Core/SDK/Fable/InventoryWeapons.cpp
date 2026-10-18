@@ -31,8 +31,15 @@ CThing* CTCInventoryWeapons::GetItemOfTypeInInventory(long def_index)
 	return OGetItemOfTypeInInventory(this, def_index);
 }
 
+void (__thiscall* CTCInventoryWeapons::OReturnAllConfiscatedItems)(CTCInventoryWeapons*) = nullptr;
+void __fastcall CTCInventoryWeapons::HReturnAllConfiscatedItems(CTCInventoryWeapons* _this, void* _EDX)
+{
+	return OReturnAllConfiscatedItems(_this);
+}
+
 void CTCInventoryWeapons::Hook()
 {
 	ADD_HOOK(0x005CB2B0, HSetThingAsActiveWeapon, OSetThingAsActiveWeapon);
 	ADD_HOOK(0x005C311A, HGetItemOfTypeInInventory, OGetItemOfTypeInInventory);
+	ADD_HOOK(0x005CB742, HReturnAllConfiscatedItems, OReturnAllConfiscatedItems);
 }

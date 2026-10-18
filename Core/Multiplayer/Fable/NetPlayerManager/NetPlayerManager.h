@@ -80,6 +80,8 @@ private:
     void BroadcastCreateNetPlayers(int networkId);
 
     void BroadcastLocalNetPlayerMovement(int networkId);
+    void BroadcastNetPlayerMovement(int networkId);
+
     void BroadcastLocalNetPlayerRotation(int networkId);
     void BroadcastLocalNetPlayerAction(int networkId);
 
@@ -103,7 +105,7 @@ private:
     CThingPlayerCreature* GetPlayerCreatureFromNetworkId(int networkId) const;
     CThingPlayerCreature* GetPlayerCreatureFromLocalId(int localId) const;
 
-    int GetDefGlobalIndexFromName(CThing* thing) const;
+    int GetDefGlobalIndexFromThing(CThing* thing) const;
 
     int GetFreeLocalId();
     int GetLocalIdFromNetworkId(int networkId) const;

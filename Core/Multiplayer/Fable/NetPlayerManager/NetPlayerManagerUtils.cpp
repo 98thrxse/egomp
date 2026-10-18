@@ -37,7 +37,7 @@ CThingPlayerCreature* NetPlayerManager::GetPlayerCreatureFromLocalId(int localId
     return player->GetPControlledCreature();
 }
 
-int NetPlayerManager::GetDefGlobalIndexFromName(CThing* thing) const
+int NetPlayerManager::GetDefGlobalIndexFromThing(CThing* thing) const
 {
     CDefString def;
     CCharString defName("");
