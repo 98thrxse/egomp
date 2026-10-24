@@ -43,6 +43,24 @@ void NetPlayerManager::ReceiveNetPlayerWeapons(SLNet::BitStream& bsIn)
     }
 
     inventoryWeapons->SetThingAsActiveWeapon(weapon_def_index, 0);
+
+    CThing* activeMelee = reinterpret_cast<CThing*>(inventoryWeapons->PActiveMeleeWeapon.GetPItem());
+    CThing* activeRanged = reinterpret_cast<CThing*>(inventoryWeapons->PActiveRangedWeapon.GetPItem());
+
+    for (auto& netPlayer : netPlayers)
+    {
+        if (netPlayer && netPlayer->GetNetworkId() == networkId)
+        {
+            if (activeMelee && activeMelee->DefGlobalIndex == weapon_def_index)
+            {
+                netPlayer->SetMeleeWeaponIndex(weapon_def_index);
+            }
+            else if (activeRanged && activeRanged->DefGlobalIndex == weapon_def_index)
+            {
+                netPlayer->SetProjectileWeaponIndex(weapon_def_index);
+            }
+        }
+    }
 }
 
 void NetPlayerManager::BroadcastLocalNetPlayerWeapons()
@@ -90,6 +108,18 @@ void NetPlayerManager::BroadcastLocalNetPlayerWeapons()
             bs.Write((SLNet::MessageID)ID_PLAYER_WEAPONS);
             bs.Write(networkId);
             bs.Write(weapon_def_index);
+
+            CThing* activeMelee = reinterpret_cast<CThing*>(inventoryWeapons->PActiveMeleeWeapon.GetPItem());
+            CThing* activeRanged = reinterpret_cast<CThing*>(inventoryWeapons->PActiveRangedWeapon.GetPItem());
+
+            if (activeMelee && activeMelee->DefGlobalIndex == weapon_def_index)
+            {
+                localNetPlayer->SetMeleeWeaponIndex(weapon_def_index);
+            }
+            else if (activeRanged && activeRanged->DefGlobalIndex == weapon_def_index)
+            {
+                localNetPlayer->SetProjectileWeaponIndex(weapon_def_index);
+            }
 
             if (localNetPlayer->GetNetworkId() == 0)
             {

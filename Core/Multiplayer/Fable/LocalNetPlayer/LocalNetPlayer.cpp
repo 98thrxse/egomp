@@ -24,6 +24,9 @@ LocalNetPlayer::LocalNetPlayer() :
 
     weaponsUsable = false;
     willUsable = false;
+
+    meleeWeaponIndex = 0;
+    projectileWeaponIndex = 0;
 }
 
 void LocalNetPlayer::SetNetworkId(int id)
@@ -186,9 +189,9 @@ std::vector<long> LocalNetPlayer::GetAllTattooIndexes() const
     return tattooIndexes;
 }
 
-void LocalNetPlayer::SetWeaponsAsUsable(bool on)
+void LocalNetPlayer::SetWeaponsAsUsable(bool weaponsUsable)
 {
-    this->weaponsUsable = on;
+    this->weaponsUsable = weaponsUsable;
 }
 
 bool LocalNetPlayer::GetWeaponsAsUsable() const
@@ -196,12 +199,32 @@ bool LocalNetPlayer::GetWeaponsAsUsable() const
     return weaponsUsable;
 }
 
-void LocalNetPlayer::SetWillAsUsable(bool on)
+void LocalNetPlayer::SetWillAsUsable(bool willUsable)
 {
-    this->willUsable = on;
+    this->willUsable = willUsable;
 }
 
 bool LocalNetPlayer::GetWillAsUsable() const
 {
     return willUsable;
+}
+
+void LocalNetPlayer::SetMeleeWeaponIndex(long meleeWeaponIndex)
+{
+    this->meleeWeaponIndex = meleeWeaponIndex;
+}
+
+long LocalNetPlayer::GetMeleeWeaponIndex() const
+{
+    return meleeWeaponIndex;
+}
+
+void LocalNetPlayer::SetProjectileWeaponIndex(long projectileWeaponIndex)
+{
+    this->projectileWeaponIndex = projectileWeaponIndex;
+}
+
+long LocalNetPlayer::GetProjectileWeaponIndex() const
+{
+    return projectileWeaponIndex;
 }

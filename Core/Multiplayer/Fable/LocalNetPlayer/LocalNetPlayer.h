@@ -32,6 +32,9 @@ private:
     bool weaponsUsable;
     bool willUsable;
 
+    long meleeWeaponIndex;
+    long projectileWeaponIndex;
+
 public:
     LocalNetPlayer();
     ~LocalNetPlayer() = default;
@@ -84,9 +87,15 @@ public:
     void SetTattooIndexes(const std::vector<long>& tattooIndexes);
     std::vector<long> GetAllTattooIndexes() const;
 
-    void SetWeaponsAsUsable(bool on);
+    void SetWeaponsAsUsable(bool weaponsUsable);
     bool GetWeaponsAsUsable() const;
 
-    void SetWillAsUsable(bool on);
+    void SetWillAsUsable(bool willUsable);
     bool GetWillAsUsable() const;
+
+    void SetMeleeWeaponIndex(long meleeWeaponIndex);
+    long GetMeleeWeaponIndex() const;
+
+    void SetProjectileWeaponIndex(long projectileWeaponIndex);
+    long GetProjectileWeaponIndex() const;
 };
