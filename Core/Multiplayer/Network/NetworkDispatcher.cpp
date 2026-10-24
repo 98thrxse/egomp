@@ -73,6 +73,10 @@ void Network::Update()
 			HandlePacket(packet, playerActionCallbacks);
 			break;
 
+		case ID_PLAYER_HERO:
+			HandlePacket(packet, playerHeroCallbacks);
+			break;
+
 		case ID_PLAYER_DESTROY:
 			HandlePacket(packet, destroyNetPlayerCallbacks);
 			break;

@@ -40,79 +40,46 @@ void NetMainGameComponent::SetupNetworkPlayerManagerCallbacks()
 
 	/* Motion */
     network->AddPlayerMovementCallback("PlayerMovement", [this](BitStream& bs) {
-        int networkId = -1;
-        C3DVector remotePosition = {};
-        C3DVector movementAcceleration = {};
-
-        bs.Read(networkId);
-        bs.Read(remotePosition);
-        bs.Read(movementAcceleration);
-
-        netPlayerManager->ReceiveNetPlayerMovement(networkId, remotePosition, movementAcceleration);
+        netPlayerManager->ReceiveNetPlayerMovement(bs);
         });
 
     network->AddPlayerRotationCallback("PlayerRotation", [this](BitStream& bs) {
-        int networkId = -1;
-        C3DVector up = {};
-        C3DVector forward = {};
-
-        bs.Read(networkId);
-        bs.Read(up);
-        bs.Read(forward);
-
-        netPlayerManager->ReceiveNetPlayerRotation(networkId, up, forward);
+        netPlayerManager->ReceiveNetPlayerRotation(bs);
         });
 
 	/* Stats */
     network->AddPlayerStatsCallback("PlayerStats", [this](BitStream& bs) {
-        int networkId = -1;
-
-        bs.Read(networkId);
-
-        netPlayerManager->ReceiveNetPlayerStats(networkId, bs);
+        netPlayerManager->ReceiveNetPlayerStats(bs);
         });
 
 	/* Appearance */
     network->AddPlayerAppearanceCallback("PlayerAppearance", [this](BitStream& bs) {
-        int networkId = -1;
-
-        bs.Read(networkId);
-
-        netPlayerManager->ReceiveNetPlayerAppearance(networkId, bs);
+        netPlayerManager->ReceiveNetPlayerAppearance(bs);
         });
 
 	/* Experience */
     network->AddPlayerExperienceCallback("PlayerExperience", [this](BitStream& bs) {
-        int networkId = -1;
-
-        bs.Read(networkId);
-
-        netPlayerManager->ReceiveNetPlayerExperience(networkId, bs);
+        netPlayerManager->ReceiveNetPlayerExperience(bs);
         });
 
 	/* Morph */
     network->AddPlayerMorphCallback("PlayerMorph", [this](BitStream& bs) {
-        int networkId = -1;
-
-        bs.Read(networkId);
-
-        netPlayerManager->ReceiveNetPlayerMorph(networkId, bs);
+        netPlayerManager->ReceiveNetPlayerMorph(bs);
         });
 
 	/* Weapons */
     network->AddPlayerWeaponsCallback("PlayerWeapons", [this](BitStream& bs) {
-        int networkId = -1;
-        long weapon_def_index = 0;
-
-        bs.Read(networkId);
-        bs.Read(weapon_def_index);
-
-        netPlayerManager->ReceiveNetPlayerWeapons(networkId, weapon_def_index);
+        netPlayerManager->ReceiveNetPlayerWeapons(bs);
         });
 
 	/* Actions */
     network->AddPlayerActionCallback("PlayerActions", [this](BitStream& bs) {
         netPlayerManager->ReceiveNetPlayerAction(bs);
+        });
+
+    /* Hero */
+    network->AddPlayerHeroCallback("PlayerHero", [this](BitStream& bs) {
+        netPlayerManager->ReceiveNetPlayerHero(bs);
         });
 }
 
@@ -147,4 +114,7 @@ void NetMainGameComponent::ClearNetworkPlayerManagerCallbacks()
 
 	/* Actions */
     network->RemovePlayerActionCallback("PlayerActions");
+
+    /* Hero */
+    network->RemovePlayerHeroCallback("PlayerHero");
 }

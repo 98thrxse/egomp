@@ -28,6 +28,7 @@ public:
     void SetInLimbo(bool on);
     void SetAsDrawable(bool on);
     void SetAsActivated(bool on);
+    void Kill(bool perform_on_die);
 
     bool IsToKillOnLevelUnload();
     void SetToKillOnLevelUnload(bool on);
@@ -60,4 +61,7 @@ private:
 
     static void(__thiscall* OSetAsActivated)(CThing*, bool);
     static void __fastcall HSetAsActivated(CThing* _this, void* _EDX, bool on);
+
+    static void(__thiscall* OKill)(CThing*, bool);
+    static void __fastcall HKill(CThing* _this, void* _EDX, bool perform_on_die);
 };

@@ -20,21 +20,22 @@ public:
     int GetNetworkId() const;
 
     void CreateLocalNetPlayer(C3DVector position, float facingAngleXY);
-	void SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
+	void SetupLocalNetPlayer(CThingPlayerCreature* creature, C3DVector position, float facingAngleXY);
 
     void CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void CreateNetPlayers(BitStream& bs);
     void SetupNetPlayer();
     void SetupNetPlayers(int networkId);
 
-    void ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration);
-    void ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward);
+    void ReceiveNetPlayerMovement(SLNet::BitStream& bs);
+    void ReceiveNetPlayerRotation(SLNet::BitStream& bs);
     void ReceiveNetPlayerAction(SLNet::BitStream& bs);
-    void ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs);
-    void ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bs);
-    void ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bs);
-    void ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs);
-    void ReceiveNetPlayerWeapons(int networkId, long weapon_def_index);
+    void ReceiveNetPlayerStats(SLNet::BitStream& bs);
+    void ReceiveNetPlayerAppearance(SLNet::BitStream& bs);
+    void ReceiveNetPlayerExperience(SLNet::BitStream& bs);
+    void ReceiveNetPlayerMorph(SLNet::BitStream& bs);
+    void ReceiveNetPlayerWeapons(SLNet::BitStream& bs);
+    void ReceiveNetPlayerHero(SLNet::BitStream& bs);
 
     void DestroyLocalNetPlayer();
     void DestroyNetPlayer(int networkId);
@@ -49,9 +50,14 @@ public:
     void SetNetPlayerParticle(int networkId, long particleTypeId, C3DVector position, bool force);
 
     void SetNetPlayersPosition(C3DVector position);
+    void SetNetPlayersWeaponsAsUsable(bool on);
+    void SetNetPlayersWillAsUsable(bool on);
 
     C3DVector GetPlayerPosition();
     float GetPlayerFacingAngleXY();
+
+    void RefreshNetPlayerSheathedWeapons(int networkId);
+    void RefreshNetPlayersSheathedWeapons();
 
 private:
     Network* network;
@@ -60,7 +66,6 @@ private:
 
     CMainGameComponent* mainGameComponent;
     CPlayerManager* playerManager = mainGameComponent->GetPlayerManager();
-    CWorld* world = mainGameComponent->GetWorld();
 
     CDefinitionManager* definitionManager = CDefinitionManager::Get();
     CDefStringTable* defStringTable = CDefStringTable::Get();
@@ -79,26 +84,31 @@ private:
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);
 
-    void BroadcastLocalNetPlayerMovement(int networkId);
+    void BroadcastLocalNetPlayerAction();
+
+    void BroadcastLocalNetPlayerMovement();
     void BroadcastNetPlayerMovement(int networkId);
 
-    void BroadcastLocalNetPlayerRotation(int networkId);
-    void BroadcastLocalNetPlayerAction(int networkId);
+    void BroadcastLocalNetPlayerRotation();
+    void BroadcastNetPlayerRotation(int networkId);
 
-    void BroadcastLocalNetPlayerStats(int networkId);
+    void BroadcastLocalNetPlayerStats();
     void BroadcastNetPlayerStats(int networkId);
 
-    void BroadcastLocalNetPlayerAppearance(int networkId);
+    void BroadcastLocalNetPlayerAppearance();
     void BroadcastNetPlayerAppearance(int networkId);
 
-    void BroadcastLocalNetPlayerExperience(int networkId);
+    void BroadcastLocalNetPlayerExperience();
     void BroadcastNetPlayerExperience(int networkId);
 
-    void BroadcastLocalNetPlayerMorph(int networkId);
+    void BroadcastLocalNetPlayerMorph();
     void BroadcastNetPlayerMorph(int networkId);
 
-    void BroadcastLocalNetPlayerWeapons(int networkId);
+    void BroadcastLocalNetPlayerWeapons();
     void BroadcastNetPlayerWeapons(int networkId);
+
+    void BroadcastLocalNetPlayerHero();
+    void BroadcastNetPlayerHero(int networkId);
 
     void BroadcastDestroyNetPlayer(int networkId);
 

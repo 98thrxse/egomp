@@ -5,11 +5,13 @@ enum Experience : int
     TRAINABLE_LEVELS = 1 << 0
 };
 
-void NetPlayerManager::ReceiveNetPlayerExperience(int networkId, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerExperience(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    int experienceFlags = 0;
     std::vector<long> trainableLevels(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
 
-    int experienceFlags = 0;
+    bsIn.Read(networkId);
     bsIn.Read(experienceFlags);
 
     if (experienceFlags & TRAINABLE_LEVELS)
@@ -77,7 +79,7 @@ void NetPlayerManager::ReceiveNetPlayerExperience(int networkId, SLNet::BitStrea
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerExperience(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerExperience()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -104,7 +106,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerExperience(int networkId)
 
     heroExperience->AddFrameUpdateCallback(
         "ExperienceFrameUpdate" + std::to_string(networkId),
-        [this, networkId, lastSendTime]() mutable
+        [this, lastSendTime]() mutable
         {
             CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 

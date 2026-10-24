@@ -89,7 +89,7 @@ void NetMainGameComponent::HandleConnectionNotification(BitStream& bs)
     if (networkId == 0)
     {
         world->AddSetAsLoadingRegionCallback("SetAsLoadingRegion", [this, networkId, world](C3DVector const& position, float facingAngleXY, bool teleporter, bool duringCutScenes, bool door) {
-            SetInLimboTillRegionLoaded(world, position);
+            SetPlayerInLimboTillRegionLoaded(world, position);
 
             world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
             netWorld->BroadcastNetLoadRegion(position, facingAngleXY, teleporter, duringCutScenes, door);

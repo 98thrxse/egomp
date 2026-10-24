@@ -195,6 +195,7 @@
     <ClInclude Include="SDK\Fable\InventoryWeapons.h" />
     <ClInclude Include="SDK\Fable\Actions.h" />
     <ClInclude Include="SDK\Fable\ParentDefClassBase.h" />
+    <ClInclude Include="SDK\Fable\PlayerGui.h" />
     <ClInclude Include="SDK\Fable\PlayerMode.h" />
     <ClInclude Include="SDK\Fable\RightHandedSet.h" />
     <ClInclude Include="SDK\Fable\DefinitionManager.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAction.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerAppearance.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerExperience.cpp" />
+    <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerHero.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerLifecycle.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerMorph.cpp" />
     <ClCompile Include="Multiplayer\Fable\NetPlayerManager\NetPlayerManagerMotion.cpp" />
@@ -278,6 +280,7 @@
     <ClCompile Include="SDK\Fable\Hero.cpp" />
     <ClCompile Include="SDK\Fable\Actions.cpp" />
     <ClCompile Include="SDK\Fable\InputManager.cpp" />
+    <ClCompile Include="SDK\Fable\PlayerGui.cpp" />
     <ClCompile Include="SDK\Fable\SystemManager.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />

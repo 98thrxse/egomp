@@ -53,6 +53,7 @@ private:
 	std::map<std::string, std::function<void(BitStream&)>> playerMorphCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> playerWeaponsCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> playerActionCallbacks;
+	std::map<std::string, std::function<void(BitStream&)>> playerHeroCallbacks;
 
 	std::map<std::string, std::function<void()>> destroyLocalNetPlayerCallbacks;
 	std::map<std::string, std::function<void(BitStream&)>> destroyNetPlayerCallbacks;
@@ -134,6 +135,9 @@ public:
 
 	void AddPlayerActionCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerActionCallbacks[id] = cb; }
 	void RemovePlayerActionCallback(const std::string& id) { playerActionCallbacks.erase(id); }
+
+	void AddPlayerHeroCallback(const std::string& id, std::function<void(BitStream&)> cb) { playerHeroCallbacks[id] = cb; }
+	void RemovePlayerHeroCallback(const std::string& id) { playerHeroCallbacks.erase(id); }
 
 	void AddDestroyLocalNetPlayerCallback(const std::string& id, std::function<void()> cb) { destroyLocalNetPlayerCallbacks[id] = cb; }
 	void RemoveDestroyLocalNetPlayerCallback(const std::string& id) { destroyLocalNetPlayerCallbacks.erase(id); }

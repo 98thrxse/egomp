@@ -1,15 +1,21 @@
 #include "NetPlayerManager.h"
 
-void NetPlayerManager::ReceiveNetPlayerWeapons(int networkId, long weapon_def_index)
+void NetPlayerManager::ReceiveNetPlayerWeapons(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    long weapon_def_index = 0;
+
+    bsIn.Read(networkId);
+    bsIn.Read(weapon_def_index);
+
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
-        SLNet::BitStream bs;
-        bs.Write((SLNet::MessageID)ID_PLAYER_WEAPONS);
-        bs.Write(networkId);
-        bs.Write(weapon_def_index);
+        SLNet::BitStream bsOut;
+        bsOut.Write((SLNet::MessageID)ID_PLAYER_WEAPONS);
+        bsOut.Write(networkId);
+        bsOut.Write(weapon_def_index);
 
-        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
+        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), HIGH_PRIORITY, RELIABLE_ORDERED);
     }
 
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
@@ -39,7 +45,7 @@ void NetPlayerManager::ReceiveNetPlayerWeapons(int networkId, long weapon_def_in
     inventoryWeapons->SetThingAsActiveWeapon(weapon_def_index, 0);
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerWeapons()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -59,7 +65,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerWeapons(int networkId)
 
     inventoryWeapons->AddSetThingAsActiveWeaponCallback(
         "SetThingAsActiveWeaponCallback" + std::to_string(networkId),
-        [this, networkId](CTCInventoryWeapons* _this, long weapon_def_index)
+        [this](CTCInventoryWeapons* _this, long weapon_def_index)
         {
             CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 

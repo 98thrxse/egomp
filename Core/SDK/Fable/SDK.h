@@ -66,6 +66,7 @@
 #include "Actions.h"
 #include "SystemManager.h"
 #include "InputManager.h"
+#include "PlayerGui.h"
 
 class SDK
 {

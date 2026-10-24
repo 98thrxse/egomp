@@ -5,11 +5,13 @@ enum Morph : int
     TATTOOS = 1 << 0
 };
 
-void NetPlayerManager::ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerMorph(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    int morphFlags = 0;
     std::vector<long> tattooIndexes;
 
-    int morphFlags = 0;
+    bsIn.Read(networkId);
     bsIn.Read(morphFlags);
 
     if (morphFlags & TATTOOS)
@@ -87,7 +89,7 @@ void NetPlayerManager::ReceiveNetPlayerMorph(int networkId, SLNet::BitStream& bs
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerMorph()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -122,7 +124,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph(int networkId)
 
     heroMorph->AddFrameUpdateCallback(
         "MorphFrameUpdate" + std::to_string(networkId),
-        [this, networkId, lastSendTime]() mutable
+        [this, lastSendTime]() mutable
         {
             CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 

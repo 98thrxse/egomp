@@ -37,9 +37,21 @@ void __fastcall CTCInventoryWeapons::HReturnAllConfiscatedItems(CTCInventoryWeap
 	return OReturnAllConfiscatedItems(_this);
 }
 
+void(__thiscall* CTCInventoryWeapons::ORefreshSheathedWeapons)(CTCInventoryWeapons*) = nullptr;
+void __fastcall CTCInventoryWeapons::HRefreshSheathedWeapons(CTCInventoryWeapons* _this, void* _EDX)
+{
+	ORefreshSheathedWeapons(_this);
+}
+
+void CTCInventoryWeapons::RefreshSheathedWeapons()
+{
+	ORefreshSheathedWeapons(this);
+}
+
 void CTCInventoryWeapons::Hook()
 {
 	ADD_HOOK(0x005CB2B0, HSetThingAsActiveWeapon, OSetThingAsActiveWeapon);
 	ADD_HOOK(0x005C311A, HGetItemOfTypeInInventory, OGetItemOfTypeInInventory);
 	ADD_HOOK(0x005CB742, HReturnAllConfiscatedItems, OReturnAllConfiscatedItems);
+	ADD_HOOK(0x005C9962, HRefreshSheathedWeapons, ORefreshSheathedWeapons);
 }

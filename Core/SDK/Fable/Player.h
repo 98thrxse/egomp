@@ -21,6 +21,8 @@ public:
     void Uninitialise();
     void UninitCharacter();
     bool LocateCharacterStartHolySite(CThingHolySite** site);
+    void ResetModes();
+    void SetPlayerCharacter(CThingPlayerCreature* creature);
 
     static void Hook();
 
@@ -51,4 +53,10 @@ private:
         CPlayer* _this,
         void* _EDX,
         CThingHolySite** site);
+
+    static void(__thiscall* OResetModes)(CPlayer*);
+    static void __fastcall HResetModes(CPlayer* _this, void* _EDX);
+
+    static void(__thiscall* OSetPlayerCharacter)(CPlayer*, CThingPlayerCreature*);
+    static void __fastcall HSetPlayerCharacter(CPlayer*, void* _EDX, CThingPlayerCreature* creature);
 };

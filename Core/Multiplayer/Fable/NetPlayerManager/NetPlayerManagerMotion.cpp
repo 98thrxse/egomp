@@ -90,7 +90,7 @@ void NetPlayerManager::ApplyNetPlayerRotation(int networkId)
         });
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerMovement()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -101,7 +101,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMovement(int networkId)
 
     auto lastSendTime = std::chrono::steady_clock::now();
 
-    creature->AddResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId), [this, networkId, lastSendTime]() mutable {
+    creature->AddResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId), [this, lastSendTime]() mutable {
         CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
         if (!creature) {
@@ -165,7 +165,7 @@ void NetPlayerManager::BroadcastNetPlayerMovement(int networkId)
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerRotation()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -176,7 +176,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
 
     auto lastSendTime = std::chrono::steady_clock::now();
 
-    creature->AddResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId), [this, networkId, lastSendTime]() mutable {
+    creature->AddResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId), [this, lastSendTime]() mutable {
         CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
         if (!creature) {
@@ -217,17 +217,51 @@ void NetPlayerManager::BroadcastLocalNetPlayerRotation(int networkId)
         });
 }
 
-void NetPlayerManager::ReceiveNetPlayerMovement(int networkId, C3DVector remotePosition, C3DVector movementAcceleration)
+void NetPlayerManager::BroadcastNetPlayerRotation(int networkId)
 {
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature) {
+        std::cout << "[NetPlayerManager::BroadcastNetPlayerMovement]: !creature" << std::endl;
+        return;
+    }
+
+    CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
+    CRightHandedSet* rhSet = reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetRHSet();
+
+    SLNet::BitStream bs;
+    bs.Write((SLNet::MessageID)ID_PLAYER_ROTATION);
+    bs.Write(networkId);
+    bs.Write(rhSet->Up);
+    bs.Write(rhSet->Forward);
+
+    if (localNetPlayer->GetNetworkId() == 0) {
+        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+    }
+    else {
+        network->SendToHost((const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+    }
+}
+
+void NetPlayerManager::ReceiveNetPlayerMovement(SLNet::BitStream& bsIn)
+{
+    int networkId = -1;
+    C3DVector remotePosition = {};
+    C3DVector movementAcceleration = {};
+
+    bsIn.Read(networkId);
+    bsIn.Read(remotePosition);
+    bsIn.Read(movementAcceleration);
+
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
-        SLNet::BitStream bs;
-        bs.Write((SLNet::MessageID)ID_PLAYER_MOVEMENT);
-        bs.Write(networkId);
-        bs.Write(remotePosition);
-        bs.Write(movementAcceleration);
+        SLNet::BitStream bsOut;
+        bsOut.Write((SLNet::MessageID)ID_PLAYER_MOVEMENT);
+        bsOut.Write(networkId);
+        bsOut.Write(remotePosition);
+        bsOut.Write(movementAcceleration);
 
-        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
     }
 
     for (auto& netPlayer : netPlayers)
@@ -242,17 +276,25 @@ void NetPlayerManager::ReceiveNetPlayerMovement(int networkId, C3DVector remoteP
     }
 }
 
-void NetPlayerManager::ReceiveNetPlayerRotation(int networkId, C3DVector up, C3DVector forward)
+void NetPlayerManager::ReceiveNetPlayerRotation(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    C3DVector up = {};
+    C3DVector forward = {};
+
+    bsIn.Read(networkId);
+    bsIn.Read(up);
+    bsIn.Read(forward);
+
     if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
     {
-        SLNet::BitStream bs;
-        bs.Write((SLNet::MessageID)ID_PLAYER_ROTATION);
-        bs.Write(networkId);
-        bs.Write(up);
-        bs.Write(forward);
+        SLNet::BitStream bsOut;
+        bsOut.Write((SLNet::MessageID)ID_PLAYER_ROTATION);
+        bsOut.Write(networkId);
+        bsOut.Write(up);
+        bsOut.Write(forward);
 
-        network->SendToAllClientsExcept(networkId, (const char*)bs.GetData(), bs.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
+        network->SendToAllClientsExcept(networkId, (const char*)bsOut.GetData(), bsOut.GetNumberOfBytesUsed(), MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED);
     }
 
     for (auto& netPlayer : netPlayers)

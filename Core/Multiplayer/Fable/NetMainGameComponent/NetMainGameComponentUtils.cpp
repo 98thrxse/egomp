@@ -1,8 +1,9 @@
 #include "NetMainGameComponent.h"
 
-void NetMainGameComponent::SetInLimboTillRegionLoaded(CWorld* world, C3DVector position)
+void NetMainGameComponent::SetPlayerInLimboTillRegionLoaded(CWorld* world, C3DVector position)
 {
     netPlayerManager->SetNetPlayersAlpha(85);
+    netPlayerManager->RefreshNetPlayersSheathedWeapons();
     netPlayerManager->SetNetPlayersInLimbo(true);
 
     world->AddUpdateRegionLoadCallback("UpdateRegionLoad", [this, world, position]() {
@@ -13,6 +14,7 @@ void NetMainGameComponent::SetInLimboTillRegionLoaded(CWorld* world, C3DVector p
             return;
 
         world->RemoveUpdateRegionLoadCallback("UpdateRegionLoad");
+
         netPlayerManager->SetNetPlayersInLimbo(false);
         netWorld->BroadcastNetLoadedRegion();
         });

@@ -93,6 +93,15 @@ void CThing::SetToKillOnLevelUnload(bool on) {
 	OSetToKillOnLevelUnload(this, on);
 }
 
+void(__thiscall* CThing::OKill)(CThing*, bool) = nullptr;
+void __fastcall CThing::HKill(CThing* _this, void* _EDX, bool perform_on_die) {
+	OKill(_this, perform_on_die);
+}
+
+void CThing::Kill(bool perform_on_die) {
+	OSetAsDrawable(this, perform_on_die);
+}
+
 void CThing::Hook()
 {
 	ADD_HOOK(0x004C73D0, HGetPos, OGetPos);
@@ -102,4 +111,5 @@ void CThing::Hook()
 	ADD_HOOK(0x004C8CF0, HSetInLimbo, OSetInLimbo);
 	ADD_HOOK(0x004C8E50, HSetAsDrawable, OSetAsDrawable);
 	ADD_HOOK(0x004C7770, HSetAsActivated, OSetAsActivated);
+	ADD_HOOK(0x004C9B80, HKill, OKill);
 }

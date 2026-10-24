@@ -17,7 +17,7 @@ void NetMainGameComponent::SetupNetworkWorldCallbacks()
         bs.Read(duringCutScenes);
         bs.Read(door);
 
-        SetInLimboTillRegionLoaded(world, position);
+        SetPlayerInLimboTillRegionLoaded(world, position);
         world->SetAsLoadingRegion(position, facingAngleXY, teleporter, duringCutScenes, door);
         });
 
@@ -27,6 +27,7 @@ void NetMainGameComponent::SetupNetworkWorldCallbacks()
 
 		netWorld->ReceiveNetLoadedRegion(netPlayerNetworkId);
         netPlayerManager->SetNetPlayerAlpha(netPlayerNetworkId, 255);
+        netPlayerManager->RefreshNetPlayerSheathedWeapons(netPlayerNetworkId);
         });
 }
 

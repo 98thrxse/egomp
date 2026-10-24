@@ -65,6 +65,6 @@ private:
 
 	void HandleDisconnectionOrLost(int networkId);
 	
-	void SetInLimboTillRegionLoaded(CWorld* world, C3DVector position);
+	void SetPlayerInLimboTillRegionLoaded(CWorld* world, C3DVector position);
 	void ClearInputBuffer();
 };

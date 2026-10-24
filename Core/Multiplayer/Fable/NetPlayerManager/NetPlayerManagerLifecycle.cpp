@@ -18,10 +18,10 @@ void NetPlayerManager::CreateLocalNetPlayer(C3DVector position, float facingAngl
         return;
     }
 
-	SetupLocalNetPlayer(networkId, creature, position, facingAngleXY);
+	SetupLocalNetPlayer(creature, position, facingAngleXY);
 }
 
-void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* creature, C3DVector position, float facingAngleXY)
+void NetPlayerManager::SetupLocalNetPlayer(CThingPlayerCreature* creature, C3DVector position, float facingAngleXY)
 {
     if (networkId != 0)
     {
@@ -29,14 +29,15 @@ void NetPlayerManager::SetupLocalNetPlayer(int networkId, CThingPlayerCreature* 
         BroadcastCreateNetPlayer(networkId, defGlobalIndex, position, facingAngleXY);
     }
 
-    BroadcastLocalNetPlayerMovement(networkId);
-    BroadcastLocalNetPlayerRotation(networkId);
-    BroadcastLocalNetPlayerStats(networkId);
-    BroadcastLocalNetPlayerAppearance(networkId);
-    BroadcastLocalNetPlayerExperience(networkId);
-    BroadcastLocalNetPlayerMorph(networkId);
-    BroadcastLocalNetPlayerWeapons(networkId);
-    //BroadcastLocalNetPlayerAction(networkId); // UNFINISHED
+    BroadcastLocalNetPlayerMovement();
+    BroadcastLocalNetPlayerRotation();
+    BroadcastLocalNetPlayerStats();
+    BroadcastLocalNetPlayerAppearance();
+    BroadcastLocalNetPlayerExperience();
+    BroadcastLocalNetPlayerMorph();
+    BroadcastLocalNetPlayerWeapons();
+    //BroadcastLocalNetPlayerAction(); // UNFINISHED
+    BroadcastLocalNetPlayerHero();
 }
 
 void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY)
@@ -62,6 +63,7 @@ void NetPlayerManager::CreateNetPlayer(int networkId, int defGlobalIndex, C3DVec
     CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
     reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->SetFacingAngleXY(facingAngleXY);
 
+    player->SetPlayerCharacter(creature);
     player->SetControlledCreature(creature);
 
     ApplyNetPlayerMovement(networkId);
@@ -104,11 +106,13 @@ void NetPlayerManager::CreateNetPlayers(BitStream& bs)
 void NetPlayerManager::SetupNetPlayer()
 {
     BroadcastNetPlayerMovement(localNetPlayer->GetNetworkId());
+    BroadcastNetPlayerRotation(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerStats(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerAppearance(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerExperience(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerMorph(localNetPlayer->GetNetworkId());
     BroadcastNetPlayerWeapons(localNetPlayer->GetNetworkId());
+    BroadcastNetPlayerHero(localNetPlayer->GetNetworkId());
 }
 
 void NetPlayerManager::SetupNetPlayers(int networkId)
@@ -119,11 +123,13 @@ void NetPlayerManager::SetupNetPlayers(int networkId)
             continue;
 
         BroadcastNetPlayerMovement(netPlayer->GetNetworkId());
+        BroadcastNetPlayerRotation(netPlayer->GetNetworkId());
         BroadcastNetPlayerStats(netPlayer->GetNetworkId());
         BroadcastNetPlayerAppearance(netPlayer->GetNetworkId());
         BroadcastNetPlayerExperience(netPlayer->GetNetworkId());
         BroadcastNetPlayerMorph(netPlayer->GetNetworkId());
         BroadcastNetPlayerWeapons(netPlayer->GetNetworkId());
+        BroadcastNetPlayerHero(netPlayer->GetNetworkId());
     }
 }
 
@@ -194,6 +200,15 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CTCHero* hero = reinterpret_cast<CTCHero*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO)
+        );
+
+    if (!hero) {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !hero" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
@@ -204,6 +219,7 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
+    hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));
 
     localNetPlayer.reset();
 }
@@ -271,6 +287,15 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         return;
     }
 
+    CTCHero* hero = reinterpret_cast<CTCHero*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO)
+        );
+
+    if (!hero) {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !hero" << std::endl;
+        return;
+    }
+
     creature->RemoveResolveMovementAccelerationCallback("ResolveMovementAcceleration" + std::to_string(networkId));
     creature->RemoveResolveFacingDirectionCallback("ResolveFacingDirection" + std::to_string(networkId));
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
@@ -281,9 +306,14 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
+    hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));
 
-    player->UninitCharacter();
-    player->Uninitialise();
+    player->ResetModes();
+    player->SetPlayerCharacter(nullptr);
+    player->SetControlledCreature(nullptr);
+
+    reinterpret_cast<CThing*>(creature)->SetInLimbo(true);
+    reinterpret_cast<CThing*>(creature)->Kill(false);
 
     for (size_t i = 0; i < netPlayers.size(); ++i)
     {

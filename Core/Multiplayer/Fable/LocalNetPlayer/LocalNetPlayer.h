@@ -29,6 +29,9 @@ private:
     std::vector<std::vector<long>> appearanceModifiers;
     std::vector<long> tattooIndexes;
 
+    bool weaponsUsable;
+    bool willUsable;
+
 public:
     LocalNetPlayer();
     ~LocalNetPlayer() = default;
@@ -80,4 +83,10 @@ public:
 
     void SetTattooIndexes(const std::vector<long>& tattooIndexes);
     std::vector<long> GetAllTattooIndexes() const;
+
+    void SetWeaponsAsUsable(bool on);
+    bool GetWeaponsAsUsable() const;
+
+    void SetWillAsUsable(bool on);
+    bool GetWillAsUsable() const;
 };

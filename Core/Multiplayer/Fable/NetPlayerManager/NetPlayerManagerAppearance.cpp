@@ -7,13 +7,15 @@ enum Appearance : int
     CLOTHING = 1 << 2
 };
 
-void NetPlayerManager::ReceiveNetPlayerAppearance(int networkId, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerAppearance(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    int appearanceFlags = 0;
     std::vector<std::vector<long>> appearanceModifierLists(
         NO_OF_APPEARANCE_MODIFIER_TYPES
     );
 
-    int appearanceFlags = 0;
+    bsIn.Read(networkId);
     bsIn.Read(appearanceFlags);
 
     if (appearanceFlags & HAIR)
@@ -131,7 +133,7 @@ void NetPlayerManager::ReceiveNetPlayerAppearance(int networkId, SLNet::BitStrea
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerAppearance()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -158,7 +160,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAppearance(int networkId)
 
     appearanceModifiers->AddFrameUpdateCallback(
         "AppearanceFrameUpdate" + std::to_string(networkId),
-        [this, networkId, lastSendTime]() mutable
+        [this, lastSendTime]() mutable
         {
             CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 

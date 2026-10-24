@@ -87,4 +87,5 @@ SDK::SDK()
 	CGameTimeManager::Hook();
 	CSystemManager::Hook();
 	CInputManager::Hook();
+	CPlayerGui::Hook();
 };

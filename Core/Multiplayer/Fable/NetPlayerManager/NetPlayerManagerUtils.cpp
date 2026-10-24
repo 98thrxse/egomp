@@ -244,6 +244,56 @@ void NetPlayerManager::SetNetPlayersPosition(C3DVector position)
     }
 }
 
+void NetPlayerManager::SetNetPlayersWeaponsAsUsable(bool on)
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersWeaponsAsUsable]: !creature: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+        CTCHero* hero = reinterpret_cast<CTCHero*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO)
+            );
+
+        if (!hero) {
+            std::cout << "[NetPlayerManager::SetNetPlayersWeaponsAsUsable]: !hero" << std::endl;
+            return;
+        }
+
+        hero->SetWeaponsAsUsable(on);
+    }
+}
+
+void NetPlayerManager::SetNetPlayersWillAsUsable(bool on)
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::SetNetPlayersWillAsUsable]: !creature: " << netPlayer->GetNetworkId() << std::endl;
+            continue;
+        }
+
+        CTCHero* hero = reinterpret_cast<CTCHero*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(TCI_HERO)
+            );
+
+        if (!hero) {
+            std::cout << "[NetPlayerManager::SetNetPlayersWillAsUsable]: !hero" << std::endl;
+            return;
+        }
+
+        hero->SetWillAsUsable(on);
+    }
+}
+
 C3DVector NetPlayerManager::GetPlayerPosition()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(0);
@@ -269,4 +319,51 @@ float NetPlayerManager::GetPlayerFacingAngleXY()
 
     CTCPhysicsBase* physicsTC = reinterpret_cast<CThing*>(creature)->PhysicsTC;
     return reinterpret_cast<CTCPhysicsStandard*>(physicsTC)->GetFacingAngleXY();
+}
+
+void NetPlayerManager::RefreshNetPlayersSheathedWeapons()
+{
+    for (const auto& netPlayer : netPlayers)
+    {
+        CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(netPlayer->GetNetworkId());
+
+        if (!creature)
+        {
+            std::cout << "[NetPlayerManager::RefreshNetPlayersSheathedWeapons]: !creature: " << networkId << std::endl;
+            return;
+        }
+
+        CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
+            );
+
+        if (!inventoryWeapons) {
+            std::cout << "[NetPlayerManager::RefreshNetPlayersSheathedWeapons]: !inventoryWeapons" << std::endl;
+            return;
+        }
+
+        inventoryWeapons->RefreshSheathedWeapons();
+    }
+}
+
+void NetPlayerManager::RefreshNetPlayerSheathedWeapons(int networkId)
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+    {
+        std::cout << "[NetPlayerManager::RefreshNetPlayerSheathedWeapons]: !creature: " << networkId << std::endl;
+        return;
+    }
+
+    CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
+        reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
+        );
+
+    if (!inventoryWeapons) {
+        std::cout << "[NetPlayerManager::RefreshNetPlayerSheathedWeapons]: !inventoryWeapons" << std::endl;
+        return;
+    }
+
+    inventoryWeapons->RefreshSheathedWeapons();
 }

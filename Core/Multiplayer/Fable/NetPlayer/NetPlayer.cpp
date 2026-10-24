@@ -22,6 +22,9 @@ NetPlayer::NetPlayer() :
     trainableStatLevels = std::vector<long>(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
     appearanceModifiers = std::vector<std::vector<long>>(NO_OF_APPEARANCE_MODIFIER_TYPES);
     tattooIndexes = std::vector<long>();
+
+    weaponsUsable = false;
+    willUsable = false;
 }
 
 void NetPlayer::SetNetworkId(int id)
@@ -192,4 +195,24 @@ void NetPlayer::SetTattooIndexes(const std::vector<long>& tattooIndexes)
 std::vector<long> NetPlayer::GetAllTattooIndexes() const
 {
     return tattooIndexes;
+}
+
+void NetPlayer::SetWeaponsAsUsable(bool on)
+{
+    this->weaponsUsable = on;
+}
+
+bool NetPlayer::GetWeaponsAsUsable() const
+{
+    return weaponsUsable;
+}
+
+void NetPlayer::SetWillAsUsable(bool on)
+{
+    this->willUsable = on;
+}
+
+bool NetPlayer::GetWillAsUsable() const
+{
+    return willUsable;
 }

@@ -83,14 +83,14 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         C3DVector requiredFacing, originalFacing;
 
         bsIn.Read(targetNetworkId);
-        bsIn.Read(requiredFacing.X); bsIn.Read(requiredFacing.Y); bsIn.Read(requiredFacing.Z);
-        bsIn.Read(originalFacing.X); bsIn.Read(originalFacing.Y); bsIn.Read(originalFacing.Z);
+        bsIn.Read(requiredFacing);
+        bsIn.Read(originalFacing);
 
         if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
         {
             bsOut.Write(targetNetworkId);
-            bsOut.Write(requiredFacing.X); bsOut.Write(requiredFacing.Y); bsOut.Write(requiredFacing.Z);
-			bsOut.Write(originalFacing.X); bsOut.Write(originalFacing.Y); bsOut.Write(originalFacing.Z);
+            bsOut.Write(requiredFacing);
+			bsOut.Write(originalFacing);
         }
 
         CThing* target = (targetNetworkId != -1) ? reinterpret_cast<CThing*>(GetPlayerCreatureFromNetworkId(targetNetworkId)) : reinterpret_cast<CThing*>(creature);
@@ -116,13 +116,13 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
         long weaponIndex = 0;
 
         bsIn.Read(targetNetworkId);
-        bsIn.Read(required_facing.X); bsIn.Read(required_facing.Y); bsIn.Read(required_facing.Z);
+        bsIn.Read(required_facing);
         bsIn.Read(weaponIndex);
 
         if (localNetPlayer && localNetPlayer->GetNetworkId() == 0)
         {
             bsOut.Write(targetNetworkId);
-            bsOut.Write(required_facing.X); bsOut.Write(required_facing.Y); bsOut.Write(required_facing.Z);
+            bsOut.Write(required_facing);
             bsOut.Write(weaponIndex);
 		}
 
@@ -252,7 +252,7 @@ void NetPlayerManager::ReceiveNetPlayerAction(SLNet::BitStream& bsIn)
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerAction()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -261,7 +261,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         return;
     }
 
-    reinterpret_cast<CThingCreatureBase*>(creature)->AddSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId), [this, networkId](CThingCreatureBase* _this, CCreatureActionBase const& action) {
+    reinterpret_cast<CThingCreatureBase*>(creature)->AddSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId), [this](CThingCreatureBase* _this, CCreatureActionBase const& action) {
         CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
         if (!creature) {
@@ -297,7 +297,13 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         {
         case Actions::CreatureAction_PlayerInteractionGreet:
         {
-            CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
+            CBaseIntelligentPointer* ptarget =
+                reinterpret_cast<CBaseIntelligentPointer*>(
+                    reinterpret_cast<uintptr_t>(&action) + 0xA8);
+
+            CThing* target =
+                reinterpret_cast<CThing*>(ptarget->GetPItem());
+
             int targetNetworkId = GetNetworkIdFromThing(target);
             bs.Write(targetNetworkId);
             
@@ -310,15 +316,21 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         }
         case Actions::CombatAction_ControlledStrafeJump:
         {
-            CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
+            CBaseIntelligentPointer* ptarget =
+                reinterpret_cast<CBaseIntelligentPointer*>(
+                    reinterpret_cast<uintptr_t>(&action) + 0xA8);
+
+            CThing* target =
+                reinterpret_cast<CThing*>(ptarget->GetPItem());
+
             int targetNetworkId = GetNetworkIdFromThing(target);
 
             C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(reinterpret_cast<uintptr_t>(&action) + 0x114);
             C3DVector originalFacing = *reinterpret_cast<const C3DVector*>(reinterpret_cast<uintptr_t>(&action) + 0x120);
 
             bs.Write(targetNetworkId);
-            bs.Write(requiredFacing.X); bs.Write(requiredFacing.Y); bs.Write(requiredFacing.Z);
-            bs.Write(originalFacing.X); bs.Write(originalFacing.Y); bs.Write(originalFacing.Z);
+            bs.Write(requiredFacing);
+            bs.Write(originalFacing);
             
             break;
         }
@@ -332,7 +344,13 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         }
         case Actions::CreatureAction_InterruptableMidAttackAutoTurn: // UNFINISHED (pmelee_ability)
         {
-            CThing* target = *reinterpret_cast<CThing**>(reinterpret_cast<uintptr_t>(&action) + 0xAC);
+            CBaseIntelligentPointer* ptarget =
+                reinterpret_cast<CBaseIntelligentPointer*>(
+                    reinterpret_cast<uintptr_t>(&action) + 0xA8);
+
+            CThing* target =
+                reinterpret_cast<CThing*>(ptarget->GetPItem());
+
             int targetNetworkId = GetNetworkIdFromThing(target);
 
             C3DVector requiredFacing = *reinterpret_cast<const C3DVector*>(
@@ -349,7 +367,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
                 weapon ? weapon->DefGlobalIndex : 0;
 
             bs.Write(targetNetworkId);
-            bs.Write(requiredFacing.X); bs.Write(requiredFacing.Y); bs.Write(requiredFacing.Z);
+            bs.Write(requiredFacing);
             bs.Write(weaponIndex);
 
             break;
@@ -404,7 +422,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerAction(int networkId)
         return;
     }
 
-    combat->AddUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId), [this, networkId]() {
+    combat->AddUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId), [this]() {
         SLNet::BitStream bs;
         bs.Write((SLNet::MessageID)ID_PLAYER_ACTION);
         bs.Write(networkId);

@@ -13,8 +13,11 @@ enum Stats : int
 	MAXHEALTH = 1 << 8
 };
 
-void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bsIn)
+void NetPlayerManager::ReceiveNetPlayerStats(SLNet::BitStream& bsIn)
 {
+    int networkId = -1;
+    int statsFlags = 0;
+
     int money = 0;
     int morality = 0;
     float age = 0;
@@ -26,9 +29,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
 	float health = 0;
 	float maxHealth = 0;
 
-    std::vector<long> trainableLevels(NUMBER_OF_TRAINABLE_HERO_STATS, 0);
-
-    int statsFlags = 0;
+    bsIn.Read(networkId);
     bsIn.Read(statsFlags);
 
     if (statsFlags & MONEY)
@@ -187,7 +188,7 @@ void NetPlayerManager::ReceiveNetPlayerStats(int networkId, SLNet::BitStream& bs
     }
 }
 
-void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
+void NetPlayerManager::BroadcastLocalNetPlayerStats()
 {
     CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 
@@ -209,7 +210,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats(int networkId)
 
     heroStats->AddFrameUpdateCallback(
         "StatsFrameUpdate" + std::to_string(networkId),
-        [this, networkId, lastSendTime]() mutable
+        [this, lastSendTime]() mutable
         {
             CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
 

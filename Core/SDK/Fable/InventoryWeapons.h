@@ -26,6 +26,7 @@ public:
 
 	void SetThingAsActiveWeapon(long weapon_def_index, NUISystem::CComponent* pcomponent);
 	CThing* GetItemOfTypeInInventory(long def_index);
+	void RefreshSheathedWeapons();
 
 	static void Hook();
 
@@ -40,4 +41,7 @@ private:
 
 	static void (__thiscall* OReturnAllConfiscatedItems)(CTCInventoryWeapons*);
 	static void __fastcall HReturnAllConfiscatedItems(CTCInventoryWeapons* _this, void* _EDX);
+
+	static void(__thiscall* ORefreshSheathedWeapons)(CTCInventoryWeapons*);
+	static void __fastcall HRefreshSheathedWeapons(CTCInventoryWeapons* _this, void* _EDX);
 };

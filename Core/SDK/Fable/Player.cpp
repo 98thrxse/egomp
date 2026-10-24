@@ -87,6 +87,26 @@ bool CPlayer::LocateCharacterStartHolySite(CThingHolySite** site)
     return OLocateCharacterStartHolySite(this, site);
 }
 
+void(__thiscall* CPlayer::OResetModes)(CPlayer*) = nullptr;
+void __fastcall CPlayer::HResetModes(CPlayer* _this, void* _EDX)
+{
+    OResetModes(_this);
+}
+
+void CPlayer::ResetModes()
+{
+    OResetModes(this);
+}
+
+void(__thiscall* CPlayer::OSetPlayerCharacter)(CPlayer*, CThingPlayerCreature*) = nullptr;
+void __fastcall CPlayer::HSetPlayerCharacter(CPlayer* _this, void* _EDX, CThingPlayerCreature* creature) {
+    OSetPlayerCharacter(_this, creature);
+}
+
+void CPlayer::SetPlayerCharacter(CThingPlayerCreature* creature) {
+    OSetPlayerCharacter(this, creature);
+}
+
 void CPlayer::Hook()
 {
     ADD_HOOK(0x0048A070, HInitCharacterAs, OInitCharacterAs);
@@ -97,4 +117,6 @@ void CPlayer::Hook()
     ADD_HOOK(0x00487AF0, HUninitialise, OUninitialise);
     ADD_HOOK(0x00487BD0, HUninitCharacter, OUninitCharacter);
     ADD_HOOK(0x00488B20, HLocateCharacterStartHolySite, OLocateCharacterStartHolySite);
+    ADD_HOOK(0x00634870, HResetModes, OResetModes);
+    ADD_HOOK(0x00487B80, HSetPlayerCharacter, OSetPlayerCharacter);
 }
