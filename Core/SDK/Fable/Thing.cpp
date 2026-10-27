@@ -27,7 +27,7 @@ C3DVector* CThing::GetPos() {
 int (__thiscall* CThing::OGetJoystickDeviceNumber)(CThing*) = nullptr;
 int __fastcall CThing::HGetJoystickDeviceNumber(CThing* _this, void* _EDX) {
 	// CRASH: if joystick is not 0 (AddRumble)
-	if (IsMultiplayer()) {
+	if (IsNetworkActive()) {
 		return 0;
 	}
 

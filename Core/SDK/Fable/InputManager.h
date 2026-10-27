@@ -7,7 +7,7 @@
 
 #include "SystemManager.h"
 
-extern bool (*IsMultiplayer)();
+extern bool (*IsNetworkActive)();
 
 class CInputManager
 {

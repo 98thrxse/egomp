@@ -9,10 +9,20 @@
 #include "../NetPlayerManager/NetPlayerManager.h"
 #include "../NetWorld/NetWorld.h"
 
+extern Network* (*CreateNetwork)();
+extern void (*DestroyNetwork)();
+extern bool (*IsNetworkActive)();
+
+extern bool (*HostNetwork)();
+extern bool (*ConnectNetwork)();
+extern bool (*DisconnectNetwork)();
+
+extern void (*UpdateNetwork)();
+
 class NetMainGameComponent
 {
 public:
-	NetMainGameComponent(std::unique_ptr<Network>& network);
+	NetMainGameComponent(Network* network);
 	~NetMainGameComponent();
 
 	void SetNetworkId(int id);
@@ -21,7 +31,7 @@ public:
 private:
 	CMainGameComponent* mainGameComponent;
 
-	std::unique_ptr<Network>& network;
+	Network* network;
 
 	std::unique_ptr<NetPlayerManager> netPlayerManager;
 	std::unique_ptr<NetWorld> netWorld;
@@ -47,7 +57,6 @@ private:
 	void ClearNetworkPlayerManagerCallbacks();
 
 	void Selection();
-	void Options();
 	void Clear();
 
 	void Host();
@@ -66,5 +75,4 @@ private:
 	void HandleDisconnectionOrLost(int networkId);
 	
 	void SetPlayerInLimboTillRegionLoaded(CWorld* world, C3DVector position);
-	void ClearInputBuffer();
 };

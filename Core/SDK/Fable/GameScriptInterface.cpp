@@ -16,7 +16,7 @@ void CGameScriptInterface::StartSneaking()
 void(__thiscall* CGameScriptInterface::OSetTeleportingAsActive)(CGameScriptInterface*, bool) = nullptr;
 void __fastcall CGameScriptInterface::HSetTeleportingAsActive(CGameScriptInterface* _this, void* _EDX, bool active)
 {
-    if (IsMultiplayer())
+    if (IsNetworkActive())
     {
         for (const auto& pair : setTeleportingAsActive)
         {

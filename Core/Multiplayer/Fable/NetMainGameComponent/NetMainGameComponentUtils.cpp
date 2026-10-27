@@ -1,5 +1,18 @@
 #include "NetMainGameComponent.h"
 
+void NetMainGameComponent::SetNetworkId(int id)
+{
+    networkId = id;
+
+    netWorld->SetNetworkId(id);
+    netPlayerManager->SetNetworkId(id);
+}
+
+int NetMainGameComponent::GetNetworkId() const
+{
+    return networkId;
+}
+
 void NetMainGameComponent::SetPlayerInLimboTillRegionLoaded(CWorld* world, C3DVector position)
 {
     netPlayerManager->SetNetPlayersAlpha(85);
@@ -18,26 +31,4 @@ void NetMainGameComponent::SetPlayerInLimboTillRegionLoaded(CWorld* world, C3DVe
         netPlayerManager->SetNetPlayersInLimbo(false);
         netWorld->BroadcastNetLoadedRegion();
         });
-}
-
-void NetMainGameComponent::ClearInputBuffer()
-{
-    std::cin.clear();
-
-    while (_kbhit()) {
-        (void)_getch();
-    }
-}
-
-void NetMainGameComponent::SetNetworkId(int id)
-{
-    networkId = id;
-
-    netWorld->SetNetworkId(id);
-    netPlayerManager->SetNetworkId(id);
-}
-
-int NetMainGameComponent::GetNetworkId() const
-{
-    return networkId;
 }

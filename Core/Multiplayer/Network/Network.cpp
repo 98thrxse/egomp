@@ -21,9 +21,10 @@ Network::~Network()
 	}
 }
 
-bool Network::Host(unsigned short port)
+bool Network::Host(int port, int slots)
 {
 	this->settings.port = port;
+	this->settings.slots = slots;
 
 	if (!peer)
 	{
@@ -65,7 +66,7 @@ bool Network::Host(unsigned short port)
 	return true;
 }
 
-bool Network::Connect(const char* ip, unsigned short port)
+bool Network::Connect(std::string ip, int port)
 {
 	this->settings.ip = ip;
 	this->settings.port = port;

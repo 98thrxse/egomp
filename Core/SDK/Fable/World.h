@@ -12,7 +12,7 @@
 #include "GameScriptInterface.h"
 #include "GameTimeManager.h"
 
-extern bool (*IsMultiplayer)();
+extern bool (*IsNetworkActive)();
 
 class CWorld
 {

@@ -6,7 +6,7 @@
 
 #include "../Utils/Hook.h"
 
-extern bool (*IsMultiplayer)();
+extern bool (*IsNetworkActive)();
 
 class CGameScriptInterface
 {

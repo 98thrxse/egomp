@@ -2,15 +2,15 @@
 
 #include "windows.h"
 #include <sstream>
-#include <string>
 
 #include "NetMainGameComponent.h"
 
 NetMainGameComponent::NetMainGameComponent(
-    std::unique_ptr<Network>& network
+    Network* network
 )
-    : mainGameComponent(CMainGameComponent::Get()),
-    network(network)
+    : network(network),
+    mainGameComponent(CMainGameComponent::Get())
+    
 {
     SetupCallbacks();
 }
@@ -18,151 +18,87 @@ NetMainGameComponent::NetMainGameComponent(
 NetMainGameComponent::~NetMainGameComponent()
 {
     ClearCallbacks();
+    network = nullptr;
 }
 
 void NetMainGameComponent::SetupCallbacks()
 {
-    mainGameComponent->AddPostInitCallback("PostInit", [this]() { this->HandleMainGameComponentPostInit(); });
     mainGameComponent->AddUpdateCallback("Update", [this]() { this->HandleMainGameComponentUpdate(); });
     mainGameComponent->AddShutdownCallback("Shutdown", [this]() { this->HandleMainGameComponentShutdown(); });
 }
 
 void NetMainGameComponent::ClearCallbacks()
 {
-    mainGameComponent->RemovePostInitCallback("PostInit");
     mainGameComponent->RemoveUpdateCallback("Update");
     mainGameComponent->RemoveShutdownCallback("Shutdown");
-}
-
-void NetMainGameComponent::HandleMainGameComponentShutdown()
-{
-    if (!network)
-        return;
-
-    Disconnect();
-
-    if (!network->IsActive())
-        Clear();
-}
-
-void NetMainGameComponent::HandleMainGameComponentPostInit() {
-    Options();
 }
 
 void NetMainGameComponent::HandleMainGameComponentUpdate()
 {
     Selection();
+    UpdateNetwork();
 
-    if (!network)
-        return;
-
-    network->Update();
-
-    if (!network->IsActive())
-    {
+    if (!IsNetworkActive())
         Clear();
-        Options();
-    }
 }
 
-std::string ReadIP(std::string defaultIP = "127.0.0.1") {
-    std::string input;
-    std::cout << "IP (" << defaultIP << "): ";
-    std::getline(std::cin, input);
-    return input.empty() ? defaultIP : input;
-}
-
-unsigned short ReadPort(unsigned short defaultPort = 60000) {
-    std::string input;
-    std::cout << "Port (" << defaultPort << "): ";
-    std::getline(std::cin, input);
-
-    if (input.empty())
-        return defaultPort;
-
-    try {
-        return (unsigned short)std::stoi(input);
-    }
-    catch (...) {
-        return defaultPort;
-    }
-}
-
-void NetMainGameComponent::Options()
+void NetMainGameComponent::Selection()
 {
-    std::cout << "VK_NUMPAD1: Host" << std::endl;
-    std::cout << "VK_NUMPAD2: Connect" << std::endl;
-    std::cout << "VK_NUMPAD3: Disconnect" << std::endl;
-}
+    const bool hostPressed = GetAsyncKeyState(VK_NUMPAD1) & 1;
+    const bool connectPressed = GetAsyncKeyState(VK_NUMPAD2) & 1;
+    const bool disconnectPressed = GetAsyncKeyState(VK_NUMPAD3) & 1;
 
-void NetMainGameComponent::Selection() {
-    if (!network)
+    if (!IsNetworkActive())
     {
-        if (GetAsyncKeyState(VK_NUMPAD1) & 1)
-        {
+        if (hostPressed)
             Host();
-        }
-        else if (GetAsyncKeyState(VK_NUMPAD2) & 1)
-        {
+        else if (connectPressed)
             Connect();
-        }
     }
-    else if (network && network->IsActive())
+    else if (disconnectPressed)
     {
-        if (GetAsyncKeyState(VK_NUMPAD3) & 1)
-        {
-            Disconnect();
-        }
+        Disconnect();
     }
 }
 
 void NetMainGameComponent::Host()
 {
-    ClearInputBuffer();
+    network = CreateNetwork();
 
     mainGameComponent = CMainGameComponent::Get();
-    network = std::make_unique<Network>();
     netPlayerManager = std::make_unique<NetPlayerManager>(
-        network.get(),
+        network,
         mainGameComponent
     );
     netWorld = std::make_unique<NetWorld>(
-        network.get(),
+        network,
         mainGameComponent
     );
 
     SetupNetworkCallbacks();
-
-    unsigned short port = ReadPort();
-    network->Host(port);
+    HostNetwork();
 }
 
 void NetMainGameComponent::Connect()
 {
-    ClearInputBuffer();
+    network = CreateNetwork();
 
     mainGameComponent = CMainGameComponent::Get();
-    network = std::make_unique<Network>();
     netPlayerManager = std::make_unique<NetPlayerManager>(
-        network.get(),
+        network,
         mainGameComponent
     );
     netWorld = std::make_unique<NetWorld>(
-        network.get(),
+        network,
         mainGameComponent
     );
 
     SetupNetworkCallbacks();
-
-    std::string ip = ReadIP();
-    unsigned short port = ReadPort();
-    network->Connect(ip.c_str(), port);
+    ConnectNetwork();
 }
 
 void NetMainGameComponent::Disconnect()
 {
-    ClearInputBuffer();
-
     netWorld->DestroyNetWorld();
     netPlayerManager->DestroyNetPlayers();
     netPlayerManager->DestroyLocalNetPlayer();
@@ -173,7 +109,15 @@ void NetMainGameComponent::Disconnect()
         netWorld->LoadTeleportingAsActive();
     }
 
-    network->Disconnect();
+    DisconnectNetwork();
+}
+
+void NetMainGameComponent::HandleMainGameComponentShutdown()
+{
+    Disconnect();
+
+    if (!IsNetworkActive())
+        Clear();
 }
 
 void NetMainGameComponent::Clear()
@@ -183,7 +127,9 @@ void NetMainGameComponent::Clear()
 
     netPlayerManager.reset();
     netWorld.reset();
-    network.reset();
+
+    DestroyNetwork();
+    network = nullptr;
 }
 
 void NetMainGameComponent::SetupNetworkCallbacks()

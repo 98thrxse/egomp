@@ -8,7 +8,7 @@
 
 #include "Player.h"
 
-extern bool (*IsMultiplayer)();
+extern bool (*IsNetworkActive)();
 
 class CPlayerManager
 {

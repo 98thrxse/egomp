@@ -1,9 +1,9 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <vector>
 #include <functional>
-#include <iostream>
 
 #include <SLikeNet/RakPeerInterface.h>
 #include "SLikeNet/RakNetTypes.h"
@@ -20,9 +20,9 @@ private:
 
 	struct Settings
 	{
-		std::string ip = "127.0.0.1";
-		unsigned short port = 60000;
-		int slots = 4;
+		std::string ip;
+		int port;
+		int slots;
 	};
 	Settings settings;
 
@@ -81,8 +81,8 @@ public:
 	Network();
 	~Network();
 
-	bool Host(unsigned short port);
-	bool Connect(const char* ip, unsigned short port);
+	bool Host(int port, int slots);
+	bool Connect(std::string ip, int port);
 	bool Disconnect();
 	void Update();
 

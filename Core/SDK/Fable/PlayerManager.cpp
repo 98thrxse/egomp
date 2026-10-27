@@ -15,7 +15,7 @@ CPlayer* __fastcall CPlayerManager::HGetPlayer(CPlayerManager* _this, void* _EDX
 bool (__thiscall* CPlayerManager::OIsMultiplayerGameActive)(CPlayerManager*) = nullptr;
 bool __fastcall CPlayerManager::HIsMultiplayerGameActive(CPlayerManager* _this, void* _EDX) {
 	// CRASH: disable native mp cut features
-	if (IsMultiplayer()) {
+	if (IsNetworkActive()) {
 		return false;
 	}
 

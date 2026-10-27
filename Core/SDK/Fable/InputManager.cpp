@@ -3,7 +3,7 @@
 void(__thiscall* CInputManager::OSetHasInputFocus)(CInputManager*, bool) = nullptr;
 void __fastcall CInputManager::HSetHasInputFocus(CInputManager* _this, void*, bool on)
 {
-    if (IsMultiplayer())
+    if (IsNetworkActive())
     {
         CSystemManager* systemManager = CSystemManager::GFGetSystemManager();
         HWND gameWindow = *reinterpret_cast<HWND*>(reinterpret_cast<std::uintptr_t>(systemManager) + 0x94);

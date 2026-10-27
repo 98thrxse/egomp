@@ -12,7 +12,7 @@
 #include "InterfaceType.h"
 #include "Base.h"
 
-extern bool (*IsMultiplayer)();
+extern bool (*IsNetworkActive)();
 
 class CThing
 {

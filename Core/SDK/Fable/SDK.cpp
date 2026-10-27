@@ -8,7 +8,7 @@ SDK& SDK::GetInstance()
 
 HWND WINAPI SDK::HGetForegroundWindow()
 {
-	if (IsMultiplayer())
+	if (IsNetworkActive())
 	{
 		HWND foreground = OGetForegroundWindow();
 		CSystemManager* systemManager = CSystemManager::GFGetSystemManager();
