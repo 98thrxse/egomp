@@ -99,6 +99,9 @@ void NetMainGameComponent::Connect()
 
 void NetMainGameComponent::Disconnect()
 {
+    if (!IsNetworkActive())
+        return;
+
     netWorld->DestroyNetWorld();
     netPlayerManager->DestroyNetPlayers();
     netPlayerManager->DestroyLocalNetPlayer();
@@ -141,11 +144,9 @@ void NetMainGameComponent::SetupNetworkCallbacks()
 
 void NetMainGameComponent::ClearNetworkCallbacks()
 {
-    if (network) {
-        ClearNetworkSessionCallbacks();
-        ClearNetworkWorldCallbacks();
-        ClearNetworkPlayerManagerCallbacks();
-    }
+    ClearNetworkSessionCallbacks();
+    ClearNetworkWorldCallbacks();
+    ClearNetworkPlayerManagerCallbacks();
 }
 
 void NetMainGameComponent::ClearSDKCallbacks()

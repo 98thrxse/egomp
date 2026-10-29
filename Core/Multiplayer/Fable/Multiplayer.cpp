@@ -109,6 +109,6 @@ void Multiplayer::UpdateNetwork()
 {
     Multiplayer& multiplayer = GetInstance();
 
-    if (multiplayer.network)
+    if (IsNetworkActive())
         multiplayer.network->Update();
 }
