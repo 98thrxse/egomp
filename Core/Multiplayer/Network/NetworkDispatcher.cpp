@@ -91,7 +91,8 @@ void Network::Update()
 
 		case ID_CONNECTION_ATTEMPT_FAILED:
 			HandleConnectionAttemptFailed(packet);
-			break;
+			peer->DeallocatePacket(packet);
+			return;
 
 		default:
 			std::cout << "[Network::Update] Received message with ID: " << (int)packet->data[0] << std::endl;

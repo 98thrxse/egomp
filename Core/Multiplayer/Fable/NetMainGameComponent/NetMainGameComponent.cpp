@@ -38,8 +38,8 @@ void NetMainGameComponent::HandleMainGameComponentUpdate()
     Selection();
     UpdateNetwork();
 
-    if (!IsNetworkActive())
-        Clear();
+    if (network && !IsNetworkActive())
+        Disconnect();
 }
 
 void NetMainGameComponent::Selection()
@@ -99,28 +99,35 @@ void NetMainGameComponent::Connect()
 
 void NetMainGameComponent::Disconnect()
 {
-    if (!IsNetworkActive())
-        return;
+    if (netPlayerManager)
+    {
+        netPlayerManager->DestroyNetPlayers();
+        netPlayerManager->DestroyLocalNetPlayer();
+    }
 
-    netWorld->DestroyNetWorld();
-    netPlayerManager->DestroyNetPlayers();
-    netPlayerManager->DestroyLocalNetPlayer();
+    if (netWorld)
+        netWorld->DestroyNetWorld();
 
     if (networkId != 0)
     {
-        netWorld->LoadAsLoadingRegion();
-        netWorld->LoadTeleportingAsActive();
+        if (netWorld)
+        {
+            netWorld->LoadAsLoadingRegion();
+            netWorld->LoadTeleportingAsActive();
+        }
     }
 
-    DisconnectNetwork();
+    if (IsNetworkActive())
+        DisconnectNetwork();
+
+    if (!IsNetworkActive())
+        Clear();
 }
 
 void NetMainGameComponent::HandleMainGameComponentShutdown()
 {
-    Disconnect();
-
-    if (!IsNetworkActive())
-        Clear();
+    if (IsNetworkActive())
+        Disconnect();
 }
 
 void NetMainGameComponent::Clear()
@@ -128,8 +135,11 @@ void NetMainGameComponent::Clear()
     ClearSDKCallbacks();
     ClearNetworkCallbacks();
 
-    netPlayerManager.reset();
-    netWorld.reset();
+    if (netPlayerManager)
+        netPlayerManager.reset();
+
+    if (netWorld)
+        netWorld.reset();
 
     DestroyNetwork();
     network = nullptr;

@@ -19,7 +19,7 @@ void NetMainGameComponent::SetupNetworkSessionCallbacks()
         });
 
     network->AddConnectionAttemptFailedCallback("ConnectionAttemptFailed", [this]() {
-        Disconnect();
+        DisconnectNetwork();
         });
 }
 
@@ -133,7 +133,7 @@ void NetMainGameComponent::HandleDisconnectionOrLost(int networkId)
 {
     if (networkId == 0)
     {
-        Disconnect();
+        DisconnectNetwork();
     }
     else
     {
