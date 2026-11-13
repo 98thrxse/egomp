@@ -79,7 +79,7 @@ private:
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
 
-    void RefreshNetPlayerMorph(int networkId);
+    void RefreshNetPlayerMorphId();
 
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);
     void BroadcastCreateNetPlayers(int networkId);

@@ -1,0 +1,9 @@
+#pragma once
+
+enum ECompositeBlendType
+{
+    COMPOSITE_BLEND_NULL = 0x0,
+    COMPOSITE_BLEND_ADDITIVE = 0x1,
+    COMPOSITE_BLEND_ALPHA = 0x2,
+    COMPOSITE_BLEND_SOLID = 0x3,
+};

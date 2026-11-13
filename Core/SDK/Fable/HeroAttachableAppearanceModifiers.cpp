@@ -85,9 +85,16 @@ void __fastcall CTCHeroAttachableAppearanceModifiers::HFrameUpdate(CTCHeroAttach
     }
 }
 
+void(__thiscall* CTCHeroAttachableAppearanceModifiers::OUpdateGraphics)(CTCHeroAttachableAppearanceModifiers*) = nullptr;
+void __fastcall CTCHeroAttachableAppearanceModifiers::HUpdateGraphics(CTCHeroAttachableAppearanceModifiers* _this, void* _EDX)
+{
+    OUpdateGraphics(_this);
+}
+
 void CTCHeroAttachableAppearanceModifiers::Hook()
 {
 	ADD_HOOK(0x00706950, HAddAppearanceModifierWithReplace, OAddAppearanceModifierWithReplace);
     ADD_HOOK(0x00706800, HGetAppearanceModifierList, OGetAppearanceModifierList);
     ADD_HOOK(0x00707AD0, HFrameUpdate, OFrameUpdate);
+    ADD_HOOK(0x007070D0, HUpdateGraphics, OUpdateGraphics);
 }

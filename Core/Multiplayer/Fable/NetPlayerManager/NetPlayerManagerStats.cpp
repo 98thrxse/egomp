@@ -223,7 +223,9 @@ void NetPlayerManager::BroadcastLocalNetPlayerStats()
 
             lastSendTime = now;
 
-            int statsFlags = 0;
+            int statsFlags =
+                HEALTH |
+                MAXHEALTH;
 
             int money = heroStats->Money;
             int morality = heroStats->Morality;

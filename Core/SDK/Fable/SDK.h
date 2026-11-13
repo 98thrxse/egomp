@@ -67,6 +67,11 @@
 #include "SystemManager.h"
 #include "InputManager.h"
 #include "PlayerGui.h"
+#include "EngineTextureMorph.h"
+#include "CompositeBlendDesc.h"
+#include "RGBColour.h"
+#include "EngineInternalPrimitiveMorphInfo.h"
+#include "EngineTextureMorphSet.h"
 
 class SDK
 {

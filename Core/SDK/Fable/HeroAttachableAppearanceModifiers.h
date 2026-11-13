@@ -37,4 +37,7 @@ private:
 
     static void(__thiscall* OFrameUpdate)(CTCHeroAttachableAppearanceModifiers*);
     static void __fastcall HFrameUpdate(CTCHeroAttachableAppearanceModifiers* _this, void* _EDX);
+
+    static void(__thiscall* OUpdateGraphics)(CTCHeroAttachableAppearanceModifiers*);
+    static void __fastcall HUpdateGraphics(CTCHeroAttachableAppearanceModifiers* _this, void* _EDX);
 };

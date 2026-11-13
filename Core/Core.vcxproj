@@ -163,6 +163,8 @@
     <ClInclude Include="SDK\Fable\CombatActionBase.h" />
     <ClInclude Include="SDK\Fable\CombatZone.h" />
     <ClInclude Include="SDK\Fable\Component.h" />
+    <ClInclude Include="SDK\Fable\CompositeBlendDesc.h" />
+    <ClInclude Include="SDK\Fable\CompositeBlendType.h" />
     <ClInclude Include="SDK\Fable\CreatureAbility.h" />
     <ClInclude Include="SDK\Fable\BaseClass.h" />
     <ClInclude Include="SDK\Fable\3DVector.h" />
@@ -175,6 +177,9 @@
     <ClInclude Include="SDK\Fable\DefPointer.h" />
     <ClInclude Include="SDK\Fable\DisplayEngine.h" />
     <ClInclude Include="SDK\Fable\DParticleEmitter.h" />
+    <ClInclude Include="SDK\Fable\EngineTextureMorph.h" />
+    <ClInclude Include="SDK\Fable\EngineInternalPrimitiveMorphInfo.h" />
+    <ClInclude Include="SDK\Fable\EngineTextureMorphSet.h" />
     <ClInclude Include="SDK\Fable\GameScriptInterface.h" />
     <ClInclude Include="SDK\Fable\GameTimeManager.h" />
     <ClInclude Include="SDK\Fable\GraphicAppearance.h" />
@@ -197,6 +202,7 @@
     <ClInclude Include="SDK\Fable\ParentDefClassBase.h" />
     <ClInclude Include="SDK\Fable\PlayerGui.h" />
     <ClInclude Include="SDK\Fable\PlayerMode.h" />
+    <ClInclude Include="SDK\Fable\RGBColour.h" />
     <ClInclude Include="SDK\Fable\RightHandedSet.h" />
     <ClInclude Include="SDK\Fable\DefinitionManager.h" />
     <ClInclude Include="SDK\Fable\DefString.h" />
@@ -274,13 +280,18 @@
     <ClCompile Include="SDK\Fable\CombatActionBase.cpp" />
     <ClCompile Include="SDK\Fable\Component.cpp" />
     <ClCompile Include="SDK\Fable\AppearanceMorphBase.cpp" />
+    <ClCompile Include="SDK\Fable\CompositeBlendDesc.cpp" />
     <ClCompile Include="SDK\Fable\DParticleEmitter.cpp" />
+    <ClCompile Include="SDK\Fable\EngineTextureMorph.cpp" />
+    <ClCompile Include="SDK\Fable\EngineInternalPrimitiveMorphInfo.cpp" />
+    <ClCompile Include="SDK\Fable\EngineTextureMorphSet.cpp" />
     <ClCompile Include="SDK\Fable\GameTimeManager.cpp" />
     <ClCompile Include="SDK\Fable\GraphicAppearance.cpp" />
     <ClCompile Include="SDK\Fable\Hero.cpp" />
     <ClCompile Include="SDK\Fable\Actions.cpp" />
     <ClCompile Include="SDK\Fable\InputManager.cpp" />
     <ClCompile Include="SDK\Fable\PlayerGui.cpp" />
+    <ClCompile Include="SDK\Fable\RGBColour.cpp" />
     <ClCompile Include="SDK\Fable\SystemManager.cpp" />
     <ClCompile Include="SDK\Fable\ThingHolySite.cpp" />
     <ClCompile Include="SDK\Fable\DefIndex.cpp" />

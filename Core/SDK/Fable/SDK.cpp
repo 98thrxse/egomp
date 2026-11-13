@@ -88,4 +88,9 @@ SDK::SDK()
 	CSystemManager::Hook();
 	CInputManager::Hook();
 	CPlayerGui::Hook();
+	CEngineTextureMorph::Hook();
+	CCompositeBlendDesc::Hook();
+	CRGBColour::Hook();
+	CEngineInternalPrimitiveMorphInfo::Hook();
+	CEngineTextureMorphSet::Hook();
 };

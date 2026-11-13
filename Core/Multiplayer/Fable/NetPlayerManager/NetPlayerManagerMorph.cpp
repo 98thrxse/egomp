@@ -114,10 +114,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph()
 
     heroMorph->AddUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId), [this]()
         {
-            for (auto& netPlayer : netPlayers)
-            {
-                RefreshNetPlayerMorph(netPlayer->GetNetworkId());
-            }
+            RefreshNetPlayerMorphId();
         });
 
     auto lastSendTime = std::chrono::steady_clock::now();
@@ -265,41 +262,82 @@ void NetPlayerManager::BroadcastNetPlayerMorph(int networkId)
     }
 }
 
-void NetPlayerManager::RefreshNetPlayerMorph(
-    int networkId)
+void NetPlayerManager::RefreshNetPlayerMorphId()
 {
-    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
-
-    if (!creature)
-        return;
-
-    CTCHeroMorph* heroMorph =
-        reinterpret_cast<CTCHeroMorph*>(
-            reinterpret_cast<CThing*>(creature)->GetTC(
-                TCI_APPEARANCE_MORPH
-            )
-            );
-
-    if (!heroMorph)
+    if (localNetPlayer)
     {
-        std::cout << "[NetPlayerManager::RefreshNetPlayerMorph]: !heroMorph" << std::endl;
-        return;
+        int localId = localNetPlayer->GetLocalId();
+        CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(localId);
+
+        if (creature)
+        {
+            CTCHeroMorph* heroMorph =
+                reinterpret_cast<CTCHeroMorph*>(
+                    reinterpret_cast<CThing*>(creature)->GetTC(
+                        TCI_APPEARANCE_MORPH
+                    )
+                    );
+
+            if (heroMorph)
+            {
+                auto meshMorphSet =
+                    *reinterpret_cast<uintptr_t*>(
+                        reinterpret_cast<uintptr_t>(heroMorph) + 0x0C);
+
+                if (meshMorphSet)
+                {
+                    auto morphs = meshMorphSet + 0x0C;
+                    auto first = *reinterpret_cast<uintptr_t*>(morphs + 0x00);
+                    auto last = *reinterpret_cast<uintptr_t*>(morphs + 0x04);
+
+                    for (auto morph = first; morph < last; morph += sizeof(CEngineTextureMorph))
+                    {
+                        auto* engineTextureMorph = reinterpret_cast<CEngineTextureMorph*>(morph);
+                        engineTextureMorph->MorphID = localId;
+                    }
+                }
+            }
+        }
     }
 
-    auto meshMorphSet =
-        *reinterpret_cast<uintptr_t*>(
-            reinterpret_cast<uintptr_t>(heroMorph) + 0x0C);
+    for (auto& netPlayer : netPlayers)
+    {
+        int remoteLocalId = netPlayer->GetLocalId();
 
-    if (!meshMorphSet)
-        return;
+        CThingPlayerCreature* creature = GetPlayerCreatureFromLocalId(remoteLocalId);
 
-    auto morphs = meshMorphSet + 0x0C;
+        if (!creature)
+            continue;
 
-    auto first = *reinterpret_cast<uintptr_t*>(morphs + 0x00);
-    auto last = *reinterpret_cast<uintptr_t*>(morphs + 0x04);
+        CTCHeroMorph* heroMorph =
+            reinterpret_cast<CTCHeroMorph*>(
+                reinterpret_cast<CThing*>(creature)->GetTC(
+                    TCI_APPEARANCE_MORPH
+                )
+                );
 
-    int localId = GetLocalIdFromNetworkId(networkId);
+        if (!heroMorph)
+        {
+            std::cout << "[NetPlayerManager::RefreshNetPlayerMorph]: !heroMorph" << std::endl;
+            continue;
+        }
 
-    for (auto morph = first; morph < last; morph += 0x14)
-        *reinterpret_cast<int*>(morph + 0x04) = localId;
+        auto meshMorphSet =
+            *reinterpret_cast<uintptr_t*>(
+                reinterpret_cast<uintptr_t>(heroMorph) + 0x0C);
+
+        if (!meshMorphSet)
+            continue;
+
+        auto morphs = meshMorphSet + 0x0C;
+
+        auto first = *reinterpret_cast<uintptr_t*>(morphs + 0x00);
+        auto last = *reinterpret_cast<uintptr_t*>(morphs + 0x04);
+
+        for (auto morph = first; morph < last; morph += sizeof(CEngineTextureMorph))
+        {
+            auto* engineTextureMorph = reinterpret_cast<CEngineTextureMorph*>(morph);
+            engineTextureMorph->MorphID = remoteLocalId;
+        }
+    }
 }
