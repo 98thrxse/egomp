@@ -1,6 +1,7 @@
 #include "HeroAttachableAppearanceModifiers.h"
 
 std::map<std::string, std::function<void()>> CTCHeroAttachableAppearanceModifiers::frameUpdateCallbacks;
+std::map<std::string, std::function<void(NGraphicAppearance::CGraphicAppearanceDrawInfo const&)>> CTCHeroAttachableAppearanceModifiers::onAppearanceDrawCallbacks;
 
 std::vector<std::vector<long>> CTCHeroAttachableAppearanceModifiers::GetAllAppearanceModifierLists()
 {
@@ -91,10 +92,23 @@ void __fastcall CTCHeroAttachableAppearanceModifiers::HUpdateGraphics(CTCHeroAtt
     OUpdateGraphics(_this);
 }
 
+bool(__thiscall* CTCHeroAttachableAppearanceModifiers::OOnAppearanceDraw)(CTCHeroAttachableAppearanceModifiers*, NGraphicAppearance::CTCGraphicAppearance&, NGraphicAppearance::CGraphicAppearanceDrawInfo const&) = nullptr;
+bool __fastcall CTCHeroAttachableAppearanceModifiers::HOnAppearanceDraw(CTCHeroAttachableAppearanceModifiers* _this, void* _EDX, NGraphicAppearance::CTCGraphicAppearance& tc_appearance, NGraphicAppearance::CGraphicAppearanceDrawInfo const& draw_info)
+{
+    for (const auto& pair : onAppearanceDrawCallbacks)
+    {
+        if (pair.second)
+            pair.second(draw_info);
+    }
+
+    return OOnAppearanceDraw(_this, tc_appearance, draw_info);
+}
+
 void CTCHeroAttachableAppearanceModifiers::Hook()
 {
 	ADD_HOOK(0x00706950, HAddAppearanceModifierWithReplace, OAddAppearanceModifierWithReplace);
     ADD_HOOK(0x00706800, HGetAppearanceModifierList, OGetAppearanceModifierList);
     ADD_HOOK(0x00707AD0, HFrameUpdate, OFrameUpdate);
     ADD_HOOK(0x007070D0, HUpdateGraphics, OUpdateGraphics);
+    ADD_HOOK(0x00707440, HOnAppearanceDraw, OOnAppearanceDraw);
 }

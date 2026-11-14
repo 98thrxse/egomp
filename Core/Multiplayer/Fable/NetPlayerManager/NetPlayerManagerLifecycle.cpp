@@ -191,6 +191,14 @@ void NetPlayerManager::DestroyLocalNetPlayer()
         return;
     }
 
+    CEngineTextureMorphSet* engineTextureMorphSet = GetNetPlayerTextureMorphSet(networkId);
+
+    if (!engineTextureMorphSet)
+    {
+        std::cout << "[NetPlayerManager::DestroyLocalNetPlayer]: !engineTextureMorphSet" << std::endl;
+        return;
+    }
+
     CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
         reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
         );
@@ -214,9 +222,11 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
     heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
+    appearanceModifiers->RemoveOnAppearanceDrawCallback("OnAppearanceDraw" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
+    engineTextureMorphSet->RemoveEngineMorphCallback("AddEngineMorph" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
     hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));
@@ -278,6 +288,14 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
         return;
     }
 
+    CEngineTextureMorphSet* engineTextureMorphSet = GetNetPlayerTextureMorphSet(networkId);
+
+    if (!engineTextureMorphSet)
+    {
+        std::cout << "[NetPlayerManager::DestroyNetPlayer]: !engineTextureMorphSet" << std::endl;
+        return;
+    }
+
     CTCInventoryWeapons* inventoryWeapons = reinterpret_cast<CTCInventoryWeapons*>(
         reinterpret_cast<CThing*>(creature)->GetTC(TCI_INVENTORY_WEAPONS)
         );
@@ -301,9 +319,11 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     reinterpret_cast<CThingCreatureBase*>(creature)->RemoveSetCurrentActionCallback("SetCurrentAction" + std::to_string(networkId));
     heroStats->RemoveFrameUpdateCallback("StatsFrameUpdate" + std::to_string(networkId));
     appearanceModifiers->RemoveFrameUpdateCallback("AppearanceFrameUpdate" + std::to_string(networkId));
+    appearanceModifiers->RemoveOnAppearanceDrawCallback("OnAppearanceDraw" + std::to_string(networkId));
     heroExperience->RemoveFrameUpdateCallback("ExperienceFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveFrameUpdateCallback("MorphFrameUpdate" + std::to_string(networkId));
     heroMorph->RemoveUpdateTextureMorphsCallback("UpdateTextureMorphs" + std::to_string(networkId));
+    engineTextureMorphSet->RemoveEngineMorphCallback("AddEngineMorph" + std::to_string(networkId));
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
     hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));

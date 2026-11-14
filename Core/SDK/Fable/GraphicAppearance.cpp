@@ -17,4 +17,8 @@ namespace NGraphicAppearance
 	{
 		ADD_HOOK(0x004BFAC0, HSetAlpha, OSetAlpha);
 	}
+
+	void CGraphicAppearanceDrawInfo::Hook()
+	{
+	}
 }

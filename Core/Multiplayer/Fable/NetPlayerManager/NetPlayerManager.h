@@ -63,6 +63,7 @@ private:
     Network* network;
 
     int networkId;
+	int netMorphId; // this variable replaces the hardcoded in-game morphId (is always 0), which is used to identify the local player's morph set
 
     CMainGameComponent* mainGameComponent;
     CPlayerManager* playerManager = mainGameComponent->GetPlayerManager();
@@ -79,6 +80,8 @@ private:
     void ApplyNetPlayerMovement(int networkId);
     void ApplyNetPlayerRotation(int networkId);
 
+    CEngineTextureMorphSet* GetNetPlayerTextureMorphSet(int networkId) const;
+    void SetNetPlayerMorphId(int networkId);
     void RefreshNetPlayerMorphId();
 
     void BroadcastCreateNetPlayer(int networkId, int defGlobalIndex, C3DVector position, float facingAngleXY);

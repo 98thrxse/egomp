@@ -84,6 +84,7 @@ SDK::SDK()
 	CTCHero::Hook();
 	CTCCombat::Hook();
 	NGraphicAppearance::CTCGraphicAppearance::Hook();
+	NGraphicAppearance::CGraphicAppearanceDrawInfo::Hook();
 	CGameTimeManager::Hook();
 	CSystemManager::Hook();
 	CInputManager::Hook();

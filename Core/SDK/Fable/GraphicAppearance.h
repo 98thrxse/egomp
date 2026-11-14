@@ -8,6 +8,12 @@
 
 namespace NGraphicAppearance
 {
+    class CGraphicAppearanceDrawInfo
+    {
+    public:
+        static void Hook();
+    };
+
     class CTCGraphicAppearance
     {
     public:

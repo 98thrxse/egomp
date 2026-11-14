@@ -367,3 +367,58 @@ void NetPlayerManager::RefreshNetPlayerSheathedWeapons(int networkId)
 
     inventoryWeapons->RefreshSheathedWeapons();
 }
+
+CEngineTextureMorphSet* NetPlayerManager::GetNetPlayerTextureMorphSet(int networkId) const
+{
+    CThingPlayerCreature* creature = GetPlayerCreatureFromNetworkId(networkId);
+
+    if (!creature)
+        return nullptr;
+
+    CTCHeroMorph* heroMorph =
+        reinterpret_cast<CTCHeroMorph*>(
+            reinterpret_cast<CThing*>(creature)->GetTC(
+                TCI_APPEARANCE_MORPH
+            )
+            );
+
+    if (!heroMorph)
+    {
+        std::cout << "[NetPlayerManager::GetNetPlayerTextureMorphSet]: !heroMorph: " << networkId << std::endl;
+        return nullptr;
+    }
+
+    uintptr_t meshMorphSet = *reinterpret_cast<uintptr_t*>(
+        reinterpret_cast<uintptr_t>(heroMorph) + 0x0C
+        );
+
+    if (!meshMorphSet)
+        return nullptr;
+
+    return reinterpret_cast<CEngineTextureMorphSet*>(meshMorphSet + 0x0C);
+}
+
+void NetPlayerManager::SetNetPlayerMorphId(int networkId)
+{
+    CEngineTextureMorphSet* engineTextureMorphSet = GetNetPlayerTextureMorphSet(networkId);
+
+    if (!engineTextureMorphSet)
+        return;
+
+    uintptr_t morphs = reinterpret_cast<uintptr_t>(engineTextureMorphSet);
+    uintptr_t first = *reinterpret_cast<uintptr_t*>(morphs + 0x00);
+    uintptr_t last = *reinterpret_cast<uintptr_t*>(morphs + 0x04);
+
+    for (uintptr_t morph = first; morph < last; morph += sizeof(CEngineTextureMorph))
+        reinterpret_cast<CEngineTextureMorph*>(morph)->MorphID = networkId;
+}
+
+void NetPlayerManager::RefreshNetPlayerMorphId()
+{
+    if (localNetPlayer)
+        SetNetPlayerMorphId(localNetPlayer->GetNetworkId());
+
+    for (const auto& netPlayer : netPlayers)
+        if (netPlayer)
+            SetNetPlayerMorphId(netPlayer->GetNetworkId());
+}
