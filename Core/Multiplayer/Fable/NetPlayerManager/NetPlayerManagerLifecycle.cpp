@@ -231,6 +231,8 @@ void NetPlayerManager::DestroyLocalNetPlayer()
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
     hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));
 
+    netMorphId = 0;
+
     localNetPlayer.reset();
 }
 
@@ -327,6 +329,8 @@ void NetPlayerManager::DestroyNetPlayer(int networkId)
     inventoryWeapons->RemoveSetThingAsActiveWeaponCallback("SetThingAsActiveWeaponCallback" + std::to_string(networkId));
     combat->RemoveUnsetBlockingCallback("UnsetBlocking" + std::to_string(networkId));
     hero->RemoveFrameUpdateCallback("HeroFrameUpdate" + std::to_string(networkId));
+
+    netMorphId = 0;
 
     player->ResetModes();
     player->SetPlayerCharacter(nullptr);

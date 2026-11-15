@@ -155,7 +155,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph()
 
             if (localNetPlayer && GetNetPlayerTextureMorphSet(localNetPlayer->GetNetworkId()) == engineTextureMorphSet)
             {
-                netMorphId = localNetPlayer->GetNetworkId();
+                netMorphId = localNetPlayer->GetLocalId();
                 return;
             }
 
@@ -163,7 +163,7 @@ void NetPlayerManager::BroadcastLocalNetPlayerMorph()
             {
                 if (GetNetPlayerTextureMorphSet(netPlayer->GetNetworkId()) == engineTextureMorphSet)
                 {
-                    netMorphId = netPlayer->GetNetworkId();
+                    netMorphId = netPlayer->GetLocalId();
                     return;
                 }
             }

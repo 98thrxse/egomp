@@ -400,6 +400,8 @@ CEngineTextureMorphSet* NetPlayerManager::GetNetPlayerTextureMorphSet(int networ
 
 void NetPlayerManager::SetNetPlayerMorphId(int networkId)
 {
+	int localId = GetLocalIdFromNetworkId(networkId);
+
     CEngineTextureMorphSet* engineTextureMorphSet = GetNetPlayerTextureMorphSet(networkId);
 
     if (!engineTextureMorphSet)
@@ -410,7 +412,7 @@ void NetPlayerManager::SetNetPlayerMorphId(int networkId)
     uintptr_t last = *reinterpret_cast<uintptr_t*>(morphs + 0x04);
 
     for (uintptr_t morph = first; morph < last; morph += sizeof(CEngineTextureMorph))
-        reinterpret_cast<CEngineTextureMorph*>(morph)->MorphID = networkId;
+        reinterpret_cast<CEngineTextureMorph*>(morph)->MorphID = localId;
 }
 
 void NetPlayerManager::RefreshNetPlayerMorphId()
