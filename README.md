@@ -1,39 +1,27 @@
 # EgoMP
 
-Experimental multiplayer mod for [Fable: The Lost Chapters](https://en.wikipedia.org/wiki/Fable:_The_Lost_Chapters).
-
-**EgoMP** is an ongoing project aimed at bringing multiplayer gameplay through a robust peer-to-peer networking layer for player synchronization, world state replication, and shared game logic.
+**EgoMP** is an experimental multiplayer mod for [Fable: The Lost Chapters](https://en.wikipedia.org/wiki/Fable:_The_Lost_Chapters), aiming to introduce cooperative gameplay through a robust peer-to-peer networking layer for player synchronization, world state replication, and shared game logic.
 
 > [!WARNING]
 > This project is currently in an experimental state. Expect bugs, crashes, desyncs, and incomplete features.
 >
 > It is primarily intended for developers, reverse engineers, and early testers.
 
-## 🛠 Technical Stack
-
-- **Language:** C++
-- **Networking:** SLNet (RakNet fork)
-- **Hooks / Injection:** Custom DLL injection and memory manipulation
-
 ## 🚀 Getting Started
 
 1. Download the latest version from the [Releases](https://github.com/98thrxse/EgoMP/releases) page.
 2. Extract the archive into your game directory.
-3. Run the `EgoMP.exe` launcher to start the game with multiplayer support.
-4. Both the game and the console will launch separately.
-5. You must start or continue to enter the game world first — the mod will not work while you are still in the main menu.
-6. Once the game is running:
+3. Configure the multiplayer settings in the configuration file:
+   - **IP:** Host IP address (for clients).
+   - **Port:** Port used for hosting and connecting.
+   - **Slots:** Maximum number of players (up to 4).
+4. Run the `EgoMP.exe` launcher to start the game with multiplayer support.
+5. Start or continue your game to enter the game world. The mod will not work while you are in the main menu.
+6. Once in the game:
    - Press **NUMPAD 1** to host a session.
    - Press **NUMPAD 2** to connect to a session.
    - Press **NUMPAD 3** to disconnect from the current session.
-7. If you are hosting:
-   - Alt + Tab to the console window.
-   - Enter a port number, or leave it empty to use the default port.
-8. If you are connecting:
-   - Alt + Tab to the console window.
-   - Enter the host IP (or leave empty for default).
-   - Then enter the port (or leave empty for default).
-9. Return to the game and *voilà*, everything should work!
+7. Return to the game and *voilà*, everything should work!
 
 ## 📜 Legal & Licensing
 
